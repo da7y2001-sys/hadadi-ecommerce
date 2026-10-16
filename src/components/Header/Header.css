@@ -1,0 +1,294 @@
+/* =========================
+   Header
+========================= */
+
+.store-header {
+  width: 100%;
+  background: #fff;
+  direction: ltr;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* =========================
+   Container
+========================= */
+
+.container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+/* =========================
+   Top Header
+========================= */
+
+.top-header {
+  min-height: 90px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 35px;
+}
+/* Search Suggestions */
+
+.suggestions-list {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  list-style: none;
+
+  z-index: 1000;
+}
+
+.suggestions-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px;
+}
+
+.suggestions-list li img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.suggestions-list li span {
+  color: #333;
+  font-size: 14px;
+}
+
+/* Logo */
+
+.store-branding {
+  flex-shrink: 0;
+}
+
+.store-logo {
+  width: 150px;
+  display: block;
+}
+
+/* Search */
+
+.top-search {
+  width: min(500px, 100%);
+  height: 44px;
+
+  display: flex;
+
+  border: 1px solid #c9dce5;
+  border-radius: 25px;
+
+  overflow: hidden;
+}
+
+.top-search input {
+  flex: 1;
+
+  border: none;
+  outline: none;
+
+  padding: 0 18px;
+
+  font-size: 14px;
+}
+
+.top-search button {
+  width: 55px;
+
+  border: none;
+
+  background: #129bd8;
+  color: #fff;
+
+  cursor: pointer;
+}
+
+/* Header Actions */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.header-action {
+  position: relative; /* ضروري لضبط مكان الرقم */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #253237;
+  text-decoration: none;
+
+  font-size: 28px;
+}
+
+/* تصميم الدائرة الزرقاء للأرقام */
+.header-action span {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background-color: #129bd8;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* =========================
+   Bottom Header
+========================= */
+
+.btm-header {
+  background: #129bd8;
+}
+
+.btm-header .nav {
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* يوزع المسافة بين اليمين واليسار */
+}
+
+/* تقسيم الهيدر السفلي */
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-icon {
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.user-icon:hover {
+  opacity: 0.8;
+}
+
+/* Categories */
+
+.nav-category {
+  position: relative;
+}
+
+.category-btn {
+  height: 52px;
+
+  padding: 0 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #fff;
+
+  cursor: pointer;
+}
+
+.category-btn svg {
+  font-size: 23px;
+}
+
+.category-btn span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Category List */
+
+.category-nav-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  width: 220px;
+
+  display: none;
+  flex-direction: column;
+
+  background: #fff;
+  border: 1px solid #e5e5e5;
+
+  z-index: 100;
+}
+
+.category-nav-list.active {
+  display: flex;
+}
+
+
+
+.category-nav-list a {
+  padding: 11px 15px;
+
+  color: #333;
+
+  text-decoration: none;
+
+  border-bottom: 1px solid #eee;
+
+  font-size: 14px;
+}
+
+
+
+.category-nav-list a:hover {
+  background: #f5f5f5;
+  color: #129bd8;
+}
+
+/* Navigation */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+
+  margin-left: 25px;
+}
+
+.nav-links a {
+  padding: 17px 18px;
+
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 14px;
+}
+
+.nav-links a:hover {
+  background: rgba(0, 0, 0, 0.08);
+}

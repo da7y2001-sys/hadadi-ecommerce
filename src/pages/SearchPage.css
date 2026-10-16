@@ -1,0 +1,40 @@
+.search-products {
+  width: min(1200px, 92%);
+  margin: 40px auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+.no-products {
+  text-align: center;
+  margin: 40px auto;
+}
+.no-products p {
+  margin: 10px auto;
+}
+.no-products a {
+  margin: 10px auto;
+  text-decoration: none;
+  color: #253237;
+  font-weight: bold;
+}
+.product_title {
+  width: min(1200px, 92%);
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.product_title h1 {
+  font-size: 24px;
+  color: #253237;
+  margin-bottom: 5px;
+}
+
+.product_title p {
+  font-size: 16px;
+  color: #253237;
+}
