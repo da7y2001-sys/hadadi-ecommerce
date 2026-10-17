@@ -1,15 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
 import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
 function ProductDetails() {
   const [product, setProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart, addToFavorites, favorites, removeFromFavorites } =
     useContext(CartContext);
   const isInFav = favorites.some((item) => item.id === product?.id);
@@ -19,6 +22,7 @@ function ProductDetails() {
         setLoading(true);
         const res = await axios.get(`https://dummyjson.com/products/${id}`);
         setProduct(res.data);
+        setSelectedImage(res.data.thumbnail);
       } catch (err) {
         setError(err);
       } finally {
@@ -39,7 +43,22 @@ function ProductDetails() {
   return (
     <div className="product-details">
       <div className="product-details-image">
-        <img src={product.thumbnail} alt={product.title} />
+        <img
+          src={selectedImage}
+          alt={product.title}
+          className="main-product-image"
+        />
+
+        <div className="product-thumbnails">
+          {product.images.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`${product.title} ${index + 1}`}
+              onClick={() => setSelectedImage(image)}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="product-details-info">
@@ -70,7 +89,16 @@ function ProductDetails() {
           Add to Cart
         </button>
         <button
-          className="favorite-btn"
+          className="go-to-cart-btn"
+          onClick={() => {
+            addToCart(product);
+            navigate("/checkout");
+          }}
+        >
+          Buy Now
+        </button>
+        <button
+          className={`favorite-btn ${isInFav ? "in-fav" : ""}`}
           onClick={() => {
             if (isInFav) {
               removeFromFavorites(product.id);
@@ -79,8 +107,7 @@ function ProductDetails() {
             }
           }}
         >
-          <FaHeart />
-          {isInFav ? "Remove from Wishlist" : "Add to Wishlist"}
+          {isInFav ? <FaHeart /> : <FaRegHeart />}
         </button>
       </div>
     </div>

@@ -1,6 +1,12 @@
 import { useContext } from "react";
 import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
-import { FaCartArrowDown, FaRegHeart, FaShare, FaCheck } from "react-icons/fa";
+import {
+  FaCartArrowDown,
+  FaRegHeart,
+  FaHeart,
+  FaShare,
+  FaCheck,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CartContext } from "../../context/CartContext";
@@ -110,7 +116,7 @@ function ProductCard({ item }) {
           <FaCartArrowDown />
         </span>
         <span className={`${isInFav ? "in-fav" : ""}`} onClick={handleAddToFav}>
-          <FaRegHeart />
+          {isInFav ? <FaHeart /> : <FaRegHeart />}
         </span>
         <span>
           <FaShare />

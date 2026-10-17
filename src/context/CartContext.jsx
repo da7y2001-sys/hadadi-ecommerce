@@ -98,6 +98,7 @@ function CartProvider({ children }) {
         clearCart,
         orders,
         addOrder,
+
         addToFavorites,
         favorites,
         removeFromFavorites,

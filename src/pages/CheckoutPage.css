@@ -50,4 +50,27 @@
   transform: scale(1.02);
   
 }
-
+.order-success {
+  text-align: center;
+  padding: 80px 20px;
+}
+.order-success-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+.order-success-actions button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #129bd8;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
+.order-success-actions button:last-child {
+  background: white;
+  color: #129bd8;
+  border: 1px solid #129bd8;
+}

@@ -103,7 +103,7 @@
 
 /* حالات خاصة للأيقونات (تمت الإضافة للمفضلة/السلة) */
 .product .icons span.in-fav {
-  background: var(--main_color);
+  background: #e53935;
   color: var(--white_color);
 }
 

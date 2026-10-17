@@ -1,13 +1,30 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
+  const navigate = useNavigate();
+  const [orderSuccess, setOrderSuccess] = useState(false);
   const { cartItems, clearCart, addOrder } = useContext(CartContext);
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+  if (orderSuccess) {
+    return (
+      <div className="order-success">
+        <h1>🎉 Order placed successfully!</h1>
+        <p>Your order has been placed successfully.</p>
+
+        <div className="order-success-actions">
+          <button onClick={() => navigate("/")}>Continue Shopping</button>
+
+          <button onClick={() => navigate("/orders")}>View Orders</button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="checkout-page">
       <h1 className="checkout-title">Checkout</h1>
@@ -18,22 +35,26 @@ function CheckoutPage() {
           e.preventDefault();
           if (cartItems.length === 0) {
             alert("Your cart is empty!");
+            navigate("/cart");
             return;
           }
 
           const formData = new FormData(e.target);
           const orderData = {
+            id: Date.now(),
             customer: Object.fromEntries(formData),
             items: cartItems,
             total: total,
             date: new Date().toISOString(),
+            status: "Processing",
           };
 
           console.log("Order Data:", orderData);
 
           addOrder(orderData);
           clearCart();
-          alert("Order placed successfully!");
+          e.target.reset();
+          setOrderSuccess(true);
         }}
       >
         <div>

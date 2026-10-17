@@ -11,7 +11,7 @@
 .cart-item {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 40px;
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid #ddd;
@@ -71,6 +71,11 @@
   color: #fff;
   cursor: pointer;
 }
+.remove-btn:hover {
+  background: #ce2e1d;
+  transform: scale(1.05);
+  transition: 0.2s ease;
+}
 
 .cart-total {
   text-align: right;
@@ -117,4 +122,82 @@
   color: #fff;
   transition: 0.3s;
   transform: scale(1.02);
+}
+.order-total {
+  text-align: right;
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+.item-total {
+  margin-top: 8px;
+  font-weight: bold;
+  color: #333;
+}
+.order-summary {
+  width: 350px;
+  margin: 40px 0 0 auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.order-summary h2 {
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.order-summary hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.order-summary .checkout-btn {
+  display: block;
+  text-align: center;
+  margin: 20px 0 0;
+}
+.cart-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.cart-actions button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-btn {
+  margin-top: 15px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background: #129bd8;
+  color: #fff;
+  cursor: pointer;
+}
+
+
+.save-btn:hover {
+  background: #129bd8;
+  transform: scale(1.05);
+  transition: 0.2s ease;
 }
