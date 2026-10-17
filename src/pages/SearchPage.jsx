@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { ProductCard } from "../components";
+import { ProductCard, ErrorState } from "../components";
 import "./SearchPage.css";
 function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -10,10 +10,12 @@ function SearchPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   useEffect(() => {
     const searchProducts = async () => {
       try {
         setLoading(true);
+        setError(null);
 
         const res = await axios.get(
           `https://dummyjson.com/products/search?q=${query}`,
@@ -27,13 +29,21 @@ function SearchPage() {
     };
 
     searchProducts();
-  }, [query]);
+  }, [query, retryCount]);
   if (loading) {
     return <h2>Loading...</h2>;
   }
 
   if (error) {
-    return <h2>Error: {error.message}</h2>;
+    return (
+      <div className="container">
+        <ErrorState
+          title="Search failed"
+          message="We couldn't load the search results. Please check your connection and try again."
+          onRetry={() => setRetryCount((count) => count + 1)}
+        />
+      </div>
+    );
   }
 
   if (products.length === 0) {

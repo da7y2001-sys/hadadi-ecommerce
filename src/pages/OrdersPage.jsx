@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice";
 
 import "./OrdersPage.css";
 function OrdersPage() {
@@ -37,12 +38,12 @@ function OrdersPage() {
               <img src={item.thumbnail} alt={item.title} />
               <p>{item.title}</p>
               <p>
-                {item.quantity} × ${item.price}
+                {item.quantity} × {formatPrice(item.price)}
               </p>
             </div>
           ))}
 
-          <h3 className="order-total">Total: ${order.total.toFixed(2)}</h3>
+          <h3 className="order-total">Total: {formatPrice(order.total)}</h3>
         </div>
       ))}
     </div>

@@ -38,7 +38,7 @@
 
 .suggestions-list {
   position: absolute;
-  top: 50px;
+  top: calc(100% + 6px);
   left: 0;
   width: 100%;
 
@@ -86,9 +86,15 @@
 
 /* Search */
 
+.searchBox_Container {
+  flex: 1 1 320px;
+  max-width: 620px;
+  min-width: 0;
+}
+
 .top-search {
-  width: min(500px, 100%);
-  height: 44px;
+  width: 100%;
+  height: 48px;
 
   display: flex;
 
@@ -96,17 +102,25 @@
   border-radius: 25px;
 
   overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.top-search:focus-within {
+  border-color: #129bd8;
+  box-shadow: 0 0 0 3px rgba(18, 155, 216, 0.15);
 }
 
 .top-search input {
   flex: 1;
+  min-width: 0;
 
   border: none;
   outline: none;
 
   padding: 0 18px;
 
-  font-size: 14px;
+  font-size: 15px;
+  color: #253237;
 }
 
 .top-search button {
@@ -118,6 +132,49 @@
   color: #fff;
 
   cursor: pointer;
+}
+
+/* زر مسح البحث (X) - يظهر فقط عند وجود نص */
+.top-search .clear-search {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 100%;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+/* دائرة واضحة خلف علامة X حتى تظهر دائمًا بشكل لا يمكن تفويته */
+.top-search .clear-search svg {
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+
+  border-radius: 50%;
+  background: #e6eef4;
+  color: #33505e;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.top-search .clear-search:hover svg,
+.top-search .clear-search:focus-visible svg {
+  background: #129bd8;
+  color: #fff;
+}
+
+.top-search .clear-search:focus-visible {
+  outline: none;
 }
 
 /* Header Actions */
@@ -291,4 +348,23 @@
 
 .nav-links a:hover {
   background: rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   Header - Responsive (Search)
+========================= */
+
+@media (max-width: 768px) {
+  .top-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    min-height: auto;
+    padding: 12px 0;
+  }
+
+  .searchBox_Container {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
 }

@@ -1,0 +1,36 @@
+.error-state {
+  max-width: 520px;
+  margin: 80px auto;
+  padding: 40px 30px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.error-state h2 {
+  font-size: 24px;
+  color: #253237;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.error-state p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.error-state-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  background: #129bd8;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.error-state-btn:hover {
+  background: #0d82b8;
+}

@@ -1,0 +1,54 @@
+.about-page {
+  padding: 50px 0;
+}
+
+.about-title {
+  text-align: center;
+  color: #253237;
+  margin-bottom: 15px;
+}
+
+.about-intro {
+  text-align: center;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto 40px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.about-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 25px;
+  background: #fff;
+}
+
+.about-card h2 {
+  color: #129bd8;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.about-card p {
+  color: #555;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}

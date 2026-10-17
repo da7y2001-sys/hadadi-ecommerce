@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice";
 import "./CartPage.css";
 function CartPage() {
   const {
@@ -27,35 +28,44 @@ function CartPage() {
           </Link>
         </div>
       ) : (
-        <>
-          {cartItems.map((item) => (
-            <div className="cart-item" key={item.id}>
-              <img src={item.thumbnail} alt={item.title} />
+        <div className="cart-layout">
+          <div className="cart-items-list">
+            {cartItems.map((item) => (
+              <div className="cart-item" key={item.id}>
+                <img src={item.thumbnail} alt={item.title} />
 
-              <div className="cart-item-info">
-                <h2>{item.title}</h2>
-
-                <p className="cart-price">${item.price}</p>
-                <p className="item-total">
-                  Total: ${(item.price * item.quantity).toFixed(2)}
-                </p>
+                <div className="cart-item-info">
+                  <h2>{item.title}</h2>
+                  <p className="cart-price">{formatPrice(item.price)}</p>
+                </div>
 
                 <div className="quantity-controls">
-                  <button onClick={() => decreaseQuantity(item.id)}>-</button>
+                  <button
+                    onClick={() => decreaseQuantity(item.id)}
+                    aria-label="Decrease quantity"
+                  >
+                    -
+                  </button>
 
                   <span>{item.quantity}</span>
 
-                  <button onClick={() => increaseQuantity(item.id)}>+</button>
+                  <button
+                    onClick={() => increaseQuantity(item.id)}
+                    disabled={item.quantity >= item.stock}
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <div className="item-total">
+                  <span className="item-total-label">Total</span>
+                  <span className="item-total-value">
+                    {formatPrice(item.price * item.quantity)}
+                  </span>
                 </div>
 
                 <div className="cart-actions">
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeFromCart(item.id)}
-                  >
-                    Remove
-                  </button>
-
                   <button
                     className="save-btn"
                     onClick={() => {
@@ -65,17 +75,24 @@ function CartPage() {
                   >
                     Save for later
                   </button>
+
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeFromCart(item.id)}
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
           <div className="order-summary">
             <h2>Order Summary</h2>
 
             <div className="summary-row">
               <span>Subtotal</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{formatPrice(total)}</span>
             </div>
 
             <div className="summary-row">
@@ -87,14 +104,14 @@ function CartPage() {
 
             <div className="summary-total">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{formatPrice(total)}</span>
             </div>
 
             <Link to="/checkout" className="checkout-btn">
               Checkout
             </Link>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

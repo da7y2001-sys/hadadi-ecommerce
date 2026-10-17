@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
@@ -91,13 +92,13 @@ function CheckoutPage() {
             <div key={item.id}>
               <p>{item.title}</p>
               <p>
-                {item.quantity} × ${item.price}
+                {item.quantity} × {formatPrice(item.price)}
               </p>
             </div>
           ))}
         </div>
         <div className="checkout-total">
-          <h2>Total: ${total.toFixed(2)}</h2>
+          <h2>Total: {formatPrice(total)}</h2>
         </div>
 
         <button className="place-order-btn" type="submit">

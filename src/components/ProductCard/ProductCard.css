@@ -79,13 +79,30 @@
   transition: right 0.3s ease;
 }
 
-.product:hover .icons {
-  right: 15px; /* تظهر عند تمرير الماوس */
+.product:hover .icons,
+.product:focus-within .icons {
+  right: 15px; /* تظهر عند تمرير الماوس أو التركيز بلوحة المفاتيح */
 }
 
-.product .icons span {
+/* إظهار الأزرار افتراضياً على أجهزة اللمس بدون الاعتماد على hover */
+@media (hover: none) {
+  .product .icons {
+    right: 15px;
+  }
+}
+
+/* وإظهارها أيضاً على الشاشات الصغيرة */
+@media (max-width: 768px) {
+  .product .icons {
+    right: 15px;
+  }
+}
+
+.product .icons button {
   width: 40px;
   height: 40px;
+  padding: 0;
+  border: none;
   background: var(--bg_color);
   display: flex;
   justify-content: center;
@@ -93,16 +110,24 @@
   border-radius: 50%;
   cursor: pointer;
   color: #333;
+  font-size: inherit;
   transition: 0.3s;
 }
 
-.product .icons span:hover {
+.product .icons button:hover {
+  background: var(--main_color);
+  color: var(--white_color);
+}
+
+.product .icons button:focus-visible {
+  outline: 2px solid var(--main_color);
+  outline-offset: 2px;
   background: var(--main_color);
   color: var(--white_color);
 }
 
 /* حالات خاصة للأيقونات (تمت الإضافة للمفضلة/السلة) */
-.product .icons span.in-fav {
+.product .icons button.in-fav {
   background: #e53935;
   color: var(--white_color);
 }
@@ -133,4 +158,37 @@
 
 .product.in-cart .status_cart {
   top: 10px;
+}
+
+/* شريط "غير متوفر" */
+.product .status_out {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #fdecea;
+  color: #e53935;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+/* تعطيل زر الإضافة عند عدم التوفر أو الوصول للحد الأقصى */
+.product .icons button.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.product .icons button:disabled {
+  cursor: not-allowed;
+}
+
+.product.out-of-stock .img_product img {
+  opacity: 0.55;
 }

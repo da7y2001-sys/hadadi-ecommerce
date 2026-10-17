@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { ProductCard } from "../components";
+import { ProductCard, ErrorState } from "../components";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -11,22 +11,26 @@ import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
+import { formatPrice } from "../utils/formatPrice";
 import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
 function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart, addToFavorites, favorites, removeFromFavorites } =
     useContext(CartContext);
   const isInFav = favorites.some((item) => item.id === product?.id);
+  const isOutOfStock = product?.stock === 0;
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
+        setError(null);
         const res = await axios.get(`https://dummyjson.com/products/${id}`);
         setProduct(res.data);
         setSelectedImage(res.data.thumbnail);
@@ -38,7 +42,7 @@ function ProductDetails() {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, retryCount]);
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       if (!product) return;
@@ -66,7 +70,15 @@ function ProductDetails() {
   }
 
   if (error) {
-    return <h2>Error: {error.message}</h2>;
+    return (
+      <div className="container">
+        <ErrorState
+          title="Product not available"
+          message="We couldn't load this product. It may have been removed, or your connection dropped."
+          onRetry={() => setRetryCount((count) => count + 1)}
+        />
+      </div>
+    );
   }
   return (
     <>
@@ -93,7 +105,16 @@ function ProductDetails() {
         <div className="product-details-info">
           <h1>{product.title}</h1>
 
-          <p className="product-price">{product.price} $</p>
+          <p className="product-price">{formatPrice(product.price)}</p>
+
+          <p
+            style={{
+              fontWeight: "bold",
+              color: isOutOfStock ? "#e53935" : "#129b38",
+            }}
+          >
+            {isOutOfStock ? "Out of stock" : `In stock: ${product.stock}`}
+          </p>
 
           <p>{product.description}</p>
 
@@ -117,6 +138,10 @@ function ProductDetails() {
           <button
             className="add-to-cart-btn"
             onClick={() => addToCart(product)}
+            disabled={isOutOfStock}
+            style={
+              isOutOfStock ? { opacity: 0.5, cursor: "not-allowed" } : undefined
+            }
           >
             Add to Cart
           </button>
@@ -126,6 +151,10 @@ function ProductDetails() {
               addToCart(product);
               navigate("/checkout");
             }}
+            disabled={isOutOfStock}
+            style={
+              isOutOfStock ? { opacity: 0.5, cursor: "not-allowed" } : undefined
+            }
           >
             Buy Now
           </button>

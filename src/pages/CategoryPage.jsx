@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./CategoryPage.css";
 // استيراد البطاقة بطريقتك النظيفة من الـ components
-import { ProductCard } from "../components";
+import { ProductCard, ErrorState } from "../components";
 // استيراد تنسيق الشبكة (Grid) اللي سويناه مسبقاً
 //import "../components/ProductList/ProductList.css";
 
@@ -13,22 +13,43 @@ function CategoryPage() {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [sortBy, setSortBy] = useState("default");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+
   useEffect(() => {
-    // جلب المنتجات بناءً على التصنيف الموجود في الرابط
-    axios
-      .get(`https://dummyjson.com/products/category/${categoryName}`)
-      .then((res) => {
+    let isActive = true;
+
+    const fetchCategory = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // جلب المنتجات بناءً على التصنيف الموجود في الرابط
+        const res = await axios.get(
+          `https://dummyjson.com/products/category/${categoryName}`,
+        );
+
+        if (!isActive) return;
         setProducts(res.data.products);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
+        if (!isActive) return;
         console.error("Error Fetching Category:", err);
-        setLoading(false);
-      });
-  }, [categoryName]); // أعد جلب البيانات كلما تغير اسم التصنيف في الرابط
+        setError(err);
+      } finally {
+        if (isActive) setLoading(false);
+      }
+    };
+
+    fetchCategory();
+
+    return () => {
+      isActive = false;
+    };
+  }, [categoryName, retryCount]); // أعد جلب البيانات كلما تغير اسم التصنيف في الرابط
+
   const filteredProducts = products.filter((product) => {
     const min = minPrice === "" ? 0 : Number(minPrice);
     const max = maxPrice === "" ? Infinity : Number(maxPrice);
@@ -51,6 +72,7 @@ function CategoryPage() {
 
     return 0;
   });
+
   // شاشة الانتظار
   if (loading) {
     return (
@@ -58,6 +80,19 @@ function CategoryPage() {
         <h2 style={{ textAlign: "center", padding: "100px 0" }}>
           Loading {categoryName.replace("-", " ")} products...
         </h2>
+      </div>
+    );
+  }
+
+  // في حال فشل جلب البيانات نعرض رسالة واضحة مع إعادة المحاولة
+  if (error) {
+    return (
+      <div className="container">
+        <ErrorState
+          title={`We couldn't load ${categoryName.replace("-", " ")}`}
+          message="Please check your connection and try again."
+          onRetry={() => setRetryCount((count) => count + 1)}
+        />
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
-//import "./WishlistPage.css";
+import "./WishlistPage.css";
 import { ProductCard } from "../components";
 function WishlistPage() {
   const { favorites } = useContext(CartContext);

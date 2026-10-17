@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
 function SearchBox() {
@@ -56,6 +56,16 @@ function SearchBox() {
           onChange={(e) => setSearchTerm(e.target.value)}
           autoComplete="off"
         />
+        {searchTerm && (
+          <button
+            type="button"
+            className="clear-search"
+            aria-label="Clear search"
+            onClick={() => setSearchTerm("")}
+          >
+            <FaTimes />
+          </button>
+        )}
         <button type="submit">
           <FaSearch />
         </button>

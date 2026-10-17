@@ -4,12 +4,12 @@ import {
   FaCartArrowDown,
   FaRegHeart,
   FaHeart,
-  FaShare,
   FaCheck,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CartContext } from "../../context/CartContext";
+import { formatPrice } from "../../utils/formatPrice";
 
 import "./ProductCard.css";
 
@@ -27,8 +27,23 @@ function ProductCard({ item }) {
   const isInCart = cartItems?.some((i) => i.id === item.id);
   const isInFav = favorites?.some((i) => i.id === item.id);
 
+  const cartEntry = cartItems?.find((i) => i.id === item.id);
+  const isOutOfStock = item.stock === 0;
+  const reachedStockLimit =
+    Boolean(cartEntry) && cartEntry.quantity >= item.stock;
+
   const handleAddToCart = (e) => {
     e.preventDefault(); // لمنع الانتقال لصفحة التفاصيل عند الضغط على الزر
+
+    if (isOutOfStock || reachedStockLimit) {
+      toast.error(
+        isOutOfStock
+          ? `${item.title} is out of stock`
+          : `Only ${item.stock} left in stock`,
+      );
+      return;
+    }
+
     addToCart(item);
     toast.success(
       <div
@@ -76,7 +91,11 @@ function ProductCard({ item }) {
   };
 
   return (
-    <div className={`product ${isInCart ? "in-cart" : ""}`}>
+    <div
+      className={`product ${isInCart ? "in-cart" : ""} ${
+        isOutOfStock ? "out-of-stock" : ""
+      }`}
+    >
       <Link
         to={`/products/${item.id}`}
         style={{ textDecoration: "none", color: "inherit" }}
@@ -86,6 +105,8 @@ function ProductCard({ item }) {
             <FaCheck /> in cart
           </span>
         )}
+
+        {isOutOfStock && <span className="status_out">Out of stock</span>}
 
         <div className="img_product">
           <img src={item.thumbnail || item.images[0]} alt={item.title} />
@@ -107,20 +128,44 @@ function ProductCard({ item }) {
         </div>
 
         <p className="price">
-          <span>$ {item.price}</span>
+          <span>{formatPrice(item.price)}</span>
         </p>
       </Link>
 
       <div className="icons">
-        <span className="btn_addtocart" onClick={handleAddToCart}>
+        <button
+          type="button"
+          className={`btn_addtocart ${
+            isOutOfStock || reachedStockLimit ? "disabled" : ""
+          }`}
+          onClick={handleAddToCart}
+          disabled={Boolean(isInCart)}
+          aria-disabled={isOutOfStock || reachedStockLimit ? "true" : undefined}
+          aria-label={
+            isOutOfStock
+              ? `${item.title} is out of stock`
+              : reachedStockLimit
+                ? `Maximum available quantity of ${item.title} reached`
+                : isInCart
+                  ? `${item.title} is already in the cart`
+                  : `Add ${item.title} to cart`
+          }
+        >
           <FaCartArrowDown />
-        </span>
-        <span className={`${isInFav ? "in-fav" : ""}`} onClick={handleAddToFav}>
+        </button>
+        <button
+          type="button"
+          className={`btn_wishlist ${isInFav ? "in-fav" : ""}`}
+          onClick={handleAddToFav}
+          aria-pressed={Boolean(isInFav)}
+          aria-label={
+            isInFav
+              ? `Remove ${item.title} from wishlist`
+              : `Add ${item.title} to wishlist`
+          }
+        >
           {isInFav ? <FaHeart /> : <FaRegHeart />}
-        </span>
-        <span>
-          <FaShare />
-        </span>
+        </button>
       </div>
     </div>
   );

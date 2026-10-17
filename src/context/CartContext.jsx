@@ -1,13 +1,32 @@
 import { createContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export const CartContext = createContext();
 
+// الحد الأقصى للكمية = قيمة stock المخزّنة مع المنتج (لو غير موجودة نعتبرها بلا حد)
+function getStock(item) {
+  return typeof item.stock === "number" ? item.stock : Infinity;
+}
+
+// قراءة آمنة من localStorage: لو البيانات تالفة أو ليست مصفوفة نرجع [] بدل ما يتعطل التطبيق
+function readStoredArray(key) {
+  try {
+    const saved = localStorage.getItem(key);
+    if (!saved) return [];
+
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn(`Ignoring corrupted "${key}" data in localStorage`, error);
+    return [];
+  }
+}
+
 function CartProvider({ children }) {
   // Favorites
-  const [favorites, setFavorites] = useState(() => {
-    const savedFav = localStorage.getItem("favoritesItems");
-    return savedFav ? JSON.parse(savedFav) : [];
-  });
+  const [favorites, setFavorites] = useState(() =>
+    readStoredArray("favoritesItems"),
+  );
 
   const addToFavorites = (item) => {
     setFavorites((prev) => {
@@ -25,14 +44,8 @@ function CartProvider({ children }) {
   };
 
   // cart
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem("cartItems");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
-  const [orders, setOrders] = useState(() => {
-    const savedOrders = localStorage.getItem("orders");
-    return savedOrders ? JSON.parse(savedOrders) : [];
-  });
+  const [cartItems, setCartItems] = useState(() => readStoredArray("cartItems"));
+  const [orders, setOrders] = useState(() => readStoredArray("orders"));
 
   const addOrder = (order) => {
     setOrders((prevOrders) => [...prevOrders, order]);
@@ -40,10 +53,21 @@ function CartProvider({ children }) {
 
   // increaseQuantity
   const increaseQuantity = (id) => {
+    const current = cartItems.find((item) => item.id === id);
+
+    if (current && current.quantity >= getStock(current)) {
+      toast.error(`Only ${getStock(current)} left in stock`);
+      return;
+    }
+
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
+      prevItems.map((item) => {
+        if (item.id !== id) return item;
+
+        return item.quantity < getStock(item)
+          ? { ...item, quantity: item.quantity + 1 }
+          : item;
+      }),
     );
   };
 
@@ -63,10 +87,26 @@ function CartProvider({ children }) {
   };
 
   const addToCart = (item) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === item.id);
+    const stock = getStock(item);
 
-      if (existingItem) {
+    if (stock <= 0) {
+      toast.error(`${item.title} is out of stock`);
+      return;
+    }
+
+    const existingItem = cartItems.find((i) => i.id === item.id);
+
+    if (existingItem && existingItem.quantity >= stock) {
+      toast.error(`Only ${stock} left in stock`);
+      return;
+    }
+
+    setCartItems((prevItems) => {
+      const existing = prevItems.find((i) => i.id === item.id);
+
+      if (existing) {
+        if (existing.quantity >= getStock(existing)) return prevItems;
+
         return prevItems.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
         );
