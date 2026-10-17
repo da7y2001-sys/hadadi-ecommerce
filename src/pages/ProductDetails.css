@@ -128,3 +128,15 @@
 .product-thumbnails img:hover {
   border-color: #129bd8;
 }
+.related-products {
+  width: min(1200px, 92%);
+  margin: 60px auto;
+}
+
+.related-products h2 {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.related-products .swiper {
+  padding: 10px 5px 45px;
+}
