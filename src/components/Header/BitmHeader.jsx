@@ -10,7 +10,7 @@ const navLinks = [
   { title: "Contact", path: "/contact" },
 ];
 
-function BitmHeader({ categories }) {
+function BitmHeader({ categories, categoriesLoading, categoriesError }) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   return (
     <div className="btm-header">
@@ -28,15 +28,21 @@ function BitmHeader({ categories }) {
             <div
               className={`category-nav-list ${isCategoryOpen ? "active" : ""}`}
             >
-              {categories.map((category) => (
-                <Link
-                  key={category.slug}
-                  to={`/category/${category.slug}`}
-                  onClick={() => setIsCategoryOpen(false)}
-                >
-                  {category.name}
-                </Link>
-              ))}
+              {categoriesLoading ? (
+                <span>Loading categories...</span>
+              ) : categoriesError ? (
+                <span>Couldn't load categories</span>
+              ) : (
+                categories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    to={`/category/${category.slug}`}
+                    onClick={() => setIsCategoryOpen(false)}
+                  >
+                    {category.name}
+                  </Link>
+                ))
+              )}
             </div>
           </div>
 

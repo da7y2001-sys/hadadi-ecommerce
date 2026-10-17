@@ -74,3 +74,32 @@
   color: #129bd8;
   border: 1px solid #129bd8;
 }
+
+.empty-checkout {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.empty-checkout h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.empty-checkout p {
+  color: #666;
+  font-size: 18px;
+}
+
+.empty-checkout-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 22px;
+  background: #129bd8;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.empty-checkout-link:hover {
+  background: #0d82b8;
+}

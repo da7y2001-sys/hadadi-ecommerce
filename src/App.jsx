@@ -10,6 +10,7 @@ import WishlistPage from "./pages/WishlistPage";
 import SearchPage from "./pages/SearchPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
+import NotFound from "./pages/NotFound";
 import "./App.css";
 
 function App() {
@@ -35,17 +36,13 @@ function App() {
     getCategories();
   }, []);
 
-  if (loading) {
-    return <h2>جاري تحميل المتجر...</h2>;
-  }
-
-  if (error) {
-    return <h2>حدث خطأ أثناء تحميل التصنيفات ❌</h2>;
-  }
-
   return (
     <div className="app-container">
-      <Header categories={categories} />
+      <Header
+        categories={categories}
+        categoriesLoading={loading}
+        categoriesError={error}
+      />
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -56,6 +53,7 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

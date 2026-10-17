@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
@@ -25,6 +25,19 @@ function CheckoutPage() {
       </div>
     );
   }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="empty-checkout">
+        <h2>Your Cart is Empty</h2>
+        <p>Add products to your cart before checking out.</p>
+        <Link to="/cart" className="empty-checkout-link">
+          Go to Cart
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="checkout-page">
       <h1 className="checkout-title">Checkout</h1>
@@ -33,11 +46,6 @@ function CheckoutPage() {
         className="checkout-form"
         onSubmit={(e) => {
           e.preventDefault();
-          if (cartItems.length === 0) {
-            alert("Your cart is empty!");
-            navigate("/cart");
-            return;
-          }
 
           const formData = new FormData(e.target);
           const orderData = {

@@ -1,0 +1,34 @@
+.not-found-page {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.not-found-page h1 {
+  font-size: 64px;
+  margin-bottom: 10px;
+  color: #129bd8;
+}
+
+.not-found-page h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.not-found-page p {
+  color: #666;
+  font-size: 18px;
+}
+
+.not-found-home {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 22px;
+  background: #129bd8;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.not-found-home:hover {
+  background: #0d82b8;
+}
