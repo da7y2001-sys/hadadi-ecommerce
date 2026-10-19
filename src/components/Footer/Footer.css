@@ -1,0 +1,91 @@
+/* =========================
+   Footer
+========================= */
+
+.store-footer {
+  margin-top: 60px;
+
+  background: #253237;
+  color: #fff;
+}
+
+.footer-container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+
+  padding: 45px 0;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 50px;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-column h2 {
+  margin: 0;
+
+  color: #129bd8;
+
+  font-size: 28px;
+}
+
+.footer-column h3 {
+  margin: 0 0 8px;
+
+  font-size: 18px;
+}
+
+.footer-column p {
+  margin: 0;
+
+  color: #d5dadd;
+
+  line-height: 1.6;
+}
+
+.footer-column a {
+  width: fit-content;
+
+  color: #d5dadd;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.footer-column a:hover {
+  color: #129bd8;
+}
+
+.footer-bottom {
+  padding: 18px 20px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+  text-align: center;
+}
+
+.footer-bottom p {
+  margin: 0;
+
+  color: #b9c1c5;
+
+  font-size: 13px;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+
+    gap: 30px;
+  }
+}

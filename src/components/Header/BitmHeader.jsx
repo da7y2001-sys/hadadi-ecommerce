@@ -4,11 +4,9 @@ import { useState } from "react";
 
 const navLinks = [
   { title: "Home", path: "/" },
-  { title: "Accessories", path: "/category/mobile-accessories" },
   { title: "About", path: "/about" },
   { title: "Contact", path: "/contact" },
 ];
-
 function BitmHeader({ categories, categoriesLoading, categoriesError }) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   return (
@@ -34,11 +32,11 @@ function BitmHeader({ categories, categoriesLoading, categoriesError }) {
               ) : (
                 categories.map((category) => (
                   <Link
-                    key={category.slug}
-                    to={`/category/${category.slug}`}
+                    key={category}
+                    to={`/category/${category}`}
                     onClick={() => setIsCategoryOpen(false)}
                   >
-                    {category.name}
+                    {category}
                   </Link>
                 ))
               )}

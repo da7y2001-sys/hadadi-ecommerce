@@ -1,0 +1,179 @@
+.profile-page {
+  width: min(900px, 92%);
+  margin: 50px auto;
+}
+
+.profile-title {
+  margin-bottom: 35px;
+  text-align: center;
+  color: #253237;
+  font-size: 32px;
+}
+
+/* Cards */
+
+.profile-card {
+  margin-bottom: 25px;
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #e2e8eb;
+  border-radius: 14px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.06);
+}
+
+.profile-card h2 {
+  margin: 0 0 25px;
+  color: #253237;
+  font-size: 22px;
+}
+
+/* Personal information */
+
+.profile-info {
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+  color: #444;
+  font-size: 15px;
+}
+
+.profile-info:last-of-type {
+  border-bottom: none;
+}
+
+.profile-info strong {
+  margin-right: 8px;
+  color: #253237;
+}
+
+/* Edit button */
+
+.profile-edit-btn {
+  margin-top: 25px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #129bd8;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.profile-edit-btn:hover {
+  background: #0d82b8;
+  transform: translateY(-1px);
+}
+
+/* Forms */
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-form label {
+  margin: 15px 0 8px;
+  color: #253237;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 15px;
+  border: 1px solid #c9dce5;
+  border-radius: 8px;
+  outline: none;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-form input:focus {
+  border-color: #129bd8;
+  box-shadow: 0 0 0 3px rgba(18, 155, 216, 0.12);
+}
+
+/* Form buttons */
+
+.profile-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.profile-form-actions button {
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #129bd8;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.profile-form-actions button:hover {
+  background: #0d82b8;
+  transform: translateY(-1px);
+}
+
+.profile-form-actions button:last-child {
+  background: #eee;
+  color: #333;
+}
+
+.profile-form-actions button:last-child:hover {
+  background: #ddd;
+}
+
+/* Orders */
+
+.profile-actions {
+  margin-bottom: 25px;
+}
+
+.profile-actions a {
+  display: inline-block;
+  padding: 12px 22px;
+  background: #129bd8;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.profile-actions a:hover {
+  background: #0d82b8;
+  transform: translateY(-1px);
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .profile-page {
+    width: 94%;
+    margin: 30px auto;
+  }
+
+  .profile-title {
+    font-size: 27px;
+    margin-bottom: 25px;
+  }
+
+  .profile-card {
+    padding: 22px;
+  }
+
+  .profile-form-actions {
+    flex-direction: column;
+  }
+
+  .profile-form-actions button {
+    width: 100%;
+  }
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import ProductCard from "../ProductCard/ProductCard"; // استدعاء البطاقة التي صنعناها
+import api from "../../services/api";
 import "./ProductList.css";
 
 function ProductList() {
@@ -9,10 +9,20 @@ function ProductList() {
 
   useEffect(() => {
     // جلب 12 منتج من الـ API للعرض في الصفحة الرئيسية
-    axios
-      .get("https://dummyjson.com/products?limit=12")
+    console.log("ProductList started");
+    api
+      .get("/products")
       .then((res) => {
-        setProducts(res.data.products);
+        //console.log(res.data);
+
+        const formattedProducts = res.data.map((item) => ({
+          ...item,
+          id: item._id,
+          title: item.name,
+        }));
+        console.log("Formatted Products:", formattedProducts);
+
+        setProducts(formattedProducts);
         setLoading(false);
       })
       .catch((err) => {
@@ -37,7 +47,7 @@ function ProductList() {
         {/* شبكة المنتجات */}
         <div className="products-grid">
           {products.map((item) => (
-            <ProductCard key={item.id} item={item} />
+            <ProductCard key={item._id} item={item} />
           ))}
         </div>
       </div>

@@ -5,3 +5,4 @@ export { default as Cart } from "./Cart/Cart.jsx";
 export { default as HeroSlider } from "./HeroSlider/HeroSlider.jsx";
 export { default as ErrorState } from "./ErrorState/ErrorState.jsx";
 export { default as ErrorBoundary } from "./ErrorBoundary/ErrorBoundary.jsx";
+export { default as Footer } from "./Footer/Footer.jsx";

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 function SearchBox() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,12 +25,26 @@ function SearchBox() {
       }
 
       try {
-        const res = await fetch(
-          `https://dummyjson.com/products/search?q=${searchTerm}`,
-        );
-        const data = await res.json();
-        // أخذ أول 5 نتائج فقط
-        setSuggestions(data.products.slice(0, 5) || []);
+        const res = await api.get("/products");
+
+        const search = searchTerm.toLowerCase().trim();
+
+        const filteredProducts = res.data
+          .filter((product) => {
+            return (
+              product.name.toLowerCase().includes(search) ||
+              product.brand.toLowerCase().includes(search) ||
+              product.category.toLowerCase().includes(search)
+            );
+          })
+          .slice(0, 5)
+          .map((product) => ({
+            ...product,
+            id: product._id,
+            title: product.name,
+          }));
+
+        setSuggestions(filteredProducts);
       } catch (error) {
         console.error("Search Error :", error);
         setSuggestions([]);
@@ -81,7 +96,7 @@ function SearchBox() {
               style={{ textDecoration: "none" }}
             >
               <li>
-                <img src={item.thumbnail} alt={item.title} />
+                <img src={item.image} alt={item.title} />
                 <span>{item.title}</span>
               </li>
             </Link>

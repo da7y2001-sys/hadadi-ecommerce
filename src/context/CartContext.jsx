@@ -44,12 +44,9 @@ function CartProvider({ children }) {
   };
 
   // cart
-  const [cartItems, setCartItems] = useState(() => readStoredArray("cartItems"));
-  const [orders, setOrders] = useState(() => readStoredArray("orders"));
-
-  const addOrder = (order) => {
-    setOrders((prevOrders) => [...prevOrders, order]);
-  };
+  const [cartItems, setCartItems] = useState(() =>
+    readStoredArray("cartItems"),
+  );
 
   // increaseQuantity
   const increaseQuantity = (id) => {
@@ -124,9 +121,6 @@ function CartProvider({ children }) {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  useEffect(() => {
-    localStorage.setItem("orders", JSON.stringify(orders));
-  }, [orders]);
   return (
     <CartContext.Provider
       value={{
@@ -136,9 +130,6 @@ function CartProvider({ children }) {
         decreaseQuantity,
         removeFromCart,
         clearCart,
-        orders,
-        addOrder,
-
         addToFavorites,
         favorites,
         removeFromFavorites,

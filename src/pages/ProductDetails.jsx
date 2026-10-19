@@ -1,18 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import { ProductCard, ErrorState } from "../components";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
-
+import api from "../services/api";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
 import { formatPrice } from "../utils/formatPrice";
-import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
+//import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
 function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -31,9 +30,16 @@ function ProductDetails() {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get(`https://dummyjson.com/products/${id}`);
-        setProduct(res.data);
-        setSelectedImage(res.data.thumbnail);
+        const res = await api.get(`/products/${id}`);
+
+        const formattedProduct = {
+          ...res.data,
+          id: res.data._id,
+          title: res.data.name,
+        };
+
+        setProduct(formattedProduct);
+        setSelectedImage(formattedProduct.image);
       } catch (err) {
         setError(err);
       } finally {
@@ -48,11 +54,15 @@ function ProductDetails() {
       if (!product) return;
 
       try {
-        const res = await axios.get(
-          `https://dummyjson.com/products/category/${product.category}`,
-        );
+        const res = await api.get(`/products`);
 
-        const filteredProducts = res.data.products.filter(
+        const formattedProducts = res.data.map((item) => ({
+          ...item,
+          id: item._id,
+          title: item.name,
+        }));
+
+        const filteredProducts = formattedProducts.filter(
           (item) => item.id !== product.id,
         );
 
@@ -89,17 +99,6 @@ function ProductDetails() {
             alt={product.title}
             className="main-product-image"
           />
-
-          <div className="product-thumbnails">
-            {product.images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`${product.title} ${index + 1}`}
-                onClick={() => setSelectedImage(image)}
-              />
-            ))}
-          </div>
         </div>
 
         <div className="product-details-info">
@@ -117,24 +116,6 @@ function ProductDetails() {
           </p>
 
           <p>{product.description}</p>
-
-          <div className="product-rating">
-            <div className="stars">
-              {[0, 1, 2, 3, 4].map((star) => {
-                if (product.rating >= star + 1) {
-                  return <FaStar key={star} />;
-                }
-
-                if (product.rating >= star + 0.5) {
-                  return <FaRegStarHalfStroke key={star} />;
-                }
-
-                return <FaRegStar key={star} />;
-              })}
-            </div>
-
-            <span>{product.rating}</span>
-          </div>
           <button
             className="add-to-cart-btn"
             onClick={() => addToCart(product)}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import axios from "axios";
-import { Header, ErrorBoundary } from "./components";
+import api from "./services/api";
+import { Header, ErrorBoundary, Footer } from "./components";
 import ProductDetails from "./pages/ProductDetails";
 import Home from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
@@ -13,6 +13,9 @@ import OrdersPage from "./pages/OrdersPage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 import "./App.css";
 
 function App() {
@@ -24,11 +27,13 @@ function App() {
   useEffect(() => {
     async function getCategories() {
       try {
-        const res = await axios.get(
-          "https://dummyjson.com/products/categories",
-        );
+        const res = await api.get("/products");
 
-        setCategories(res.data);
+        const uniqueCategories = [
+          ...new Set(res.data.map((product) => product.category)),
+        ];
+
+        setCategories(uniqueCategories);
       } catch (error) {
         setError(error);
       } finally {
@@ -60,8 +65,12 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </ErrorBoundary>
+      <Footer />
     </div>
   );
 }

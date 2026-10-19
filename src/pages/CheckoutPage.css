@@ -1,105 +1,293 @@
+/* =========================
+   Checkout Page
+========================= */
+
 .checkout-page {
-  width: min(1100px, 92%);
-  margin: 40px auto;
+  width: min(900px, 92%);
+  margin: 50px auto;
 }
 
 .checkout-title {
+  margin-bottom: 35px;
+
   text-align: center;
-  margin-bottom: 30px;
+
+  color: #253237;
+  font-size: 32px;
 }
 
+/* =========================
+   Checkout Form
+========================= */
+
 .checkout-form {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+
+  padding: 35px;
+
   background: #fff;
+
+  border: 1px solid #e2e8eb;
+  border-radius: 14px;
+
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.06);
+
+  direction: ltr;
+}
+
+.checkout-form > div {
+  margin-bottom: 20px;
 }
 
 .checkout-form label {
   display: block;
+
   margin-bottom: 8px;
-  font-weight: bold;
+
+  color: #253237;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  text-align: left;
 }
 
 .checkout-form input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
   box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  border: 1px solid #c9dce5;
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 15px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.checkout-form input:focus {
+  border-color: #129bd8;
+
+  box-shadow: 0 0 0 3px rgba(18, 155, 216, 0.12);
+}
+
+/* =========================
+   Order Summary
+========================= */
+
+.checkout-items {
+  margin-top: 30px;
+  padding: 20px;
+
+  background: #f7fafc;
+
+  border: 1px solid #e5edf1;
+  border-radius: 10px;
+}
+
+.checkout-items h2 {
+  margin: 0 0 15px;
+
+  color: #253237;
+
+  font-size: 20px;
+}
+
+.checkout-items > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 0;
+
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.checkout-items > div:last-child {
+  border-bottom: none;
+}
+
+.checkout-items p {
+  margin: 0;
+
+  color: #444;
+
+  font-size: 14px;
+}
+
+/* =========================
+   Total
+========================= */
+
+.checkout-total {
+  margin-top: 20px;
+
+  text-align: right;
+}
+
+.checkout-total h2 {
+  margin: 0;
+
+  color: #129bd8;
+
+  font-size: 22px;
+}
+
+/* =========================
+   Place Order
+========================= */
 
 .place-order-btn {
   width: 100%;
-  padding: 12px;
+
+  margin-top: 10px;
+  padding: 14px;
+
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+
   background: #129bd8;
   color: #fff;
+
   font-size: 16px;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .place-order-btn:hover {
   background: #0d82b8;
-  color: #fff;
-  transition: 0.3s;
-  transform: scale(1.02);
-  
+
+  transform: translateY(-1px);
 }
+
+/* =========================
+   Order Success
+========================= */
+
 .order-success {
   text-align: center;
-  padding: 80px 20px;
+
+  padding: 100px 20px;
 }
+
+.order-success h1 {
+  color: #253237;
+}
+
+.order-success p {
+  color: #666;
+}
+
 .order-success-actions {
   display: flex;
   justify-content: center;
   gap: 15px;
+
   margin-top: 25px;
 }
+
 .order-success-actions button {
-  padding: 12px 20px;
+  padding: 12px 22px;
+
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
+
   background: #129bd8;
-  color: white;
-  cursor: pointer;
+  color: #fff;
+
   font-size: 15px;
+
+  cursor: pointer;
 }
+
+.order-success-actions button:hover {
+  background: #0d82b8;
+}
+
 .order-success-actions button:last-child {
-  background: white;
+  background: #fff;
   color: #129bd8;
+
   border: 1px solid #129bd8;
 }
 
+/* =========================
+   Empty Checkout
+========================= */
+
 .empty-checkout {
   text-align: center;
+
   padding: 100px 20px;
 }
 
 .empty-checkout h2 {
-  font-size: 32px;
   margin-bottom: 10px;
+
+  color: #253237;
+
+  font-size: 32px;
 }
 
 .empty-checkout p {
   color: #666;
+
   font-size: 18px;
 }
 
 .empty-checkout-link {
   display: inline-block;
+
   margin-top: 20px;
   padding: 12px 22px;
+
   background: #129bd8;
   color: #fff;
+
   text-decoration: none;
-  border-radius: 6px;
+
+  border-radius: 7px;
 }
 
 .empty-checkout-link:hover {
   background: #0d82b8;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 600px) {
+  .checkout-page {
+    width: 94%;
+    margin: 30px auto;
+  }
+
+  .checkout-form {
+    padding: 22px;
+  }
+
+  .checkout-title {
+    font-size: 27px;
+  }
+
+  .checkout-items > div {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .order-success-actions {
+    flex-direction: column;
+  }
 }

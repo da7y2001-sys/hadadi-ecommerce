@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 import "./CategoryPage.css";
 // استيراد البطاقة بطريقتك النظيفة من الـ components
 import { ProductCard, ErrorState } from "../components";
@@ -27,13 +27,19 @@ function CategoryPage() {
       setError(null);
 
       try {
-        // جلب المنتجات بناءً على التصنيف الموجود في الرابط
-        const res = await axios.get(
-          `https://dummyjson.com/products/category/${categoryName}`,
-        );
+        const res = await api.get("/products");
 
         if (!isActive) return;
-        setProducts(res.data.products);
+
+        const formattedProducts = res.data
+          .filter((product) => product.category === categoryName)
+          .map((product) => ({
+            ...product,
+            id: product._id,
+            title: product.name,
+          }));
+
+        setProducts(formattedProducts);
       } catch (err) {
         if (!isActive) return;
         console.error("Error Fetching Category:", err);

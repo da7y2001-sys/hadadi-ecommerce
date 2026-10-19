@@ -1,17 +1,32 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "../utils/formatPrice";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
   const navigate = useNavigate();
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const { cartItems, clearCart, addOrder } = useContext(CartContext);
+  const { cartItems, clearCart } = useContext(CartContext);
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user) {
+      navigate("/login", {
+        state: { from: "/checkout" },
+      });
+    }
+  }, [user, loading, navigate]);
+
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+
   if (orderSuccess) {
     return (
       <div className="order-success">
@@ -45,25 +60,44 @@ function CheckoutPage() {
 
       <form
         className="checkout-form"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
 
           const formData = new FormData(e.target);
+
           const orderData = {
-            id: Date.now(),
-            customer: Object.fromEntries(formData),
-            items: cartItems,
+            items: cartItems.map((item) => ({
+              product: item.id,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+
             total: total,
-            date: new Date().toISOString(),
-            status: "Processing",
+
+            shippingAddress: {
+              fullName: formData.get("fullName"),
+              phone: formData.get("phone"),
+              address: formData.get("address"),
+            },
           };
 
-          console.log("Order Data:", orderData);
+          try {
+            const token = localStorage.getItem("token");
 
-          addOrder(orderData);
-          clearCart();
-          e.target.reset();
-          setOrderSuccess(true);
+            const res = await api.post("/orders", orderData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            console.log("Order created:", res.data);
+
+            clearCart();
+            e.target.reset();
+            setOrderSuccess(true);
+          } catch (error) {
+            console.log("Failed to create order:", error);
+          }
         }}
       >
         <div>

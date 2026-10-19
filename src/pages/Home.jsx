@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import HeroSlider from "../components/HeroSlider/HeroSlider";
 import ProductSlider from "../components/ProductList/ProductSlider";
+import ProductList from "../components/ProductList/ProductList";
 import ProductSliderLoading from "../components/ProductList/ProductSliderLoading";
 import { ErrorState } from "../components";
-
+import api from "../services/api";
 // التصنيفات التي نريد عرضها في الصفحة الرئيسية كسلايدرات
-const categories = [
-  "smartphones",
-  "mobile-accessories",
-  "laptops",
-  "mens-watches",
-  "sunglasses",
-];
-
+const categories = ["phones", "audio", "laptops"];
 function Home() {
   const [products, setProducts] = useState({});
   const [loading, setLoading] = useState(true);
@@ -28,20 +21,20 @@ function Home() {
       setError(null);
 
       try {
-        // جلب المنتجات لكل تصنيف في نفس الوقت
-        const results = await Promise.all(
-          categories.map(async (category) => {
-            const res = await axios.get(
-              `https://dummyjson.com/products/category/${category}`,
-            );
-            return { [category]: res.data.products };
-          }),
-        );
+        const res = await api.get("/products");
+        const productsData = {};
+
+        categories.forEach((category) => {
+          productsData[category] = res.data
+            .filter((product) => product.category === category)
+            .map((product) => ({
+              ...product,
+              id: product._id,
+              title: product.name,
+            }));
+        });
 
         if (!isActive) return;
-
-        // دمج البيانات في كائن واحد
-        const productsData = Object.assign({}, ...results);
         setProducts(productsData);
       } catch (err) {
         if (!isActive) return;
@@ -75,6 +68,7 @@ function Home() {
     <div>
       {/* 1. البانر العلوي المتحرك */}
       <HeroSlider />
+      <ProductList />
 
       {/* 2. عرض السلايدرات (شريط التمرير) لكل تصنيف */}
       {loading
@@ -86,7 +80,7 @@ function Home() {
                 <ProductSlider
                   key={category}
                   data={products[category]}
-                  title={category.replace("-", " ")} // يزيل الشرطة لتصبح "mobile accessories"
+                  title={category.replace("-", " ")}
                 />
               ),
           )}

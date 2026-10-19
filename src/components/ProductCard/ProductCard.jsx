@@ -1,11 +1,6 @@
 import { useContext } from "react";
 import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
-import {
-  FaCartArrowDown,
-  FaRegHeart,
-  FaHeart,
-  FaCheck,
-} from "react-icons/fa";
+import { FaCartArrowDown, FaRegHeart, FaHeart, FaCheck } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CartContext } from "../../context/CartContext";
@@ -51,7 +46,7 @@ function ProductCard({ item }) {
         style={{ display: "flex", alignItems: "center", gap: "10px" }}
       >
         <img
-          src={item.thumbnail || item.images[0]}
+          src={item.image}
           alt=""
           style={{ width: "40px", borderRadius: "5px" }}
         />
@@ -109,7 +104,7 @@ function ProductCard({ item }) {
         {isOutOfStock && <span className="status_out">Out of stock</span>}
 
         <div className="img_product">
-          <img src={item.thumbnail || item.images[0]} alt={item.title} />
+          <img src={item.image} alt={item.title} />
         </div>
 
         <p className="name_product">{item.title}</p>

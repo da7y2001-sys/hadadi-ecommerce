@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { ProductCard, ErrorState } from "../components";
 import "./SearchPage.css";
 function SearchPage() {
@@ -17,10 +17,17 @@ function SearchPage() {
         setLoading(true);
         setError(null);
 
-        const res = await axios.get(
-          `https://dummyjson.com/products/search?q=${query}`,
+        const res = await api.get(
+          `/products/search?q=${encodeURIComponent(query)}`,
         );
-        setProducts(res.data.products);
+
+        const formattedProducts = res.data.map((product) => ({
+          ...product,
+          id: product._id,
+          title: product.name,
+        }));
+
+        setProducts(formattedProducts);
       } catch (err) {
         setError(err);
       } finally {
