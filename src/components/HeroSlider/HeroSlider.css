@@ -46,12 +46,15 @@
 }
 
 .shop-now-btn {
+  display: inline-block;
   padding: 10px 25px;
   background-color: #129bd8;
   color: #fff;
   border: none;
   border-radius: 5px;
   font-size: 16px;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
   transition: background 0.3s;
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import "./Profile.css";
@@ -13,8 +14,15 @@ function Profile() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
   const handleUpdate = async (e) => {
     e.preventDefault();
+
+    if (isUpdatingProfile) return;
+
+    setIsUpdatingProfile(true);
 
     try {
       const token = localStorage.getItem("token");
@@ -35,18 +43,28 @@ function Profile() {
       setUser(res.data.user);
       setEditing(false);
 
-      console.log("Profile updated:", res.data);
+      toast.success("Profile updated successfully");
     } catch (error) {
-      console.log("Failed to update profile:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to update profile. Please try again.",
+      );
+    } finally {
+      setIsUpdatingProfile(false);
     }
   };
+
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
+
+    if (isUpdatingPassword) return;
+
+    setIsUpdatingPassword(true);
 
     try {
       const token = localStorage.getItem("token");
 
-      const res = await api.patch(
+      await api.patch(
         "/profile/password",
         {
           currentPassword,
@@ -60,13 +78,18 @@ function Profile() {
         },
       );
 
-      console.log("Password updated:", res.data);
+      toast.success("Password updated successfully");
 
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error) {
-      console.log("Failed to update password:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to update password. Please try again.",
+      );
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
   return (
@@ -114,9 +137,15 @@ function Profile() {
             />
 
             <div className="profile-form-actions">
-              <button type="submit">Save Changes</button>
+              <button type="submit" disabled={isUpdatingProfile}>
+                {isUpdatingProfile ? "Saving..." : "Save Changes"}
+              </button>
 
-              <button type="button" onClick={() => setEditing(false)}>
+              <button
+                type="button"
+                onClick={() => setEditing(false)}
+                disabled={isUpdatingProfile}
+              >
                 Cancel
               </button>
             </div>
@@ -160,7 +189,9 @@ function Profile() {
           />
 
           <div className="profile-form-actions">
-            <button type="submit">Change Password</button>
+            <button type="submit" disabled={isUpdatingPassword}>
+              {isUpdatingPassword ? "Updating..." : "Change Password"}
+            </button>
           </div>
         </form>
       </div>

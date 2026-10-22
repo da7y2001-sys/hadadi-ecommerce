@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { Link } from "react-router-dom";
+import { ErrorState } from "../components";
 import { formatPrice } from "../utils/formatPrice";
 
 import "./OrdersPage.css";
 function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    let isActive = true;
 
     api
       .get("/orders", {
@@ -18,18 +22,42 @@ function OrdersPage() {
         },
       })
       .then((res) => {
-        setOrders(res.data);
+        if (isActive) setOrders(res.data);
       })
-      .catch((error) => {
-        console.log("Failed to get orders:", error);
+      .catch(() => {
+        if (isActive) {
+          setError("We couldn't load your orders. Please try again.");
+        }
       })
       .finally(() => {
-        setLoading(false);
+        if (isActive) setLoading(false);
       });
-  }, []);
+
+    return () => {
+      isActive = false;
+    };
+  }, [retryCount]);
+
   if (loading) {
     return <p style={{ textAlign: "center" }}>Loading orders...</p>;
   }
+
+  if (error) {
+    return (
+      <div className="container">
+        <ErrorState
+          title="Could not load orders"
+          message={error}
+          onRetry={() => {
+            setLoading(true);
+            setError("");
+            setRetryCount((count) => count + 1);
+          }}
+        />
+      </div>
+    );
+  }
+
   if (orders.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "100px 0" }}>

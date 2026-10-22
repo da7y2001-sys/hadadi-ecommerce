@@ -32,6 +32,33 @@
   color: white;
 }
 
+.admin-sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.admin-sidebar-actions a,
+.admin-sidebar-actions button {
+  padding: 12px 15px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #333;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-sidebar-actions a:hover,
+.admin-sidebar-actions button:hover {
+  background: #f2f2f2;
+}
+
 .admin-content {
   flex: 1;
   padding: 30px;

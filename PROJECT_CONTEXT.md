@@ -1,80 +1,61 @@
-أريدك تكمل معي مشروع متجر إلكتروني React الذي كنا نبنيه خطوة بخطوة.
+# Project Context
 
-مهم جدًا:
+## What this project is
 
-- لا تعطيني مشروع كامل جاهز.
-- لا تعطيني كود ضخم دفعة واحدة.
-- نمشي خطوة واحدة فقط كل مرة.
-- اشرح لي لماذا نستخدم كل شيء قبل أو أثناء تطبيقه.
-- أنا أريد أن أفهم React وأبني المشروع بنفسي، وليس مجرد نسخ ولصق.
-- إذا أرسلت لك كودي، راجعه وعدّل فقط الشيء الضروري.
-- لا تنتقل للخطوة التالية حتى أتأكد أن الخطوة الحالية تعمل.
+A full-stack e-commerce MVP built for learning and portfolio use.
 
-التقنيات الحالية:
-React + Vite
-React Router
-Axios
-DummyJSON API
-Context API
-localStorage
-Swiper
+- Frontend: React, Vite, React Router, Axios, Context API, CSS
+- Backend: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt
+- Repository root: `myapp/`
+- Backend: `myapp/backend/`
+- Frontend source: `myapp/src/`
 
-المشروع متجر إلكتروني.
+## Current functionality
 
-الذي أنجزناه:
-✅ Header
-✅ Categories
-✅ Home
-✅ عرض المنتجات
-✅ Product Details
-✅ Cart
-✅ زيادة/إنقاص الكمية
-✅ حذف المنتجات من السلة
-✅ حساب Total
-✅ Wishlist
-✅ Search + Search Suggestions
-✅ Checkout
-✅ التحقق من الحقول required
-✅ منع إنشاء طلب إذا كانت السلة فارغة
-✅ حفظ الطلبات في Context + localStorage
-✅ Orders Page
-✅ زر Shop Now في حالة عدم وجود طلبات
+- User registration and login
+- JWT authentication and protected routes
+- Admin role authorization
+- Profile editing and password change
+- Product browsing, categories, search, and details
+- localStorage cart and wishlist
+- Checkout with backend price and stock calculation
+- Stock decrement on order creation
+- Stock restoration on order cancellation
+- User order history
+- Admin product management
+- Admin order management
+- Admin user listing
+- Responsive UI, loading states, error states, and toast feedback
 
-هيكل المشروع الحالي تقريبًا:
-src/
-├── components/
-│ ├── Cart/
-│ ├── Header/
-│ ├── HeroSlider/
-│ ├── ProductCard/
-│ └── ProductList/
-├── context/
-│ └── CartContext.jsx
-├── pages/
-│ ├── Home.jsx
-│ ├── CategoryPage.jsx
-│ ├── ProductDetails.jsx
-│ ├── CartPage.jsx
-│ ├── WishlistPage.jsx
-│ ├── SearchPage.jsx
-│ ├── CheckoutPage.jsx
-│ └── OrdersPage.jsx
-├── App.jsx
-├── App.css
-└── main.jsx
+## Current state
 
-آخر نقطة وصلنا لها:
-كنا نجهز OrdersPage.
-أضفنا:
-import { Link } from "react-router-dom";
+The project is an MVP prepared for a GitHub/CV release. Core functionality is implemented. It is not a production commerce platform.
 
-واستبدلنا زر Shop Now بـ:
+Known limitations:
 
-<Link to="/" className="shop-now-btn">
-  Shop Now
-</Link>
+- No payments
+- No reviews or ratings
+- No email verification or password reset
+- No image uploads (products use image URLs)
+- Cart and wishlist are browser-local
+- First admin must be promoted manually in MongoDB
+- No automated test suite yet
 
-الخطوة التالية:
-أتأكد أن زر Shop Now يعمل، ثم نبدأ بتنسيق OrdersPage وتحسين عرض الطلبات خطوة بخطوة.
+## Development
 
-إذا أرسلت لك هذا البرومبت في محادثة جديدة، لا تبدأ من الصفر. اعتبر أن هذا هو آخر وضع وصلنا إليه واسألني/وجّهني للخطوة التالية المناسبة.
+Frontend commands (from `myapp/`):
+
+```bash
+npm run dev
+npm run build
+npm run lint
+```
+
+Backend commands (from `myapp/backend/`):
+
+```bash
+npm run dev
+npm start
+```
+
+Environment setup and API details are documented in `README.md`.

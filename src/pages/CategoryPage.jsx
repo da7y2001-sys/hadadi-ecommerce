@@ -72,10 +72,6 @@ function CategoryPage() {
       return b.price - a.price;
     }
 
-    if (sortBy === "rating") {
-      return b.rating - a.rating;
-    }
-
     return 0;
   });
 
@@ -116,7 +112,6 @@ function CategoryPage() {
             <option value="default">Default</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
-            <option value="rating">Rating: High to Low</option>
           </select>
           <div className="price-filter">
             <input

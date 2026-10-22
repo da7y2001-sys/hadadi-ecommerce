@@ -84,7 +84,7 @@ router.post("/login", async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Invalid email or password",
       });
     }
@@ -95,7 +95,7 @@ router.post("/login", async (req, res) => {
     );
 
     if (!isPasswordValid) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Invalid email or password",
       });
     }
@@ -114,6 +114,8 @@ router.post("/login", async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error("Login failed:", error);
+
     res.status(500).json({
       message: "Failed to login",
     });

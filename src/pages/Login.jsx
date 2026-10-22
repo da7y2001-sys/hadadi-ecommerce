@@ -46,12 +46,14 @@ function Login() {
         navigate(location.state?.from || "/");
       }
     } catch (error) {
-      if (error.response?.status === 400) {
+      if (error.response?.status === 401) {
         toast.error(
           error.response.data?.message || "Invalid email or password",
         );
       } else if (error.response) {
-        toast.error("Server error. Please try again later");
+        toast.error(
+          error.response.data?.message || "Server error. Please try again later",
+        );
       } else {
         toast.error("Unable to connect to the server. Please try again");
       }

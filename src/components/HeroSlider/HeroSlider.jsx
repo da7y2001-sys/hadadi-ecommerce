@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 // استيراد Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -38,7 +39,9 @@ export default function HeroSlider() {
           <div className="slide-content">
             <h2>Latest Tech Devices</h2>
             <p>Discover the new generation of smartphones</p>
-            <button className="shop-now-btn">Shop Now</button>
+            <Link className="shop-now-btn" to="/category/phones">
+              Shop Now
+            </Link>
           </div>
           <img
             src="https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&w=1200&q=80"
@@ -51,7 +54,9 @@ export default function HeroSlider() {
           <div className="slide-content">
             <h2>Powerful Laptops</h2>
             <p>For work, gaming, and everything in between</p>
-            <button className="shop-now-btn">Shop Now</button>
+            <Link className="shop-now-btn" to="/category/laptops">
+              Shop Now
+            </Link>
           </div>
           <img
             src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200&q=80"
@@ -64,7 +69,9 @@ export default function HeroSlider() {
           <div className="slide-content">
             <h2>Premium Audio</h2>
             <p>Experience sound like never before</p>
-            <button className="shop-now-btn">Shop Now</button>
+            <Link className="shop-now-btn" to="/category/audio">
+              Shop Now
+            </Link>
           </div>
           <img
             src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80"

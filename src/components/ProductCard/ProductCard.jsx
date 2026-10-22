@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
 import { FaCartArrowDown, FaRegHeart, FaHeart, FaCheck } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -108,19 +107,6 @@ function ProductCard({ item }) {
         </div>
 
         <p className="name_product">{item.title}</p>
-        <div className="stars">
-          {[0, 1, 2, 3, 4].map((star) => {
-            if (item.rating >= star + 1) {
-              return <FaStar key={star} />;
-            }
-
-            if (item.rating >= star + 0.5) {
-              return <FaRegStarHalfStroke key={star} />;
-            }
-
-            return <FaRegStar key={star} />;
-          })}
-        </div>
 
         <p className="price">
           <span>{formatPrice(item.price)}</span>

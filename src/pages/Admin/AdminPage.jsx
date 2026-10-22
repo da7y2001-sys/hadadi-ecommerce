@@ -4,11 +4,24 @@ import api from "../../services/api";
 //import { Link } from "react-router-dom";
 import "./AdminPage.css";
 
+function getApiErrorMessage(error, fallbackMessage) {
+  const responseData = error.response?.data;
+
+  if (Array.isArray(responseData?.errors) && responseData.errors.length > 0) {
+    return responseData.errors.join(" ");
+  }
+
+  return responseData?.message || fallbackMessage;
+}
+
 function AdminPage() {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [addingProduct, setAddingProduct] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [loadRetryCount, setLoadRetryCount] = useState(0);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -18,11 +31,28 @@ function AdminPage() {
     stock: "",
     image: "",
   });
+
   useEffect(() => {
-    api.get("/products").then((res) => {
-      setProducts(res.data);
-    });
-  }, []);
+    let isActive = true;
+
+    api
+      .get("/products")
+      .then((res) => {
+        if (isActive) setProducts(res.data);
+      })
+      .catch(() => {
+        if (isActive) {
+          setLoadError("Could not load products. Please try again.");
+        }
+      })
+      .finally(() => {
+        if (isActive) setLoadingProducts(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [loadRetryCount]);
 
   const handleDelete = async (id) => {
     if (isSubmitting) return;
@@ -50,7 +80,9 @@ function AdminPage() {
 
       toast.success("Product deleted successfully");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete product");
+      toast.error(
+        getApiErrorMessage(error, "Failed to delete product"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +120,9 @@ function AdminPage() {
 
       toast.success("Product updated successfully");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update product");
+      toast.error(
+        getApiErrorMessage(error, "Failed to update product"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -125,7 +159,9 @@ function AdminPage() {
 
       toast.success("Product created successfully");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create product");
+      toast.error(
+        getApiErrorMessage(error, "Failed to create product"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -133,6 +169,25 @@ function AdminPage() {
   return (
     <div className="admin-page">
       <h1>Admin Dashboard</h1>
+
+      {loadingProducts && <p>Loading products...</p>}
+
+      {loadError && (
+        <div className="admin-error" role="alert">
+          <p>{loadError}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setLoadingProducts(true);
+              setLoadError("");
+              setLoadRetryCount((count) => count + 1);
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+
       <button onClick={() => setAddingProduct(true)} disabled={isSubmitting}>
         + Add Product
       </button>

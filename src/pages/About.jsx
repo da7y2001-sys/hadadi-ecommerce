@@ -22,8 +22,8 @@ function About() {
         <div className="about-card">
           <h2>What We Offer</h2>
           <p>
-            Products across many categories, with clear pricing, ratings, and
-            recommendations to help you decide.
+            Products across many categories, with clear pricing and detailed
+            product pages to help you choose.
           </p>
         </div>
 

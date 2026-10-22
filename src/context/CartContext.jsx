@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+// This module intentionally exports the provider and its context together.
+// eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext();
 
 // الحد الأقصى للكمية = قيمة stock المخزّنة مع المنتج (لو غير موجودة نعتبرها بلا حد)

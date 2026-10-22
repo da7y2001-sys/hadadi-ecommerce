@@ -53,13 +53,6 @@
   text-overflow: ellipsis;
 }
 
-.product .stars {
-  margin: 10px 0;
-  display: flex;
-  gap: 3px;
-  color: #f8d941;
-}
-
 .product .price {
   font-weight: bold;
   font-size: 18px;

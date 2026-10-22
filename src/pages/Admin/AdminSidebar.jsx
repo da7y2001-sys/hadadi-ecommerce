@@ -1,6 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 function AdminSidebar() {
+  const { logout } = useAuth();
+
   return (
     <aside className="admin-sidebar">
       <h2>Hadai Admin</h2>
@@ -16,6 +19,13 @@ function AdminSidebar() {
 
         <NavLink to="/admin/users">Users</NavLink>
       </nav>
+
+      <div className="admin-sidebar-actions">
+        <Link to="/">Back to Store</Link>
+        <button type="button" onClick={logout}>
+          Logout
+        </button>
+      </div>
     </aside>
   );
 }

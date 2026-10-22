@@ -12,7 +12,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
 import { formatPrice } from "../utils/formatPrice";
-//import { FaStar, FaRegStar, FaRegStarHalfStroke } from "react-icons/fa6";
+
 function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -75,8 +75,8 @@ function ProductDetails() {
         );
 
         setRelatedProducts(filteredProducts);
-      } catch (err) {
-        console.log(err);
+      } catch {
+        setRelatedProducts([]);
       }
     };
 

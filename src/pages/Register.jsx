@@ -31,11 +31,13 @@ function Register() {
       const status = error.response?.status;
       const message = error.response?.data?.message;
 
-      if (status === 400) {
+      if (status === 409) {
         toast.error(
-          message === "User already exists"
-            ? "An account with this email already exists"
-            : message || "Registration failed. Please check your details",
+          message || "An account with this email already exists",
+        );
+      } else if (status === 400) {
+        toast.error(
+          message || "Registration failed. Please check your details",
         );
       } else if (error.response) {
         toast.error("Server error. Please try again later");

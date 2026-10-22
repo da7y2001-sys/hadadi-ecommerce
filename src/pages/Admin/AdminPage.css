@@ -6,6 +6,28 @@
   margin-bottom: 30px;
 }
 
+.admin-error {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #f0b7b7;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #a12626;
+}
+
+.admin-error p {
+  margin: 0 0 10px;
+}
+
+.admin-error button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #a12626;
+  color: #fff;
+  cursor: pointer;
+}
+
 .admin-products {
   overflow-x: auto;
 }

@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import api from "../../services/api";
+import { ErrorState } from "../../components";
 import "./AdminOrders.css";
+
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+  const [updatingOrderId, setUpdatingOrderId] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    let isActive = true;
 
     api
       .get("/admin/orders", {
@@ -16,17 +22,27 @@ function AdminOrders() {
         },
       })
       .then((res) => {
-        setOrders(res.data);
+        if (isActive) setOrders(res.data);
       })
       .catch(() => {
-        setError("Failed to load orders");
+        if (isActive) {
+          setError("Could not load orders. Please try again.");
+        }
       })
       .finally(() => {
-        setLoading(false);
+        if (isActive) setLoading(false);
       });
-  }, []);
+
+    return () => {
+      isActive = false;
+    };
+  }, [retryCount]);
 
   const handleStatusChange = async (orderId, status) => {
+    if (updatingOrderId) return;
+
+    setUpdatingOrderId(orderId);
+
     try {
       const token = localStorage.getItem("token");
 
@@ -45,16 +61,34 @@ function AdminOrders() {
           order._id === orderId ? res.data.order : order,
         ),
       );
+
+      toast.success("Order status updated successfully");
     } catch (error) {
-      console.error(error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to update order status. Please try again.",
+      );
+    } finally {
+      setUpdatingOrderId("");
     }
   };
+
   if (loading) {
     return <p>Loading orders...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <ErrorState
+        title="Could not load orders"
+        message={error}
+        onRetry={() => {
+          setLoading(true);
+          setError("");
+          setRetryCount((count) => count + 1);
+        }}
+      />
+    );
   }
 
   return (
@@ -78,6 +112,10 @@ function AdminOrders() {
               <select
                 value={order.status}
                 onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                disabled={
+                  updatingOrderId === order._id ||
+                  order.status === "Cancelled"
+                }
               >
                 <option value="Processing">Processing</option>
                 <option value="Shipped">Shipped</option>
