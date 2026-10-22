@@ -1,4 +1,4 @@
-# Hadai E-Commerce
+# Hadadi E-Commerce
 
 A full-stack e-commerce application built as a learning and portfolio project. It includes a React storefront, JWT authentication, a localStorage cart and wishlist, backend-managed checkout and stock, order history, and an admin area for products, orders, and users.
 
