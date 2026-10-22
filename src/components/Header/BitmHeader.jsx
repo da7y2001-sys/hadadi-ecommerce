@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
 import { useState } from "react";
-
+import { useAuth } from "../../context/AuthContext";
 const navLinks = [
   { title: "Home", path: "/" },
   { title: "About", path: "/about" },
@@ -9,6 +9,7 @@ const navLinks = [
 ];
 function BitmHeader({ categories, categoriesLoading, categoriesError }) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const { user } = useAuth();
   return (
     <div className="btm-header">
       <div className="container">
@@ -45,7 +46,14 @@ function BitmHeader({ categories, categoriesLoading, categoriesError }) {
 
           <div className="nav-links">
             {navLinks.map((link) => (
-              <Link key={link.path} to={link.path}>
+              <Link
+                key={link.path}
+                to={
+                  link.title === "Home" && user?.role === "admin"
+                    ? "/admin"
+                    : link.path
+                }
+              >
                 {link.title}
               </Link>
             ))}

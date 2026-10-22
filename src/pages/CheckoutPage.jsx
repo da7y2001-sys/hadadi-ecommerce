@@ -4,11 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "../utils/formatPrice";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import toast from "react-hot-toast";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
   const navigate = useNavigate();
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { cartItems, clearCart } = useContext(CartContext);
   const { user, loading } = useAuth();
 
@@ -26,6 +28,56 @@ function CheckoutPage() {
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+
+  const handlePlaceOrder = async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(e.target);
+
+      const orderData = {
+        items: cartItems.map((item) => ({
+          product: item.id,
+          quantity: item.quantity,
+        })),
+
+        shippingAddress: {
+          fullName: formData.get("fullName"),
+          phone: formData.get("phone"),
+          address: formData.get("address"),
+        },
+      };
+
+      const token = localStorage.getItem("token");
+
+      await api.post("/orders", orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success("Order placed successfully");
+
+      clearCart();
+      e.target.reset();
+      setOrderSuccess(true);
+    } catch (error) {
+      if (!error.response) {
+        toast.error("Unable to connect to the server. Please try again");
+      } else {
+        toast.error(
+          error.response.data?.message ||
+            "Could not place your order. Please try again",
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (orderSuccess) {
     return (
@@ -58,56 +110,20 @@ function CheckoutPage() {
     <div className="checkout-page">
       <h1 className="checkout-title">Checkout</h1>
 
-      <form
-        className="checkout-form"
-        onSubmit={async (e) => {
-          e.preventDefault();
-
-          const formData = new FormData(e.target);
-
-          const orderData = {
-            items: cartItems.map((item) => ({
-              product: item.id,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-
-            total: total,
-
-            shippingAddress: {
-              fullName: formData.get("fullName"),
-              phone: formData.get("phone"),
-              address: formData.get("address"),
-            },
-          };
-
-          try {
-            const token = localStorage.getItem("token");
-
-            const res = await api.post("/orders", orderData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-
-            console.log("Order created:", res.data);
-
-            clearCart();
-            e.target.reset();
-            setOrderSuccess(true);
-          } catch (error) {
-            console.log("Failed to create order:", error);
-          }
-        }}
-      >
+      <form className="checkout-form" onSubmit={handlePlaceOrder}>
         <div>
           <label>Full Name</label>
-          <input name="fullName" type="text" required />
+          <input
+            name="fullName"
+            type="text"
+            value={user?.name || ""}
+            readOnly
+          />
         </div>
 
         <div>
           <label>Email</label>
-          <input name="email" type="email" required />
+          <input name="email" type="email" value={user?.email || ""} readOnly />
         </div>
 
         <div>
@@ -135,8 +151,12 @@ function CheckoutPage() {
           <h2>Total: {formatPrice(total)}</h2>
         </div>
 
-        <button className="place-order-btn" type="submit">
-          Place Order
+        <button
+          className="place-order-btn"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Placing Order..." : "Place Order"}
         </button>
       </form>
     </div>

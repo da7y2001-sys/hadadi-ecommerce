@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import "./Auth.css";
 function Login() {
   const navigate = useNavigate();
@@ -11,9 +12,14 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
       const res = await api.post("/auth/login", {
@@ -33,9 +39,24 @@ function Login() {
 
       setUser(profileRes.data.user);
 
-      navigate(location.state?.from || "/");
+      toast.success("Logged in successfully");
+      if (profileRes.data.user.role === "admin") {
+        navigate(location.state?.from || "/admin");
+      } else {
+        navigate(location.state?.from || "/");
+      }
     } catch (error) {
-      console.log(error);
+      if (error.response?.status === 400) {
+        toast.error(
+          error.response.data?.message || "Invalid email or password",
+        );
+      } else if (error.response) {
+        toast.error("Server error. Please try again later");
+      } else {
+        toast.error("Unable to connect to the server. Please try again");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -61,7 +82,9 @@ function Login() {
             required
           />
 
-          <button type="submit">Login</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </button>
           <p className="auth-link">
             Don't have an account? <Link to="/register">Register</Link>
           </p>

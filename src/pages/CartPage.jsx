@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { formatPrice } from "../utils/formatPrice";
 import "./CartPage.css";
 function CartPage() {
@@ -71,6 +72,7 @@ function CartPage() {
                     onClick={() => {
                       addToFavorites(item);
                       removeFromCart(item.id);
+                      toast.success(`${item.title} moved to wishlist`);
                     }}
                   >
                     Save for later
@@ -78,7 +80,10 @@ function CartPage() {
 
                   <button
                     className="remove-btn"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => {
+                      removeFromCart(item.id);
+                      toast.success(`${item.title} removed from cart`);
+                    }}
                   >
                     Remove
                   </button>

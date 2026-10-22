@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import toast from "react-hot-toast";
+import api from "../../services/api";
+//import { Link } from "react-router-dom";
 import "./AdminPage.css";
 
 function AdminPage() {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [addingProduct, setAddingProduct] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -22,11 +25,15 @@ function AdminPage() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (isSubmitting) return;
+
     const confirmed = window.confirm(
       "Are you sure you want to delete this product?",
     );
 
     if (!confirmed) return;
+
+    setIsSubmitting(true);
 
     try {
       const token = localStorage.getItem("token");
@@ -40,12 +47,20 @@ function AdminPage() {
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product._id !== id),
       );
+
+      toast.success("Product deleted successfully");
     } catch (error) {
-      console.log("Failed to delete product:", error);
+      toast.error(error.response?.data?.message || "Failed to delete product");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       const token = localStorage.getItem("token");
 
@@ -53,8 +68,8 @@ function AdminPage() {
         `/products/${editingProduct._id}`,
         {
           name: editingProduct.name,
-          price: editingProduct.price,
-          stock: editingProduct.stock,
+          price: Number(editingProduct.price),
+          stock: Number(editingProduct.stock),
         },
         {
           headers: {
@@ -70,13 +85,21 @@ function AdminPage() {
       );
 
       setEditingProduct(null);
+
+      toast.success("Product updated successfully");
     } catch (error) {
-      console.log("Failed to update product:", error);
+      toast.error(error.response?.data?.message || "Failed to update product");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
       const token = localStorage.getItem("token");
@@ -86,8 +109,6 @@ function AdminPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("Product created:", res.data);
 
       setProducts((prev) => [...prev, res.data.product]);
 
@@ -101,14 +122,20 @@ function AdminPage() {
         image: "",
       });
       setAddingProduct(false);
+
+      toast.success("Product created successfully");
     } catch (error) {
-      console.log("Failed to create product:", error);
+      toast.error(error.response?.data?.message || "Failed to create product");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
     <div className="admin-page">
       <h1>Admin Dashboard</h1>
-      <button onClick={() => setAddingProduct(true)}>+ Add Product</button>
+      <button onClick={() => setAddingProduct(true)} disabled={isSubmitting}>
+        + Add Product
+      </button>
       {addingProduct && (
         <form className="add-product-form" onSubmit={handleAddProduct}>
           <h2>Add Product</h2>
@@ -176,7 +203,9 @@ function AdminPage() {
             }
           />
 
-          <button type="submit">Save</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save"}
+          </button>
 
           <button type="button" onClick={() => setAddingProduct(false)}>
             Cancel
@@ -192,6 +221,7 @@ function AdminPage() {
 
             <input
               type="text"
+              placeholder="Product Name"
               value={editingProduct.name}
               onChange={(e) =>
                 setEditingProduct({
@@ -203,27 +233,35 @@ function AdminPage() {
 
             <input
               type="number"
+              placeholder="Price"
+              min="0"
+              step="0.01"
               value={editingProduct.price}
               onChange={(e) =>
                 setEditingProduct({
                   ...editingProduct,
-                  price: Number(e.target.value),
+                  price: e.target.value,
                 })
               }
             />
 
             <input
               type="number"
+              placeholder="Stock"
+              min="0"
+              step="1"
               value={editingProduct.stock}
               onChange={(e) =>
                 setEditingProduct({
                   ...editingProduct,
-                  stock: Number(e.target.value),
+                  stock: e.target.value,
                 })
               }
             />
 
-            <button onClick={handleUpdate}>Save</button>
+            <button onClick={handleUpdate} disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
+            </button>
 
             <button onClick={() => setEditingProduct(null)}>Cancel</button>
           </div>
@@ -245,10 +283,16 @@ function AdminPage() {
                 <td>{product.price}</td>
                 <td>{product.stock}</td>
                 <td>
-                  <button onClick={() => setEditingProduct(product)}>
+                  <button
+                    onClick={() => setEditingProduct(product)}
+                    disabled={isSubmitting}
+                  >
                     Edit
                   </button>
-                  <button onClick={() => handleDelete(product._id)}>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    disabled={isSubmitting}
+                  >
                     Delete
                   </button>
                 </td>

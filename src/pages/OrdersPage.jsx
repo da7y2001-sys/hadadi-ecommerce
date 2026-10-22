@@ -50,11 +50,13 @@ function OrdersPage() {
         <div className="order-card" key={order._id}>
           <h2>Order #{order._id}</h2>
 
-          <p className="order-info">Name: {order.shippingAddress.fullName}</p>
+          <p className="order-info">Name: {order.shippingAddress?.fullName}</p>
 
-          <p className="order-info">Phone: {order.shippingAddress.phone}</p>
+          <p className="order-info">Phone: {order.shippingAddress?.phone}</p>
 
-          <p className="order-info">Address: {order.shippingAddress.address}</p>
+          <p className="order-info">
+            Address: {order.shippingAddress?.address}
+          </p>
 
           <p className="order-info">
             Date: {new Date(order.createdAt).toLocaleDateString()}
@@ -64,9 +66,9 @@ function OrdersPage() {
           </p>
           {order.items.map((item) => (
             <div className="order-item" key={item._id}>
-              <img src={item.product.image} alt={item.product.name} />
+              <img src={item.image} alt={item.name} />
 
-              <p>{item.product.name}</p>
+              <p>{item.name}</p>
 
               <p>
                 {item.quantity} × {formatPrice(item.price)}

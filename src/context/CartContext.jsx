@@ -53,7 +53,7 @@ function CartProvider({ children }) {
     const current = cartItems.find((item) => item.id === id);
 
     if (current && current.quantity >= getStock(current)) {
-      toast.error(`Only ${getStock(current)} left in stock`);
+      toast.error(`Only ${getStock(current)} of ${current.title} left in stock`);
       return;
     }
 
@@ -88,14 +88,14 @@ function CartProvider({ children }) {
 
     if (stock <= 0) {
       toast.error(`${item.title} is out of stock`);
-      return;
+      return false;
     }
 
     const existingItem = cartItems.find((i) => i.id === item.id);
 
     if (existingItem && existingItem.quantity >= stock) {
-      toast.error(`Only ${stock} left in stock`);
-      return;
+      toast.error(`Only ${stock} of ${item.title} left in stock`);
+      return false;
     }
 
     setCartItems((prevItems) => {
@@ -111,6 +111,8 @@ function CartProvider({ children }) {
 
       return [...prevItems, { ...item, quantity: 1 }];
     });
+
+    return true;
   };
 
   const clearCart = () => {

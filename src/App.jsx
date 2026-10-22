@@ -17,8 +17,11 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import AdminPage from "./pages/AdminPage";
+import AdminPage from "./pages/Admin/AdminPage";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
+import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminLayout from "./pages/Admin/AdminLayout";
+import AdminUsers from "./pages/Admin/AdminUsers";
 import "./App.css";
 
 function App() {
@@ -26,6 +29,7 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   useEffect(() => {
     async function getCategories() {
@@ -49,11 +53,14 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header
-        categories={categories}
-        categoriesLoading={loading}
-        categoriesError={error}
-      />
+      {/* Header shwon on all pages except admin */}
+      {!isAdminPage && (
+        <Header
+          categories={categories}
+          categoriesLoading={loading}
+          categoriesError={error}
+        />
+      )}
 
       <ErrorBoundary key={location.pathname}>
         <Routes>
@@ -98,13 +105,18 @@ function App() {
             path="/admin"
             element={
               <AdminRoute>
-                <AdminPage />
+                <AdminLayout />
               </AdminRoute>
             }
-          />
+          >
+            <Route index element={<AdminPage />} />
+            <Route path="products" element={<AdminPage />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="users" element={<AdminUsers />} />
+          </Route>
         </Routes>
       </ErrorBoundary>
-      <Footer />
+      {!isAdminPage && <Footer />}
     </div>
   );
 }

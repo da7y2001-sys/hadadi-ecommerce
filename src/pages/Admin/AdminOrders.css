@@ -1,0 +1,37 @@
+.admin-orders-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.admin-orders-title {
+  margin-bottom: 30px;
+}
+
+.admin-order-card {
+  padding: 25px;
+  margin-bottom: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.admin-order-card h3 {
+  margin-bottom: 15px;
+}
+
+.admin-order-card h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.admin-order-card p {
+  margin: 8px 0;
+}
+
+.admin-order-item {
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}

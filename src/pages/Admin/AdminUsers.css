@@ -1,0 +1,23 @@
+.admin-users-page {
+  padding: 40px;
+}
+
+.admin-users-title {
+  margin-bottom: 30px;
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-users-table th {
+  background: #f5f5f5;
+}

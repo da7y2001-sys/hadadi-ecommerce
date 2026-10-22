@@ -34,3 +34,23 @@
   border-radius: 6px;
   cursor: pointer;
 }
+.edit-product-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.edit-product-form input {
+  width: 160px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.edit-product-form input[type="number"] {
+  width: 140px;
+}

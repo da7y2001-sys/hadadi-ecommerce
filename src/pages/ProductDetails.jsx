@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import api from "../services/api";
+import toast from "react-hot-toast";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
@@ -25,6 +26,13 @@ function ProductDetails() {
     useContext(CartContext);
   const isInFav = favorites.some((item) => item.id === product?.id);
   const isOutOfStock = product?.stock === 0;
+
+  const handleAddToCart = () => {
+    if (addToCart(product)) {
+      toast.success(`${product.title} added to cart`);
+    }
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -118,7 +126,7 @@ function ProductDetails() {
           <p>{product.description}</p>
           <button
             className="add-to-cart-btn"
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
             disabled={isOutOfStock}
             style={
               isOutOfStock ? { opacity: 0.5, cursor: "not-allowed" } : undefined
@@ -129,7 +137,7 @@ function ProductDetails() {
           <button
             className="go-to-cart-btn"
             onClick={() => {
-              addToCart(product);
+              handleAddToCart();
               navigate("/checkout");
             }}
             disabled={isOutOfStock}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../services/api";
 import "./Auth.css";
 function Register() {
@@ -8,22 +9,41 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
-      const res = await api.post("/auth/register", {
+      await api.post("/auth/register", {
         name,
         email,
         password,
       });
 
-      console.log(res.data);
-
+      toast.success("Account created successfully. Please log in");
       navigate("/login");
     } catch (error) {
-      console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message;
+
+      if (status === 400) {
+        toast.error(
+          message === "User already exists"
+            ? "An account with this email already exists"
+            : message || "Registration failed. Please check your details",
+        );
+      } else if (error.response) {
+        toast.error("Server error. Please try again later");
+      } else {
+        toast.error("Unable to connect to the server. Please try again");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -57,7 +77,9 @@ function Register() {
             required
           />
 
-          <button type="submit">Create Account</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating Account..." : "Create Account"}
+          </button>
         </form>
       </div>
     </div>
