@@ -35,13 +35,9 @@ function App() {
   useEffect(() => {
     async function getCategories() {
       try {
-        const res = await api.get("/products");
+        const res = await api.get("/products/categories");
 
-        const uniqueCategories = [
-          ...new Set(res.data.map((product) => product.category)),
-        ];
-
-        setCategories(uniqueCategories);
+        setCategories(res.data);
       } catch (error) {
         setError(error);
       } finally {

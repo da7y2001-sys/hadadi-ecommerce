@@ -257,8 +257,70 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Product.distinct("category", { isActive: true });
+
+    res.json(categories);
+  } catch (error) {
+    console.error("Failed to get categories:", error);
+
+    res.status(500).json({
+      message: "Failed to get categories",
+    });
+  }
+};
+
+const getProductSuggestions = async (req, res) => {
+  try {
+    const searchTerm = req.query.q;
+
+    if (!searchTerm || !searchTerm.trim()) {
+      return res.json([]);
+    }
+
+    const safeSearchTerm = escapeRegex(searchTerm.trim());
+
+    const suggestions = await Product.find({
+      isActive: true,
+      $or: [
+        {
+          name: {
+            $regex: safeSearchTerm,
+            $options: "i",
+          },
+        },
+        {
+          brand: {
+            $regex: safeSearchTerm,
+            $options: "i",
+          },
+        },
+        {
+          category: {
+            $regex: safeSearchTerm,
+            $options: "i",
+          },
+        },
+      ],
+    })
+      .select("_id name image")
+      .limit(5);
+
+    res.json(suggestions);
+  } catch (error) {
+    console.error("Failed to get product suggestions:", error);
+
+    res.status(500).json({
+      message: "Failed to get suggestions",
+    });
+  }
+};
+
 module.exports = {
   createProduct,
+  getCategories,
+  getProductSuggestions,
   getProducts,
   getAdminProducts,
   getBestSellingProducts,

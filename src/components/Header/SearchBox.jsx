@@ -25,26 +25,17 @@ function SearchBox() {
       }
 
       try {
-        const res = await api.get("/products");
+        const res = await api.get(
+          `/products/suggest?q=${encodeURIComponent(searchTerm.trim())}`
+        );
 
-        const search = searchTerm.toLowerCase().trim();
+        const formattedProducts = res.data.map((product) => ({
+          ...product,
+          id: product._id,
+          title: product.name,
+        }));
 
-        const filteredProducts = res.data
-          .filter((product) => {
-            return (
-              product.name.toLowerCase().includes(search) ||
-              product.brand.toLowerCase().includes(search) ||
-              product.category.toLowerCase().includes(search)
-            );
-          })
-          .slice(0, 5)
-          .map((product) => ({
-            ...product,
-            id: product._id,
-            title: product.name,
-          }));
-
-        setSuggestions(filteredProducts);
+        setSuggestions(formattedProducts);
       } catch (error) {
         console.error("Search Error :", error);
         setSuggestions([]);

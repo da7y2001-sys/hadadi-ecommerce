@@ -3,6 +3,8 @@ const router = express.Router();
 
 const {
   createProduct,
+  getCategories,
+  getProductSuggestions,
   getProducts,
   getBestSellingProducts,
   searchProducts,
@@ -21,6 +23,12 @@ router.post(
   adminMiddleware,
   createProduct
 );
+
+// Categories
+router.get("/categories", getCategories);
+
+// Search suggestions
+router.get("/suggest", getProductSuggestions);
 
 // Get all products
 router.get("/", getProducts);
