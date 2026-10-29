@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Order = require("../models/Order");
-const Product = require("../models/Product");
+
 const User = require("../models/User");
+const { restoreOrderInventory, OrderError } = require("./orderController");
 
 // Get all orders for admin
 const getAdminOrders = async (req, res) => {
@@ -97,42 +98,7 @@ const updateOrderStatus = async (req, res) => {
 
     // Restore stock and decrease sold count atomically when transitioning to Cancelled
     if (status === "Cancelled" && order.status !== "Cancelled") {
-      for (const item of order.items) {
-        const updatedProduct = await Product.findOneAndUpdate(
-          {
-            _id: item.product,
-            soldCount: { $gte: item.quantity },
-          },
-          {
-            $inc: {
-              stock: item.quantity,
-              soldCount: -item.quantity,
-            },
-          },
-          {
-            new: true,
-            session,
-          }
-        );
-
-        if (!updatedProduct) {
-          const existingProduct = await Product.findById(item.product).session(
-            session
-          );
-
-          await session.abortTransaction();
-
-          if (!existingProduct) {
-            return res.status(404).json({
-              message: `Cannot cancel order: Product with ID '${item.product}' no longer exists`,
-            });
-          }
-
-          return res.status(409).json({
-            message: `Cannot cancel order: Product '${existingProduct.name}' has soldCount (${existingProduct.soldCount}) less than order quantity (${item.quantity})`,
-          });
-        }
-      }
+      await restoreOrderInventory(order.items, session);
     }
 
     order.status = status;
@@ -147,6 +113,12 @@ const updateOrderStatus = async (req, res) => {
   } catch (error) {
     if (session?.inTransaction()) {
       await session.abortTransaction();
+    }
+
+    if (error instanceof OrderError) {
+      return res.status(error.status).json({
+        message: error.message,
+      });
     }
 
     console.error("Failed to update order status:", error);

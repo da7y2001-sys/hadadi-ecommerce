@@ -35,3 +35,50 @@
   margin-right: 15px;
   border-radius: 8px;
 }
+
+.order-status.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.order-status.status-processing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.order-status.status-shipped {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.order-status.status-delivered {
+  background: #d4edda;
+  color: #155724;
+}
+
+.order-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel-order-btn {
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-order-btn:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.cancel-order-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

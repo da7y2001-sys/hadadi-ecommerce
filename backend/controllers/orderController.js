@@ -194,7 +194,130 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+async function restoreOrderInventory(orderItems, session) {
+  for (const item of orderItems) {
+    const productId = item.product?._id || item.product;
+
+    const updatedProduct = await Product.findOneAndUpdate(
+      {
+        _id: productId,
+        soldCount: { $gte: item.quantity },
+      },
+      {
+        $inc: {
+          stock: item.quantity,
+          soldCount: -item.quantity,
+        },
+      },
+      {
+        new: true,
+        session,
+      }
+    );
+
+    if (!updatedProduct) {
+      const existingProduct = await Product.findById(productId).session(
+        session
+      );
+
+      if (!existingProduct) {
+        throw new OrderError(
+          `Cannot cancel order: Product with ID '${productId}' no longer exists`,
+          404
+        );
+      }
+
+      throw new OrderError(
+        `Cannot cancel order: Product '${existingProduct.name}' has soldCount (${existingProduct.soldCount}) less than order quantity (${item.quantity})`,
+        409
+      );
+    }
+  }
+}
+
+const cancelOrder = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      message: "Invalid order ID",
+    });
+  }
+
+  let session;
+
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    const order = await Order.findById(id).session(session);
+
+    if (!order) {
+      await session.abortTransaction();
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    if (order.user.toString() !== req.user.userId) {
+      await session.abortTransaction();
+      return res.status(403).json({
+        message: "You are not authorized to cancel this order",
+      });
+    }
+
+    if (order.status === "Cancelled") {
+      await session.abortTransaction();
+      return res.status(400).json({
+        message: "Order is already cancelled",
+      });
+    }
+
+    if (order.status !== "Processing") {
+      await session.abortTransaction();
+      return res.status(400).json({
+        message: `Cannot cancel order with '${order.status}' status. Only orders in 'Processing' status can be cancelled.`,
+      });
+    }
+
+    await restoreOrderInventory(order.items, session);
+
+    order.status = "Cancelled";
+    await order.save({ session });
+
+    await session.commitTransaction();
+
+    res.json({
+      message: "Order cancelled successfully",
+      order,
+    });
+  } catch (error) {
+    if (session?.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    if (error instanceof OrderError) {
+      return res.status(error.status).json({
+        message: error.message,
+      });
+    }
+
+    console.error("Failed to cancel order:", error);
+
+    res.status(500).json({
+      message: "Failed to cancel order",
+    });
+  } finally {
+    if (session) {
+      await session.endSession();
+    }
+  }
+};
+
 module.exports = {
   createOrder,
   getUserOrders,
+  cancelOrder,
+  restoreOrderInventory,
+  OrderError,
 };
