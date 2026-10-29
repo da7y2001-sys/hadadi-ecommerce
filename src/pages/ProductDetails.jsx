@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { ProductCard, ErrorState } from "../components";
 import "swiper/css";
@@ -8,9 +8,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import api from "../services/api";
 import toast from "react-hot-toast";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { formatPrice } from "../utils/formatPrice";
 
 function ProductDetails() {
@@ -22,8 +23,28 @@ function ProductDetails() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { addToCart, addToFavorites, favorites, removeFromFavorites } =
     useContext(CartContext);
+
+  // Reviews states
+  const [reviews, setReviews] = useState([]);
+  const [reviewVersion, setReviewVersion] = useState(0);
+  const [myReview, setMyReview] = useState(null);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+
+  // Create review state
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Edit review state
+  const [editingReview, setEditingReview] = useState(false);
+  const [editRating, setEditRating] = useState(5);
+  const [editComment, setEditComment] = useState("");
+  const [updatingReview, setUpdatingReview] = useState(false);
+  const [deletingReview, setDeletingReview] = useState(false);
+
   const isInFav = favorites.some((item) => item.id === product?.id);
   const isOutOfStock = product?.stock === 0;
 
@@ -34,6 +55,7 @@ function ProductDetails() {
       ? product.price * (1 - discount / 100)
       : product.price
     : 0;
+
   const handleAddToCart = () => {
     if (addToCart(product)) {
       toast.success(`${product.title} added to cart`);
@@ -41,29 +63,75 @@ function ProductDetails() {
   };
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    let isActive = true;
+
+    const fetchProductAndReviews = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await api.get(`/products/${id}`);
+        const [prodRes, revsRes] = await Promise.all([
+          api.get(`/products/${id}`),
+          api.get(`/products/${id}/reviews`),
+        ]);
+
+        if (!isActive) return;
 
         const formattedProduct = {
-          ...res.data,
-          id: res.data._id,
-          title: res.data.name,
+          ...prodRes.data,
+          id: prodRes.data._id,
+          title: prodRes.data.name,
         };
 
         setProduct(formattedProduct);
         setSelectedImage(formattedProduct.image);
+        setReviews(revsRes.data);
       } catch (err) {
+        if (!isActive) return;
         setError(err);
       } finally {
-        setLoading(false);
+        if (isActive) {
+          setLoading(false);
+          setLoadingReviews(false);
+        }
       }
     };
 
-    fetchProduct();
-  }, [id, retryCount]);
+    fetchProductAndReviews();
+
+    return () => {
+      isActive = false;
+    };
+  }, [id, retryCount, reviewVersion]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    if (!user) {
+      return;
+    }
+
+    const fetchUserReview = async () => {
+      try {
+        const res = await api.get(`/products/${id}/reviews/my-review`);
+        if (!isActive) return;
+        setMyReview(res.data?.review || null);
+        if (res.data?.review) {
+          setEditRating(res.data.review.rating);
+          setEditComment(res.data.review.comment);
+        }
+      } catch {
+        if (!isActive) return;
+        setMyReview(null);
+      }
+    };
+
+    fetchUserReview();
+
+    return () => {
+      isActive = false;
+    };
+  }, [id, user, reviewVersion]);
+
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       if (!product) return;
@@ -90,6 +158,84 @@ function ProductDetails() {
     fetchRelatedProducts();
   }, [product]);
 
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (submittingReview) return;
+
+    if (comment.trim().length < 3) {
+      toast.error("Comment must be at least 3 characters");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      const res = await api.post(`/products/${id}/reviews`, {
+        rating,
+        comment: comment.trim(),
+      });
+      toast.success(res.data?.message || "Review submitted successfully");
+      setComment("");
+      setRating(5);
+      setReviewVersion((v) => v + 1);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to submit review. Please try again.",
+      );
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+    if (!myReview || updatingReview) return;
+
+    if (editComment.trim().length < 3) {
+      toast.error("Comment must be at least 3 characters");
+      return;
+    }
+
+    setUpdatingReview(true);
+    try {
+      const res = await api.patch(`/reviews/${myReview._id}`, {
+        rating: editRating,
+        comment: editComment.trim(),
+      });
+      toast.success(res.data?.message || "Review updated successfully");
+      setEditingReview(false);
+      setReviewVersion((v) => v + 1);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to update review. Please try again.",
+      );
+    } finally {
+      setUpdatingReview(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (deletingReview) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this review?",
+    );
+    if (!confirmed) return;
+
+    setDeletingReview(true);
+    try {
+      const res = await api.delete(`/reviews/${reviewId}`);
+      toast.success(res.data?.message || "Review deleted successfully");
+      setEditingReview(false);
+      setReviewVersion((v) => v + 1);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to delete review. Please try again.",
+      );
+    } finally {
+      setDeletingReview(false);
+    }
+  };
+
   if (loading) {
     return <h2>Loading...</h2>;
   }
@@ -105,9 +251,14 @@ function ProductDetails() {
       </div>
     );
   }
+
   if (!product) {
     return <h2>Product not available</h2>;
   }
+
+  const ratingAvg = Number(product.ratingAverage || 0);
+  const ratingCnt = Number(product.ratingCount || 0);
+
   return (
     <>
       <div className="product-details">
@@ -121,6 +272,31 @@ function ProductDetails() {
 
         <div className="product-details-info">
           <h1>{product.title}</h1>
+
+          {/* Product rating summary with smooth scroll */}
+          <div
+            className="product-rating"
+            onClick={() => {
+              const section = document.getElementById("reviews-section");
+              if (section) section.scrollIntoView({ behavior: "smooth" });
+            }}
+            style={{ cursor: "pointer", marginBottom: "15px" }}
+            title="View customer reviews"
+          >
+            <div className="stars">
+              {[1, 2, 3, 4, 5].map((star) =>
+                star <= Math.round(ratingAvg) ? (
+                  <FaStar key={star} color="#f5c518" />
+                ) : (
+                  <FaRegStar key={star} color="#ccc" />
+                ),
+              )}
+            </div>
+            <span>
+              {ratingAvg > 0 ? ratingAvg.toFixed(1) : "0.0"} ({ratingCnt}{" "}
+              {ratingCnt === 1 ? "review" : "reviews"})
+            </span>
+          </div>
 
           <div className="product-price">
             {discount > 0 ? (
@@ -187,6 +363,236 @@ function ProductDetails() {
           </button>
         </div>
       </div>
+
+      {/* Reviews & Ratings Section */}
+      <div className="reviews-section" id="reviews-section">
+        <div className="reviews-container">
+          <div className="reviews-header">
+            <h2>Customer Reviews</h2>
+            <div className="overall-rating">
+              <span className="big-rating">
+                {ratingAvg > 0 ? ratingAvg.toFixed(1) : "0.0"}
+              </span>
+              <div className="stars">
+                {[1, 2, 3, 4, 5].map((star) =>
+                  star <= Math.round(ratingAvg) ? (
+                    <FaStar key={star} color="#f5c518" />
+                  ) : (
+                    <FaRegStar key={star} color="#ccc" />
+                  ),
+                )}
+              </div>
+              <span className="rating-subtitle">
+                Based on {ratingCnt} {ratingCnt === 1 ? "review" : "reviews"}
+              </span>
+            </div>
+          </div>
+
+          {/* Review Form Area */}
+          <div className="review-action-area">
+            {!user ? (
+              <div className="review-login-prompt">
+                <p>
+                  Have you tried this product?{" "}
+                  <Link to="/login" state={{ from: `/products/${id}` }}>
+                    Log in
+                  </Link>{" "}
+                  to write a review.
+                </p>
+              </div>
+            ) : myReview ? (
+              editingReview ? (
+                <form onSubmit={handleUpdateReview} className="review-form">
+                  <h3>Edit Your Review</h3>
+                  <div className="interactive-stars">
+                    <label>Rating: </label>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        className="star-btn"
+                        onClick={() => setEditRating(star)}
+                        aria-label={`Rate ${star} stars`}
+                      >
+                        {star <= editRating ? (
+                          <FaStar color="#f5c518" />
+                        ) : (
+                          <FaRegStar color="#ccc" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  <textarea
+                    value={editComment}
+                    onChange={(e) => setEditComment(e.target.value)}
+                    placeholder="Write your review here (min 3 characters)..."
+                    rows={4}
+                    required
+                  />
+
+                  <div className="review-form-actions">
+                    <button
+                      type="submit"
+                      className="submit-review-btn"
+                      disabled={updatingReview}
+                    >
+                      {updatingReview ? "Saving..." : "Save Changes"}
+                    </button>
+                    <button
+                      type="button"
+                      className="cancel-review-btn"
+                      onClick={() => setEditingReview(false)}
+                      disabled={updatingReview}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="my-review-card">
+                  <div className="my-review-card-header">
+                    <h4>Your Review</h4>
+                    <div className="my-review-actions">
+                      <button
+                        type="button"
+                        className="edit-action-btn"
+                        onClick={() => {
+                          setEditRating(myReview.rating);
+                          setEditComment(myReview.comment);
+                          setEditingReview(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="delete-action-btn"
+                        onClick={() => handleDeleteReview(myReview._id)}
+                        disabled={deletingReview}
+                      >
+                        {deletingReview ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="stars">
+                    {[1, 2, 3, 4, 5].map((star) =>
+                      star <= myReview.rating ? (
+                        <FaStar key={star} color="#f5c518" />
+                      ) : (
+                        <FaRegStar key={star} color="#ccc" />
+                      ),
+                    )}
+                  </div>
+
+                  {myReview.isVerifiedPurchase && (
+                    <span className="verified-badge">✔ Verified Buyer</span>
+                  )}
+
+                  <p className="review-comment">{myReview.comment}</p>
+                </div>
+              )
+            ) : (
+              <form onSubmit={handleSubmitReview} className="review-form">
+                <h3>Write a Review</h3>
+                <div className="interactive-stars">
+                  <label>Your Rating: </label>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      className="star-btn"
+                      onClick={() => setRating(star)}
+                      aria-label={`Rate ${star} stars`}
+                    >
+                      {star <= rating ? (
+                        <FaStar color="#f5c518" />
+                      ) : (
+                        <FaRegStar color="#ccc" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Share your thoughts about this product (min 3 characters)..."
+                  rows={4}
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="submit-review-btn"
+                  disabled={submittingReview}
+                >
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Reviews List */}
+          <div className="reviews-list">
+            <h3>All Reviews ({reviews.length})</h3>
+            {loadingReviews ? (
+              <p>Loading reviews...</p>
+            ) : reviews.length === 0 ? (
+              <p className="no-reviews">
+                No reviews yet. Be the first to review this product!
+              </p>
+            ) : (
+              reviews.map((rev) => (
+                <div key={rev._id} className="review-item">
+                  <div className="review-item-header">
+                    <div className="reviewer-info">
+                      <span className="reviewer-name">
+                        {rev.user?.name || "Customer"}
+                      </span>
+                      {rev.isVerifiedPurchase && (
+                        <span className="verified-badge">
+                          ✔ Verified Buyer
+                        </span>
+                      )}
+                    </div>
+                    <div className="review-right-meta">
+                      <span className="review-date">
+                        {new Date(rev.createdAt).toLocaleDateString()}
+                      </span>
+                      {user && (user._id === rev.user?._id || user.id === rev.user?._id || user.role === "admin") && (
+                        <button
+                          type="button"
+                          className="delete-icon-btn"
+                          onClick={() => handleDeleteReview(rev._id)}
+                          disabled={deletingReview}
+                          title="Delete review"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="stars">
+                    {[1, 2, 3, 4, 5].map((star) =>
+                      star <= rev.rating ? (
+                        <FaStar key={star} color="#f5c518" />
+                      ) : (
+                        <FaRegStar key={star} color="#ccc" />
+                      ),
+                    )}
+                  </div>
+
+                  <p className="review-comment">{rev.comment}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="related-products">
         <h2>Recommended Products</h2>
 

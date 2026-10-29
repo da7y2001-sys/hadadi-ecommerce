@@ -15,6 +15,7 @@ const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 app.use(helmet());//
 app.use(express.json());//
 
@@ -60,6 +61,7 @@ app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/admin", adminRoutes);
 app.use("/profile", profileRoutes);
+app.use("/reviews", reviewRoutes);
 //////////////////////////////////
 
 
@@ -81,6 +83,10 @@ app.use((err, req, res, _next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT} 🚀`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT} 🚀`);
+  });
+}
+
+module.exports = app;
