@@ -51,6 +51,11 @@ function TopHeader() {
                 {user ? (
                   <>
                     <span>Hi, {user.name}</span>
+                    {user?.role === "admin" && (
+                      <Link to="/admin" onClick={() => setAccountOpen(false)}>
+                        Admin Panel
+                      </Link>
+                    )}
                     <Link to="/profile" onClick={() => setAccountOpen(false)}>
                       My Profile
                     </Link>

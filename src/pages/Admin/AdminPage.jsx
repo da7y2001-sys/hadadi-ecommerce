@@ -94,7 +94,11 @@ function AdminPage() {
         {
           name: editingProduct.name,
           price: Number(editingProduct.price),
+          description: editingProduct.description,
+          category: editingProduct.category,
+          brand: editingProduct.brand,
           stock: Number(editingProduct.stock),
+          image: editingProduct.image,
           sku: editingProduct.sku,
           discount: Number(editingProduct.discount),
           isActive: editingProduct.isActive,
@@ -359,6 +363,54 @@ function AdminPage() {
                 setEditingProduct({
                   ...editingProduct,
                   discount: e.target.value,
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="Description"
+              value={editingProduct.description || ""}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  description: e.target.value,
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="Category"
+              value={editingProduct.category || ""}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  category: e.target.value,
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="Brand"
+              value={editingProduct.brand || ""}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  brand: e.target.value,
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="Image URL"
+              value={editingProduct.image || ""}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  image: e.target.value,
                 })
               }
             />

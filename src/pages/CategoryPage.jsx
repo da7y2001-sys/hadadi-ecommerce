@@ -7,6 +7,13 @@ import { ProductCard, ErrorState } from "../components";
 // استيراد تنسيق الشبكة (Grid) اللي سويناه مسبقاً
 //import "../components/ProductList/ProductList.css";
 
+function getEffectivePrice(product) {
+  const price = Number(product?.price) || 0;
+  const discount = Number(product?.discount) || 0;
+
+  return discount > 0 ? price * (1 - discount / 100) : price;
+}
+
 function CategoryPage() {
   // هذا السطر يسحب اسم التصنيف من الرابط مباشرة (مثلاً: smartphones)
   const { categoryName } = useParams();
@@ -60,16 +67,17 @@ function CategoryPage() {
     const min = minPrice === "" ? 0 : Number(minPrice);
     const max = maxPrice === "" ? Infinity : Number(maxPrice);
 
-    return product.price >= min && product.price <= max;
+    const effectivePrice = getEffectivePrice(product);
+    return effectivePrice >= min && effectivePrice <= max;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === "price-low") {
-      return a.price - b.price;
+      return getEffectivePrice(a) - getEffectivePrice(b);
     }
 
     if (sortBy === "price-high") {
-      return b.price - a.price;
+      return getEffectivePrice(b) - getEffectivePrice(a);
     }
 
     return 0;
