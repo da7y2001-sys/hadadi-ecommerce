@@ -12,15 +12,10 @@ function AdminOrders() {
   const [updatingOrderId, setUpdatingOrderId] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     let isActive = true;
 
     api
-      .get("/admin/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get("/admin/orders")
       .then((res) => {
         if (isActive) setOrders(res.data);
       })
@@ -44,16 +39,9 @@ function AdminOrders() {
     setUpdatingOrderId(orderId);
 
     try {
-      const token = localStorage.getItem("token");
-
       const res = await api.patch(
         `/admin/orders/${orderId}/status`,
         { status },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       );
 
       setOrders((prevOrders) =>

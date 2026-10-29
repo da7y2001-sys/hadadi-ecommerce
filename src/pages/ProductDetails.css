@@ -140,3 +140,32 @@
 .related-products .swiper {
   padding: 10px 5px 45px;
 }
+.product-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.discounted-price {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.original-price {
+  text-decoration: line-through;
+  opacity: 0.6;
+  font-size: 16px;
+}
+
+.product-discount-badge {
+  display: inline-block;
+  background: #e53935;
+  color: white;
+  padding: 5px 9px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}

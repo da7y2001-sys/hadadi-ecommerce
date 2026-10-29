@@ -30,13 +30,16 @@ function AdminPage() {
     brand: "",
     stock: "",
     image: "",
+    sku: "",
+    discount: 0,
+    isActive: true,
   });
 
   useEffect(() => {
     let isActive = true;
 
     api
-      .get("/products")
+      .get("/admin/products")
       .then((res) => {
         if (isActive) setProducts(res.data);
       })
@@ -66,13 +69,7 @@ function AdminPage() {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("token");
-
-      await api.delete(`/products/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/products/${id}`);
 
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product._id !== id),
@@ -80,9 +77,7 @@ function AdminPage() {
 
       toast.success("Product deleted successfully");
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(error, "Failed to delete product"),
-      );
+      toast.error(getApiErrorMessage(error, "Failed to delete product"));
     } finally {
       setIsSubmitting(false);
     }
@@ -94,19 +89,15 @@ function AdminPage() {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("token");
-
       const res = await api.patch(
         `/products/${editingProduct._id}`,
         {
           name: editingProduct.name,
           price: Number(editingProduct.price),
           stock: Number(editingProduct.stock),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          sku: editingProduct.sku,
+          discount: Number(editingProduct.discount),
+          isActive: editingProduct.isActive,
         },
       );
 
@@ -120,9 +111,7 @@ function AdminPage() {
 
       toast.success("Product updated successfully");
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(error, "Failed to update product"),
-      );
+      toast.error(getApiErrorMessage(error, "Failed to update product"));
     } finally {
       setIsSubmitting(false);
     }
@@ -136,13 +125,7 @@ function AdminPage() {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.post("/products", newProduct, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.post("/products", newProduct);
 
       setProducts((prev) => [...prev, res.data.product]);
 
@@ -154,14 +137,15 @@ function AdminPage() {
         brand: "",
         stock: "",
         image: "",
+        sku: "",
+        discount: 0,
+        isActive: true,
       });
       setAddingProduct(false);
 
       toast.success("Product created successfully");
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(error, "Failed to create product"),
-      );
+      toast.error(getApiErrorMessage(error, "Failed to create product"));
     } finally {
       setIsSubmitting(false);
     }
@@ -212,6 +196,45 @@ function AdminPage() {
               setNewProduct({ ...newProduct, price: Number(e.target.value) })
             }
           />
+          <input
+            type="number"
+            placeholder="Discount %"
+            min="0"
+            max="100"
+            step="1"
+            value={newProduct.discount}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                discount: e.target.value,
+              })
+            }
+          />
+          <input
+            type="text"
+            placeholder="SKU"
+            value={newProduct.sku}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                sku: e.target.value,
+              })
+            }
+          />
+
+          <label>
+            <input
+              type="checkbox"
+              checked={newProduct.isActive}
+              onChange={(e) =>
+                setNewProduct({
+                  ...newProduct,
+                  isActive: e.target.checked,
+                })
+              }
+            />
+            Active
+          </label>
 
           <input
             type="text"
@@ -313,6 +336,46 @@ function AdminPage() {
                 })
               }
             />
+            <input
+              type="text"
+              placeholder="SKU"
+              value={editingProduct.sku || ""}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  sku: e.target.value,
+                })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Discount %"
+              min="0"
+              max="100"
+              step="1"
+              value={editingProduct.discount ?? 0}
+              onChange={(e) =>
+                setEditingProduct({
+                  ...editingProduct,
+                  discount: e.target.value,
+                })
+              }
+            />
+
+            <label>
+              <input
+                type="checkbox"
+                checked={editingProduct.isActive ?? true}
+                onChange={(e) =>
+                  setEditingProduct({
+                    ...editingProduct,
+                    isActive: e.target.checked,
+                  })
+                }
+              />
+              Active
+            </label>
 
             <button onClick={handleUpdate} disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Save"}
@@ -326,7 +389,9 @@ function AdminPage() {
             <tr>
               <th>Product</th>
               <th>Price</th>
+              <th>Discount</th>
               <th>Stock</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -335,8 +400,19 @@ function AdminPage() {
             {products.map((product) => (
               <tr key={product._id}>
                 <td>{product.name}</td>
-                <td>{product.price}</td>
+                <td>{product.price} SAR</td>
+
+                <td>{product.discount > 0 ? `${product.discount}%` : "-"}</td>
+
                 <td>{product.stock}</td>
+
+                <td>
+                  {product.isActive ? (
+                    <span className="status-active">Active</span>
+                  ) : (
+                    <span className="status-inactive">Inactive</span>
+                  )}
+                </td>
                 <td>
                   <button
                     onClick={() => setEditingProduct(product)}

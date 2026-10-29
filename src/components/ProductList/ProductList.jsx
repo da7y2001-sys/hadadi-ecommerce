@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ProductCard from "../ProductCard/ProductCard"; // استدعاء البطاقة التي صنعناها
+import ProductCard from "../ProductCard/ProductCard";
 import api from "../../services/api";
 import "./ProductList.css";
 
@@ -8,43 +8,44 @@ function ProductList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // جلب 12 منتج من الـ API للعرض في الصفحة الرئيسية
-    console.log("ProductList started");
-    api
-      .get("/products")
-      .then((res) => {
-        //console.log(res.data);
+    const fetchBestSellingProducts = async () => {
+      try {
+        const res = await api.get("/products/best-selling");
 
         const formattedProducts = res.data.map((item) => ({
           ...item,
           id: item._id,
           title: item.name,
         }));
-        console.log("Formatted Products:", formattedProducts);
 
         setProducts(formattedProducts);
+      } catch (error) {
+        console.error("Error fetching best selling products:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error Fetching Products:", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchBestSellingProducts();
   }, []);
 
   if (loading) {
     return (
       <h2 style={{ textAlign: "center", marginTop: "50px" }}>
-        جاري تحميل المنتجات...
+        جاري تحميل الأكثر مبيعًا...
       </h2>
     );
+  }
+
+  if (products.length === 0) {
+    return null;
   }
 
   return (
     <div className="container">
       <div className="product-list-section">
-        <h2 className="section-title">Latest Products</h2>
+        <h2 className="section-title">🔥 Best Selling Products</h2>
 
-        {/* شبكة المنتجات */}
         <div className="products-grid">
           {products.map((item) => (
             <ProductCard key={item._id} item={item} />

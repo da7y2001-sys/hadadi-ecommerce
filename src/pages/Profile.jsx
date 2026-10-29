@@ -25,18 +25,11 @@ function Profile() {
     setIsUpdatingProfile(true);
 
     try {
-      const token = localStorage.getItem("token");
-
       const res = await api.patch(
         "/profile",
         {
           name,
           email,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 
@@ -62,19 +55,12 @@ function Profile() {
     setIsUpdatingPassword(true);
 
     try {
-      const token = localStorage.getItem("token");
-
       await api.patch(
         "/profile/password",
         {
           currentPassword,
           newPassword,
           confirmPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 

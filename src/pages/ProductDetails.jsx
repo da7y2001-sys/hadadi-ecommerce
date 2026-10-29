@@ -27,6 +27,13 @@ function ProductDetails() {
   const isInFav = favorites.some((item) => item.id === product?.id);
   const isOutOfStock = product?.stock === 0;
 
+  const discount = Number(product?.discount) || 0;
+
+  const discountedPrice = product
+    ? discount > 0
+      ? product.price * (1 - discount / 100)
+      : product.price
+    : 0;
   const handleAddToCart = () => {
     if (addToCart(product)) {
       toast.success(`${product.title} added to cart`);
@@ -98,6 +105,9 @@ function ProductDetails() {
       </div>
     );
   }
+  if (!product) {
+    return <h2>Product not available</h2>;
+  }
   return (
     <>
       <div className="product-details">
@@ -112,7 +122,23 @@ function ProductDetails() {
         <div className="product-details-info">
           <h1>{product.title}</h1>
 
-          <p className="product-price">{formatPrice(product.price)}</p>
+          <div className="product-price">
+            {discount > 0 ? (
+              <>
+                <span className="discounted-price">
+                  {formatPrice(discountedPrice)}
+                </span>
+
+                <span className="original-price">
+                  {formatPrice(product.price)}
+                </span>
+
+                <span className="product-discount-badge">-{discount}%</span>
+              </>
+            ) : (
+              <span>{formatPrice(product.price)}</span>
+            )}
+          </div>
 
           <p
             style={{

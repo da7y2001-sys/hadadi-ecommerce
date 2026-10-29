@@ -25,7 +25,7 @@ export default function HeroSlider() {
         spaceBetween={30}
         centeredSlides={true}
         autoplay={{
-          delay: 4000, // خليتها 4 ثواني ليلحق المستخدم يقرأ
+          delay: 4000,
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}

@@ -12,15 +12,10 @@ function OrdersPage() {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     let isActive = true;
 
     api
-      .get("/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get("/orders")
       .then((res) => {
         if (isActive) setOrders(res.data);
       })

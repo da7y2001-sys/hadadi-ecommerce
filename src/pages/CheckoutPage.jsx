@@ -52,13 +52,7 @@ function CheckoutPage() {
         },
       };
 
-      const token = localStorage.getItem("token");
-
-      await api.post("/orders", orderData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.post("/orders", orderData);
 
       toast.success("Order placed successfully");
 
@@ -141,9 +135,16 @@ function CheckoutPage() {
           {cartItems.map((item) => (
             <div key={item.id}>
               <p>{item.title}</p>
+
               <p>
-                {item.quantity} × {formatPrice(item.price)}
+                {item.quantity} × <strong>{formatPrice(item.price)}</strong>
               </p>
+
+              {Number(item.discount) > 0 && (
+                <p>
+                  <span>-{item.discount}% discount</span>
+                </p>
+              )}
             </div>
           ))}
         </div>

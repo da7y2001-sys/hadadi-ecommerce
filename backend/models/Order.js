@@ -38,10 +38,11 @@ items: [
     required: true,
   },
 
-  status: {
-    type: String,
-    default: "Processing",
-  },
+ status: {
+  type: String,
+  enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
+  default: "Processing",
+},
 
   shippingAddress: {
     fullName: String,

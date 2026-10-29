@@ -22,6 +22,7 @@ import AdminRoute from "./components/AdminRoute/AdminRoute";
 import AdminOrders from "./pages/Admin/AdminOrders";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminUsers from "./pages/Admin/AdminUsers";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import "./App.css";
 
 function App() {
@@ -109,7 +110,7 @@ function App() {
               </AdminRoute>
             }
           >
-            <Route index element={<AdminPage />} />
+            <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminPage />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="users" element={<AdminUsers />} />

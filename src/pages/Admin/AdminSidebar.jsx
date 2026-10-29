@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function AdminSidebar() {
@@ -21,7 +21,6 @@ function AdminSidebar() {
       </nav>
 
       <div className="admin-sidebar-actions">
-        <Link to="/">Back to Store</Link>
         <button type="button" onClick={logout}>
           Logout
         </button>

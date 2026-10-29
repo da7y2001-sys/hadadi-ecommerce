@@ -9,6 +9,15 @@ export const CartContext = createContext();
 function getStock(item) {
   return typeof item.stock === "number" ? item.stock : Infinity;
 }
+function getFinalPrice(item) {
+  const discount = Number(item.discount) || 0;
+
+  if (discount <= 0) {
+    return item.price;
+  }
+
+  return item.price * (1 - discount / 100);
+}
 
 // قراءة آمنة من localStorage: لو البيانات تالفة أو ليست مصفوفة نرجع [] بدل ما يتعطل التطبيق
 function readStoredArray(key) {
@@ -55,7 +64,9 @@ function CartProvider({ children }) {
     const current = cartItems.find((item) => item.id === id);
 
     if (current && current.quantity >= getStock(current)) {
-      toast.error(`Only ${getStock(current)} of ${current.title} left in stock`);
+      toast.error(
+        `Only ${getStock(current)} of ${current.title} left in stock`,
+      );
       return;
     }
 
@@ -87,6 +98,7 @@ function CartProvider({ children }) {
 
   const addToCart = (item) => {
     const stock = getStock(item);
+    const finalPrice = getFinalPrice(item);
 
     if (stock <= 0) {
       toast.error(`${item.title} is out of stock`);
@@ -104,14 +116,32 @@ function CartProvider({ children }) {
       const existing = prevItems.find((i) => i.id === item.id);
 
       if (existing) {
-        if (existing.quantity >= getStock(existing)) return prevItems;
+        if (existing.quantity >= getStock(existing)) {
+          return prevItems;
+        }
 
         return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
+          i.id === item.id
+            ? {
+                ...i,
+                quantity: i.quantity + 1,
+                price: finalPrice,
+                discount: item.discount || 0,
+                originalPrice: item.price,
+              }
+            : i,
         );
       }
 
-      return [...prevItems, { ...item, quantity: 1 }];
+      return [
+        ...prevItems,
+        {
+          ...item,
+          price: finalPrice,
+          originalPrice: item.price,
+          quantity: 1,
+        },
+      ];
     });
 
     return true;

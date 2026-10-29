@@ -31,11 +31,7 @@ function Login() {
 
       localStorage.setItem("token", token);
 
-      const profileRes = await api.get("/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const profileRes = await api.get("/profile");
 
       setUser(profileRes.data.user);
 

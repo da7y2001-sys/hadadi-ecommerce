@@ -10,15 +10,10 @@ function AdminUsers() {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     let isActive = true;
 
     api
-      .get("/admin/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get("/admin/users")
       .then((res) => {
         if (isActive) setUsers(res.data);
       })

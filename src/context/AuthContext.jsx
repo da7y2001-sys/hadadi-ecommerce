@@ -10,6 +10,18 @@ export function AuthProvider({ children }) {
   );
 
   useEffect(() => {
+    const handleUnauthorized = () => {
+      setUser(null);
+    };
+
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    };
+  }, []);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -17,11 +29,7 @@ export function AuthProvider({ children }) {
     }
 
     api
-      .get("/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get("/profile")
       .then((res) => {
         setUser(res.data.user);
       })

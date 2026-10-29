@@ -26,6 +26,11 @@ function ProductCard({ item }) {
   const reachedStockLimit =
     Boolean(cartEntry) && cartEntry.quantity >= item.stock;
 
+  const discount = Number(item.discount) || 0;
+
+  const discountedPrice =
+    discount > 0 ? item.price * (1 - discount / 100) : item.price;
+
   const handleAddToCart = (e) => {
     e.preventDefault(); // لمنع الانتقال لصفحة التفاصيل عند الضغط على الزر
 
@@ -101,16 +106,28 @@ function ProductCard({ item }) {
         )}
 
         {isOutOfStock && <span className="status_out">Out of stock</span>}
-
+        {discount > 0 && !isOutOfStock && (
+          <span className="discount-badge">-{discount}%</span>
+        )}
         <div className="img_product">
           <img src={item.image} alt={item.title} />
         </div>
 
         <p className="name_product">{item.title}</p>
 
-        <p className="price">
-          <span>{formatPrice(item.price)}</span>
-        </p>
+        <div className="price">
+          {discount > 0 ? (
+            <>
+              <span className="discounted-price">
+                {formatPrice(discountedPrice)}
+              </span>
+
+              <span className="original-price">{formatPrice(item.price)}</span>
+            </>
+          ) : (
+            <span>{formatPrice(item.price)}</span>
+          )}
+        </div>
       </Link>
 
       <div className="icons">
