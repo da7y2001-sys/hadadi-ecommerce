@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import ProductCard from "../ProductCard/ProductCard";
 import api from "../../services/api";
+import { useLanguage } from "../../context/LanguageContext";
 import "./ProductList.css";
 
 function ProductList() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,9 +33,11 @@ function ProductList() {
 
   if (loading) {
     return (
-      <h2 style={{ textAlign: "center", marginTop: "50px" }}>
-        جاري تحميل الأكثر مبيعًا...
-      </h2>
+      <div className="container" style={{ padding: "40px 0" }}>
+        <p style={{ textAlign: "center", color: "#888", fontSize: "14px" }}>
+          {t("loadingBestsellers")}
+        </p>
+      </div>
     );
   }
 
@@ -42,17 +46,22 @@ function ProductList() {
   }
 
   return (
-    <div className="container">
-      <div className="product-list-section">
-        <h2 className="section-title">🔥 Best Selling Products</h2>
+    <section className="bestsellers-section">
+      <div className="container">
+        <div className="slider-header-bar">
+          <div className="slider-title-group">
+            <h2 className="slider-heading">{t("curatedBestsellers")}</h2>
+            <span className="slider-subline">{t("topPerformingTech")}</span>
+          </div>
+        </div>
 
-        <div className="products-grid">
-          {products.map((item) => (
-            <ProductCard key={item._id} item={item} />
+        <div className="bestsellers-grid">
+          {products.slice(0, 4).map((item) => (
+            <ProductCard key={item.id} item={item} />
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

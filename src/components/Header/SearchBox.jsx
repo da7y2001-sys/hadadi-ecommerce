@@ -1,13 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../services/api";
+import { useLanguage } from "../../context/LanguageContext";
 
 function SearchBox() {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const searchContainerRef = useRef(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Reset suggestions during render if route changes (React recommended pattern)
+  const [prevLocationKey, setPrevLocationKey] = useState(location.key);
+  if (location.key !== prevLocationKey) {
+    setPrevLocationKey(location.key);
+    setSuggestions([]);
+    setIsOpen(false);
+  }
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,12 +42,20 @@ function SearchBox() {
       navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
     }
     setSuggestions([]);
+    setIsOpen(false);
+  };
+
+  const handleSelectSuggestion = () => {
+    setSuggestions([]);
+    setIsOpen(false);
+    setSearchTerm("");
   };
 
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (!searchTerm.trim()) {
         setSuggestions([]);
+        setIsOpen(false);
         return;
       }
 
@@ -36,13 +71,15 @@ function SearchBox() {
         }));
 
         setSuggestions(formattedProducts);
+        setIsOpen(formattedProducts.length > 0);
       } catch (error) {
         console.error("Search Error :", error);
         setSuggestions([]);
+        setIsOpen(false);
       }
     };
 
-    // تقنية Debounce لتقليل الطلبات
+    // Debounce to optimize API requests
     const debounce = setTimeout(() => {
       fetchSuggestions();
     }, 300);
@@ -51,40 +88,52 @@ function SearchBox() {
   }, [searchTerm]);
 
   return (
-    <div className="searchBox_Container" style={{ position: "relative" }}>
+    <div
+      ref={searchContainerRef}
+      className="searchBox_Container"
+      style={{ position: "relative" }}
+    >
       <form onSubmit={handleSubmit} className="top-search">
         <input
           type="text"
           name="search"
           id="search"
-          placeholder="Search For Products"
+          placeholder={t("searchPlaceholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => {
+            if (suggestions.length > 0) setIsOpen(true);
+          }}
           autoComplete="off"
         />
         {searchTerm && (
           <button
             type="button"
             className="clear-search"
-            aria-label="Clear search"
-            onClick={() => setSearchTerm("")}
+            aria-label={t("clearSearch")}
+            onClick={() => {
+              setSearchTerm("");
+              setSuggestions([]);
+              setIsOpen(false);
+            }}
           >
             <FaTimes />
           </button>
         )}
-        <button type="submit">
+        <button type="submit" aria-label={t("searchPlaceholder")}>
           <FaSearch />
         </button>
       </form>
 
-      {/* قائمة الاقتراحات المنسدلة */}
-      {suggestions.length > 0 && (
+      {/* Suggestions Dropdown */}
+      {isOpen && suggestions.length > 0 && (
         <ul className="suggestions-list">
           {suggestions.map((item) => (
             <Link
               key={item.id}
               to={`/products/${item.id}`}
               style={{ textDecoration: "none" }}
+              onClick={handleSelectSuggestion}
             >
               <li>
                 <img src={item.image} alt={item.title} />

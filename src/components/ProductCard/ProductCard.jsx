@@ -3,13 +3,16 @@ import { FaCartArrowDown, FaRegHeart, FaHeart, FaCheck } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CartContext } from "../../context/CartContext";
-import { formatPrice } from "../../utils/formatPrice";
+import { formatPrice, getEffectivePrice } from "../../utils/formatPrice";
+import { useLanguage } from "../../context/LanguageContext";
 
 import "./ProductCard.css";
 
 function ProductCard({ item }) {
   const navigate = useNavigate();
-  // استدعاء الدوال من الـ Context
+  const { t } = useLanguage();
+
+  // Preserve all existing CartContext logic
   const {
     cartItems,
     addToCart,
@@ -27,49 +30,42 @@ function ProductCard({ item }) {
     Boolean(cartEntry) && cartEntry.quantity >= item.stock;
 
   const discount = Number(item.discount) || 0;
+  const ratingAvg = Number(item.ratingAverage || 0);
+  const ratingCnt = Number(item.ratingCount || 0);
 
-  const discountedPrice =
-    discount > 0 ? item.price * (1 - discount / 100) : item.price;
+  // Exact 2-decimal effective price calculation
+  const discountedPrice = getEffectivePrice(item);
 
-  const handleAddToCart = (e) => {
-    e.preventDefault(); // لمنع الانتقال لصفحة التفاصيل عند الضغط على الزر
-
-    if (isOutOfStock || reachedStockLimit) {
-      toast.error(
-        isOutOfStock
-          ? `${item.title} is out of stock`
-          : `Only ${item.stock} left in stock`,
-      );
-      return;
-    }
-
+  const handleAddToCart = () => {
     addToCart(item);
-    toast.success(
+
+    // Toast notification with link to cart
+    toast(
       <div
-        className="toast-wrapper"
+        className="toast-cart-wrapper"
         style={{ display: "flex", alignItems: "center", gap: "10px" }}
       >
         <img
           src={item.image}
           alt=""
-          style={{ width: "40px", borderRadius: "5px" }}
+          style={{ width: "36px", height: "36px", objectFit: "contain", borderRadius: "2px" }}
         />
         <div className="toast-content">
-          <strong>{item.title}</strong> added to Cart
-          <div style={{ marginTop: "5px" }}>
+          <strong>{item.title}</strong> {t("addedToCartSuccess")}
+          <div style={{ marginTop: "4px" }}>
             <button
               style={{
-                padding: "5px 10px",
-                background: "#0090f0",
-                color: "#fff",
+                padding: "4px 8px",
+                background: "#111111",
+                color: "#ffffff",
                 border: "none",
-                borderRadius: "4px",
+                borderRadius: "2px",
                 cursor: "pointer",
+                fontSize: "12px",
               }}
               onClick={() => navigate("/cart")}
             >
-              {" "}
-              View Cart{" "}
+              {t("viewCart")}
             </button>
           </div>
         </div>
@@ -82,10 +78,10 @@ function ProductCard({ item }) {
     e.preventDefault();
     if (isInFav) {
       removeFromFavorites(item.id);
-      toast.error(`${item.title} Removed from favorites`);
+      toast.error(`${item.title} ${t("removeFromWishlist")}`);
     } else {
       addToFavorites(item);
-      toast.success(`${item.title} added To favorites`);
+      toast.success(`${item.title} ${t("addToWishlist")}`);
     }
   };
 
@@ -95,25 +91,79 @@ function ProductCard({ item }) {
         isOutOfStock ? "out-of-stock" : ""
       }`}
     >
-      <Link
-        to={`/products/${item.id}`}
-        style={{ textDecoration: "none", color: "inherit" }}
-      >
-        {isInCart && (
-          <span className="status_cart">
-            <FaCheck /> in cart
-          </span>
-        )}
-
-        {isOutOfStock && <span className="status_out">Out of stock</span>}
-        {discount > 0 && !isOutOfStock && (
-          <span className="discount-badge">-{discount}%</span>
-        )}
-        <div className="img_product">
-          <img src={item.image} alt={item.title} />
+      <div className="product-media-container">
+        {/* Badges in top-left */}
+        <div className="product-badges">
+          {isInCart && (
+            <span className="badge badge-cart">
+              <FaCheck size={9} /> {t("inCart")}
+            </span>
+          )}
+          {isOutOfStock && <span className="badge badge-out">{t("outOfStockBadge")}</span>}
+          {discount > 0 && !isOutOfStock && (
+            <span className="badge badge-discount">-{discount}%</span>
+          )}
         </div>
 
-        <p className="name_product">{item.title}</p>
+        {/* Wishlist Button in top-right */}
+        <button
+          type="button"
+          className={`btn_wishlist ${isInFav ? "in-fav" : ""}`}
+          onClick={handleAddToFav}
+          aria-pressed={Boolean(isInFav)}
+          aria-label={
+            isInFav
+              ? `${t("removeFromWishlist")} - ${item.title}`
+              : `${t("addToWishlist")} - ${item.title}`
+          }
+        >
+          {isInFav ? <FaHeart /> : <FaRegHeart />}
+        </button>
+
+        {/* Clickable Image linking to details */}
+        <Link to={`/products/${item.id}`} className="product-image-link">
+          <div className="img_product">
+            <img src={item.image} alt={item.title} loading="lazy" />
+          </div>
+        </Link>
+      </div>
+
+      {/* Card Info & Pricing */}
+      <div className="product-info-block">
+        {item.brand && <span className="product-brand">{item.brand}</span>}
+
+        <Link to={`/products/${item.id}`} className="product-title-link">
+          <h3 className="name_product" title={item.title}>
+            {item.title}
+          </h3>
+        </Link>
+
+        {/* Minimalist Product Rating */}
+        <div className="product-card-rating">
+          <div
+            className="card-stars"
+            aria-label={`${t("ratingAria")}: ${ratingAvg > 0 ? ratingAvg.toFixed(1) : "0"} / 5`}
+          >
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={`star-glyph ${
+                  star <= Math.round(ratingAvg) && ratingAvg > 0
+                    ? "active"
+                    : "inactive"
+                }`}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <span className="card-rating-score">
+            {ratingAvg > 0 ? ratingAvg.toFixed(1) : "0.0"}
+          </span>
+          {ratingCnt > 0 && (
+            <span className="card-rating-count">({ratingCnt})</span>
+          )}
+        </div>
 
         <div className="price">
           {discount > 0 ? (
@@ -121,16 +171,16 @@ function ProductCard({ item }) {
               <span className="discounted-price">
                 {formatPrice(discountedPrice)}
               </span>
-
               <span className="original-price">{formatPrice(item.price)}</span>
             </>
           ) : (
-            <span>{formatPrice(item.price)}</span>
+            <span className="regular-price">{formatPrice(item.price)}</span>
           )}
         </div>
-      </Link>
+      </div>
 
-      <div className="icons">
+      {/* Action buttons (Preserving original Add To Cart action) */}
+      <div className="product-actions-bar">
         <button
           type="button"
           className={`btn_addtocart ${
@@ -141,28 +191,16 @@ function ProductCard({ item }) {
           aria-disabled={isOutOfStock || reachedStockLimit ? "true" : undefined}
           aria-label={
             isOutOfStock
-              ? `${item.title} is out of stock`
+              ? `${item.title} ${t("outOfStockBadge")}`
               : reachedStockLimit
                 ? `Maximum available quantity of ${item.title} reached`
                 : isInCart
-                  ? `${item.title} is already in the cart`
-                  : `Add ${item.title} to cart`
+                  ? `${item.title} ${t("inCart")}`
+                  : `${t("addToCart")} - ${item.title}`
           }
         >
           <FaCartArrowDown />
-        </button>
-        <button
-          type="button"
-          className={`btn_wishlist ${isInFav ? "in-fav" : ""}`}
-          onClick={handleAddToFav}
-          aria-pressed={Boolean(isInFav)}
-          aria-label={
-            isInFav
-              ? `Remove ${item.title} from wishlist`
-              : `Add ${item.title} to wishlist`
-          }
-        >
-          {isInFav ? <FaHeart /> : <FaRegHeart />}
+          <span>{isInCart ? t("inCart") : isOutOfStock ? t("outOfStockBadge") : t("addToCart")}</span>
         </button>
       </div>
     </div>

@@ -32,7 +32,7 @@
 
   text-align: center;
 
-  color: #253237;
+  color: #111111;
 
   font-size: 28px;
 }
@@ -62,7 +62,7 @@
 }
 
 .auth-form input:focus {
-  border-color: #129bd8;
+  border-color: #111111;
 
   box-shadow: 0 0 0 3px rgba(18, 155, 216, 0.12);
 }
@@ -73,7 +73,7 @@
   border: none;
   border-radius: 8px;
 
-  background: #129bd8;
+  background: #111111;
   color: #fff;
 
   font-size: 16px;
@@ -99,7 +99,7 @@
 }
 
 .auth-link a {
-  color: #129bd8;
+  color: #111111;
 
   font-weight: 600;
 

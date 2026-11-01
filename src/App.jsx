@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import api from "./services/api";
-import { Header, ErrorBoundary, Footer } from "./components";
+import { Header, ErrorBoundary, Footer, ScrollToTop } from "./components";
 import ProductDetails from "./pages/ProductDetails";
 import Home from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
@@ -50,6 +50,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <ScrollToTop />
       {/* Header shwon on all pages except admin */}
       {!isAdminPage && (
         <Header

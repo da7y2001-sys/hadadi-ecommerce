@@ -1,33 +1,41 @@
+import { Link } from "react-router-dom";
 import ProductCard from "../ProductCard/ProductCard";
 import "./ProductList.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Autoplay, Navigation } from "swiper/modules";
+import { useLanguage } from "../../context/LanguageContext";
 
 function ProductSlider({ data, title }) {
+  const { t } = useLanguage();
+  const categoryKey = title.toLowerCase().replace(" ", "-");
+  const translatedTitle = t(categoryKey) || title;
+
   return (
-    <div className="slide_products slide">
+    <section className="product-slider-section">
       <div className="container">
-        <div className="top_slide">
-          <h2>{title}</h2>
-          <p>Explore the latest products in this category</p>
+        <div className="slider-header-bar">
+          <div className="slider-title-group">
+            <h2 className="slider-heading">{translatedTitle}</h2>
+            <span className="slider-subline">{t("exploreCuratedCollection")}</span>
+          </div>
+
+          <Link to={`/category/${categoryKey}`} className="view-all-link">
+            {t("viewAll")} ({data?.length || 0}) →
+          </Link>
         </div>
 
         <Swiper
-          loop={true}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
+          loop={false}
           navigation={true}
           modules={[Navigation, Autoplay]}
-          className="mySwiper"
+          className="category-product-swiper"
           breakpoints={{
-            320: { slidesPerView: 1, spaceBetween: 10 },
-            640: { slidesPerView: 2, spaceBetween: 20 },
-            768: { slidesPerView: 3, spaceBetween: 30 },
-            1024: { slidesPerView: 5, spaceBetween: 20 },
+            320: { slidesPerView: 1, spaceBetween: 14 },
+            600: { slidesPerView: 2, spaceBetween: 18 },
+            900: { slidesPerView: 3, spaceBetween: 22 },
+            1150: { slidesPerView: 4, spaceBetween: 24 },
           }}
         >
           {data?.map((item) => (
@@ -37,7 +45,7 @@ function ProductSlider({ data, title }) {
           ))}
         </Swiper>
       </div>
-    </div>
+    </section>
   );
 }
 

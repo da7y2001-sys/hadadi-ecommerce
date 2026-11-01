@@ -4,9 +4,12 @@ import api from "../services/api";
 import { Link } from "react-router-dom";
 import { ErrorState } from "../components";
 import { formatPrice } from "../utils/formatPrice";
+import { useLanguage } from "../context/LanguageContext";
 
 import "./OrdersPage.css";
+
 function OrdersPage() {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -34,12 +37,12 @@ function OrdersPage() {
         ),
       );
 
-      toast.success(res.data?.message || "Order cancelled successfully");
+      toast.success(res.data.message || "Order cancelled successfully");
     } catch (err) {
-      const message =
+      toast.error(
         err.response?.data?.message ||
-        "Failed to cancel order. Please try again.";
-      toast.error(message);
+          "Could not cancel order. Please try again",
+      );
     } finally {
       setCancellingOrderId("");
     }
@@ -48,19 +51,31 @@ function OrdersPage() {
   useEffect(() => {
     let isActive = true;
 
-    api
-      .get("/orders")
-      .then((res) => {
-        if (isActive) setOrders(res.data);
-      })
-      .catch(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const res = await api.get("/orders");
+
+        if (!isActive) return;
+
+        setOrders(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        if (!isActive) return;
+
+        setError(
+          err.response?.data?.message ||
+            "Could not load orders. Please try again",
+        );
+      } finally {
         if (isActive) {
-          setError("We couldn't load your orders. Please try again.");
+          setLoading(false);
         }
-      })
-      .finally(() => {
-        if (isActive) setLoading(false);
-      });
+      }
+    };
+
+    fetchOrders();
 
     return () => {
       isActive = false;
@@ -68,14 +83,14 @@ function OrdersPage() {
   }, [retryCount]);
 
   if (loading) {
-    return <p style={{ textAlign: "center" }}>Loading orders...</p>;
+    return <p style={{ textAlign: "center", padding: "60px 0" }}>{t("loadingCategories")}</p>;
   }
 
   if (error) {
     return (
       <div className="container">
         <ErrorState
-          title="Could not load orders"
+          title={t("ordersTitle")}
           message={error}
           onRetry={() => {
             setLoading(true);
@@ -90,40 +105,55 @@ function OrdersPage() {
   if (orders.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "100px 0" }}>
-        <h1>My Orders</h1>
-        <p>No Orders Yet</p>
+        <h1>{t("ordersTitle")}</h1>
+        <p>{t("noOrdersDesc")}</p>
         <Link to="/" className="shop-now-btn">
-          Shop Now
+          {t("continueShopping")}
         </Link>
       </div>
     );
   }
 
+  const getTranslatedStatus = (status) => {
+    switch (status?.toLowerCase()) {
+      case "processing":
+        return t("statusProcessing");
+      case "shipped":
+        return t("statusShipped");
+      case "delivered":
+        return t("statusDelivered");
+      case "cancelled":
+        return t("statusCancelled");
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="orders-page">
-      <h1>My Orders</h1>
+      <h1>{t("ordersTitle")}</h1>
 
       {orders.map((order) => (
         <div className="order-card" key={order._id}>
-          <h2>Order #{order._id}</h2>
+          <h2>{t("orderId")} #{order._id}</h2>
 
-          <p className="order-info">Name: {order.shippingAddress?.fullName}</p>
+          <p className="order-info">{t("fullName")}: {order.shippingAddress?.fullName}</p>
 
-          <p className="order-info">Phone: {order.shippingAddress?.phone}</p>
+          <p className="order-info">{t("phone")}: {order.shippingAddress?.phone}</p>
 
           <p className="order-info">
-            Address: {order.shippingAddress?.address}
+            {t("orderAddress")} {order.shippingAddress?.address}
           </p>
 
           <p className="order-info">
-            Date: {new Date(order.createdAt).toLocaleDateString()}
+            {t("orderDate")} {new Date(order.createdAt).toLocaleDateString()}
           </p>
           <p>
-            Status:{" "}
+            {t("orderStatus")}{" "}
             <span
               className={`order-status status-${order.status?.toLowerCase()}`}
             >
-              {order.status}
+              {getTranslatedStatus(order.status)}
             </span>
           </p>
           {order.items.map((item) => (
@@ -138,7 +168,7 @@ function OrdersPage() {
             </div>
           ))}
 
-          <h3 className="order-total">Total: {formatPrice(order.total)}</h3>
+          <h3 className="order-total">{t("total")}: {formatPrice(order.total)}</h3>
 
           {order.status === "Processing" && (
             <div className="order-actions">
@@ -149,8 +179,8 @@ function OrdersPage() {
                 disabled={cancellingOrderId === order._id}
               >
                 {cancellingOrderId === order._id
-                  ? "Cancelling..."
-                  : "Cancel Order"}
+                  ? t("cancellingOrder")
+                  : t("cancelOrder")}
               </button>
             </div>
           )}

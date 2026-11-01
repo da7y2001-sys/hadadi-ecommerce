@@ -3,11 +3,24 @@ import HeroSlider from "../components/HeroSlider/HeroSlider";
 import ProductSlider from "../components/ProductList/ProductSlider";
 import ProductList from "../components/ProductList/ProductList";
 import ProductSliderLoading from "../components/ProductList/ProductSliderLoading";
+import CategoryCatalog from "../components/CategoryCatalog/CategoryCatalog";
 import { ErrorState } from "../components";
 import api from "../services/api";
-// التصنيفات التي نريد عرضها في الصفحة الرئيسية كسلايدرات
-const categories = ["phones", "audio", "laptops"];
+import { useLanguage } from "../context/LanguageContext";
+
+// 7 Unified tech categories
+const categories = [
+  "phones",
+  "audio",
+  "laptops",
+  "watches",
+  "monitors",
+  "gaming",
+  "accessories",
+];
+
 function Home() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,10 +67,10 @@ function Home() {
 
   if (error) {
     return (
-      <div className="container">
+      <div className="container" style={{ padding: "60px 0" }}>
         <ErrorState
-          title="We couldn't load the home page"
-          message="Please check your connection and try again."
+          title={t("homeLoadErrorTitle")}
+          message={t("homeLoadErrorMessage")}
           onRetry={() => setRetryCount((count) => count + 1)}
         />
       </div>
@@ -65,25 +78,32 @@ function Home() {
   }
 
   return (
-    <div>
-      {/* 1. البانر العلوي المتحرك */}
+    <div className="home-page-layout">
+      {/* 1. Horizontal Category Catalog Strip (Above HeroSlider) */}
+      <CategoryCatalog categories={categories} />
+
+      {/* 2. Balanced Hero Banner */}
       <HeroSlider />
+
+      {/* 3. Curated Bestsellers Section */}
       <ProductList />
 
-      {/* 2. عرض السلايدرات (شريط التمرير) لكل تصنيف */}
-      {loading
-        ? categories.map((category) => <ProductSliderLoading key={category} />)
-        : categories.map(
-            (category) =>
-              products[category] &&
-              products[category].length > 0 && (
-                <ProductSlider
-                  key={category}
-                  data={products[category]}
-                  title={category.replace("-", " ")}
-                />
-              ),
-          )}
+      {/* 4. Category Sections with Consistent Spacing */}
+      <div className="home-categories-container">
+        {loading
+          ? categories.map((category) => <ProductSliderLoading key={category} />)
+          : categories.map(
+              (category) =>
+                products[category] &&
+                products[category].length > 0 && (
+                  <ProductSlider
+                    key={category}
+                    data={products[category]}
+                    title={category.replace("-", " ")}
+                  />
+                ),
+            )}
+      </div>
     </div>
   );
 }

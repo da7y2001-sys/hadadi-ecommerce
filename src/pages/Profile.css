@@ -6,7 +6,7 @@
 .profile-title {
   margin-bottom: 35px;
   text-align: center;
-  color: #253237;
+  color: #111111;
   font-size: 32px;
 }
 
@@ -23,7 +23,7 @@
 
 .profile-card h2 {
   margin: 0 0 25px;
-  color: #253237;
+  color: #111111;
   font-size: 22px;
 }
 
@@ -42,7 +42,7 @@
 
 .profile-info strong {
   margin-right: 8px;
-  color: #253237;
+  color: #111111;
 }
 
 /* Edit button */
@@ -52,7 +52,7 @@
   padding: 12px 22px;
   border: none;
   border-radius: 8px;
-  background: #129bd8;
+  background: #111111;
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -61,7 +61,7 @@
 }
 
 .profile-edit-btn:hover {
-  background: #0d82b8;
+  background: #333333;
   transform: translateY(-1px);
 }
 
@@ -74,7 +74,7 @@
 
 .profile-form label {
   margin: 15px 0 8px;
-  color: #253237;
+  color: #111111;
   font-size: 14px;
   font-weight: 600;
 }
@@ -91,7 +91,7 @@
 }
 
 .profile-form input:focus {
-  border-color: #129bd8;
+  border-color: #111111;
   box-shadow: 0 0 0 3px rgba(18, 155, 216, 0.12);
 }
 
@@ -107,7 +107,7 @@
   padding: 12px 22px;
   border: none;
   border-radius: 8px;
-  background: #129bd8;
+  background: #111111;
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -116,7 +116,7 @@
 }
 
 .profile-form-actions button:hover {
-  background: #0d82b8;
+  background: #333333;
   transform: translateY(-1px);
 }
 
@@ -138,7 +138,7 @@
 .profile-actions a {
   display: inline-block;
   padding: 12px 22px;
-  background: #129bd8;
+  background: #111111;
   color: #fff;
   border-radius: 8px;
   text-decoration: none;
@@ -148,7 +148,7 @@
 }
 
 .profile-actions a:hover {
-  background: #0d82b8;
+  background: #333333;
   transform: translateY(-1px);
 }
 

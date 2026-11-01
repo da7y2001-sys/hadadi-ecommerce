@@ -1,27 +1,21 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../services/api";
 import "./CategoryPage.css";
-// استيراد البطاقة بطريقتك النظيفة من الـ components
 import { ProductCard, ErrorState } from "../components";
-// استيراد تنسيق الشبكة (Grid) اللي سويناه مسبقاً
-//import "../components/ProductList/ProductList.css";
-
-function getEffectivePrice(product) {
-  const price = Number(product?.price) || 0;
-  const discount = Number(product?.discount) || 0;
-
-  return discount > 0 ? price * (1 - discount / 100) : price;
-}
+import { getEffectivePrice, RiyalSymbol } from "../utils/formatPrice";
+import { useLanguage } from "../context/LanguageContext";
 
 function CategoryPage() {
-  // هذا السطر يسحب اسم التصنيف من الرابط مباشرة (مثلاً: smartphones)
   const { categoryName } = useParams();
+  const { t } = useLanguage();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  
+  // Existing Filter/Sort States - Preserving all existing functionality
   const [sortBy, setSortBy] = useState("default");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -61,8 +55,9 @@ function CategoryPage() {
     return () => {
       isActive = false;
     };
-  }, [categoryName, retryCount]); // أعد جلب البيانات كلما تغير اسم التصنيف في الرابط
+  }, [categoryName, retryCount]);
 
+  // Existing Price & EffectivePrice Filter logic
   const filteredProducts = products.filter((product) => {
     const min = minPrice === "" ? 0 : Number(minPrice);
     const max = maxPrice === "" ? Infinity : Number(maxPrice);
@@ -71,6 +66,7 @@ function CategoryPage() {
     return effectivePrice >= min && effectivePrice <= max;
   });
 
+  // Existing Sorting logic
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === "price-low") {
       return getEffectivePrice(a) - getEffectivePrice(b);
@@ -83,23 +79,23 @@ function CategoryPage() {
     return 0;
   });
 
-  // شاشة الانتظار
+  const categoryTitle = t(categoryName) || categoryName.replace("-", " ");
+
   if (loading) {
     return (
-      <div className="container">
-        <h2 style={{ textAlign: "center", padding: "100px 0" }}>
-          Loading {categoryName.replace("-", " ")} products...
-        </h2>
+      <div className="container category-page-container">
+        <div className="category-loading-state">
+          <p>{t("categoryLoadingCatalog", { category: categoryTitle })}</p>
+        </div>
       </div>
     );
   }
 
-  // في حال فشل جلب البيانات نعرض رسالة واضحة مع إعادة المحاولة
   if (error) {
     return (
-      <div className="container">
+      <div className="container category-page-container">
         <ErrorState
-          title={`We couldn't load ${categoryName.replace("-", " ")}`}
+          title={t("categoryFailedTitle", { category: categoryTitle })}
           message="Please check your connection and try again."
           onRetry={() => setRetryCount((count) => count + 1)}
         />
@@ -108,47 +104,107 @@ function CategoryPage() {
   }
 
   return (
-    <div className="container">
-      <div className="product-list-section">
-        {/* عنوان القسم (مع إزالة الشرطة لو كانت موجودة وتكبير أول حرف) */}
-        <h2 className="section-title" style={{ textTransform: "capitalize" }}>
-          {categoryName.replace("-", " ")}
-        </h2>
+    <div className="container category-page-container">
+      {/* Breadcrumb Navigation */}
+      <nav className="category-breadcrumbs" aria-label="Breadcrumbs">
+        <Link to="/">{t("home")}</Link>
+        <span className="breadcrumb-separator">/</span>
+        <span className="breadcrumb-current">{categoryTitle}</span>
+      </nav>
 
-        <div className="category-filters">
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="default">Default</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
-          <div className="price-filter">
-            <input
-              type="number"
-              placeholder="Min Price"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-            />
-
-            <input
-              type="number"
-              placeholder="Max Price"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-            />
-          </div>
+      {/* Category Header */}
+      <div className="category-header-bar">
+        <div className="category-title-group">
+          <h1 className="category-heading">{categoryTitle}</h1>
+          <span className="category-count">{t("productsCountLabel", { count: sortedProducts.length })}</span>
         </div>
-        {sortedProducts.length === 0 ? (
-          <div className="empty-products">
-            <h2>No Products Found</h2>
-            <p>Try changing your filters.</p>
+
+        {/* Existing Sort Dropdown */}
+        <div className="category-sort-group">
+          <label htmlFor="category-sort" className="sort-label">{t("sortByLabel")}</label>
+          <select
+            id="category-sort"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="minimal-select"
+          >
+            <option value="default">{t("sortFeatured")}</option>
+            <option value="price-low">{t("sortPriceLow")}</option>
+            <option value="price-high">{t("sortPriceHigh")}</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Main 2-Column Listing Layout: Sidebar Facets + Grid */}
+      <div className="category-layout">
+        <aside className="category-sidebar">
+          <div className="filter-group">
+            <h3 className="filter-group-title">{t("filterByPriceTitle")}</h3>
+            <div className="price-filter-inputs">
+              <div className="price-input-wrapper">
+                <span className="currency-prefix"><RiyalSymbol /></span>
+                <input
+                  type="number"
+                  placeholder={t("minPricePlaceholder")}
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  aria-label="Minimum price"
+                />
+              </div>
+              <span className="price-dash">—</span>
+              <div className="price-input-wrapper">
+                <span className="currency-prefix"><RiyalSymbol /></span>
+                <input
+                  type="number"
+                  placeholder={t("maxPricePlaceholder")}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  aria-label="Maximum price"
+                />
+              </div>
+            </div>
+
+            {(minPrice !== "" || maxPrice !== "") && (
+              <button
+                type="button"
+                className="clear-filter-btn"
+                onClick={() => {
+                  setMinPrice("");
+                  setMaxPrice("");
+                }}
+              >
+                {t("clearPriceFilterBtn")}
+              </button>
+            )}
           </div>
-        ) : (
-          <div className="products-grid">
-            {sortedProducts.map((item) => (
-              <ProductCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
+        </aside>
+
+        {/* Products Grid */}
+        <main className="category-products-area">
+          {sortedProducts.length === 0 ? (
+            <div className="empty-products-state">
+              <h3>{t("noFilterMatchesTitle")}</h3>
+              <p>{t("noFilterMatchesDesc")}</p>
+              <button
+                type="button"
+                className="reset-filters-btn"
+                onClick={() => {
+                  setMinPrice("");
+                  setMaxPrice("");
+                  setSortBy("default");
+                }}
+              >
+                {t("resetAllFiltersBtn")}
+              </button>
+            </div>
+          ) : (
+            <div className="products-grid">
+              {sortedProducts.map((item) => (
+                <ProductCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

@@ -1,21 +1,24 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
-import "./WishlistPage.css";
 import { ProductCard } from "../components";
+import { useLanguage } from "../context/LanguageContext";
+import "./WishlistPage.css";
+
 function WishlistPage() {
+  const { t } = useLanguage();
   const { favorites } = useContext(CartContext);
 
   return (
     <div className="wishlist-page">
-      <h1 className="wishlist-title">Wishlist</h1>
+      <h1 className="wishlist-title">{t("wishlistTitle")}</h1>
 
       {favorites.length === 0 ? (
         <div className="empty-wishlist">
-          <h2>Your Wishlist is Empty</h2>
-          <p>Looks like you haven't added any favorites yet.</p>
+          <h2>{t("emptyWishlistTitle")}</h2>
+          <p>{t("emptyWishlistDesc")}</p>
           <Link to="/" className="continue-shopping">
-            Continue Shopping
+            {t("continueShopping")}
           </Link>
         </div>
       ) : (
@@ -28,4 +31,5 @@ function WishlistPage() {
     </div>
   );
 }
+
 export default WishlistPage;

@@ -1,14 +1,16 @@
 import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
-import { formatPrice } from "../utils/formatPrice";
+import { formatPrice, getEffectivePrice } from "../utils/formatPrice";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import api from "../services/api";
 import toast from "react-hot-toast";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { cartItems, clearCart } = useContext(CartContext);
@@ -25,7 +27,7 @@ function CheckoutPage() {
   }, [user, loading, navigate]);
 
   const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + getEffectivePrice(item) * item.quantity,
     0,
   );
 
@@ -54,7 +56,7 @@ function CheckoutPage() {
 
       await api.post("/orders", orderData);
 
-      toast.success("Order placed successfully");
+      toast.success(t("orderSuccessTitle"));
 
       clearCart();
       e.target.reset();
@@ -76,13 +78,13 @@ function CheckoutPage() {
   if (orderSuccess) {
     return (
       <div className="order-success">
-        <h1>🎉 Order placed successfully!</h1>
-        <p>Your order has been placed successfully.</p>
+        <h1>{t("orderSuccessTitle")}</h1>
+        <p>{t("orderSuccessDesc")}</p>
 
         <div className="order-success-actions">
-          <button onClick={() => navigate("/")}>Continue Shopping</button>
+          <button onClick={() => navigate("/")}>{t("continueShopping")}</button>
 
-          <button onClick={() => navigate("/orders")}>View Orders</button>
+          <button onClick={() => navigate("/orders")}>{t("viewOrders")}</button>
         </div>
       </div>
     );
@@ -91,10 +93,10 @@ function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <div className="empty-checkout">
-        <h2>Your Cart is Empty</h2>
-        <p>Add products to your cart before checking out.</p>
+        <h2>{t("emptyCheckoutTitle")}</h2>
+        <p>{t("emptyCheckoutDesc")}</p>
         <Link to="/cart" className="empty-checkout-link">
-          Go to Cart
+          {t("goToCart")}
         </Link>
       </div>
     );
@@ -102,11 +104,11 @@ function CheckoutPage() {
 
   return (
     <div className="checkout-page">
-      <h1 className="checkout-title">Checkout</h1>
+      <h1 className="checkout-title">{t("checkoutTitle")}</h1>
 
       <form className="checkout-form" onSubmit={handlePlaceOrder}>
         <div>
-          <label>Full Name</label>
+          <label>{t("fullName")}</label>
           <input
             name="fullName"
             type="text"
@@ -116,40 +118,51 @@ function CheckoutPage() {
         </div>
 
         <div>
-          <label>Email</label>
+          <label>{t("email")}</label>
           <input name="email" type="email" value={user?.email || ""} readOnly />
         </div>
 
         <div>
-          <label>Phone</label>
+          <label>{t("phone")}</label>
           <input name="phone" type="tel" required />
         </div>
 
         <div>
-          <label>Address</label>
+          <label>{t("address")}</label>
           <input name="address" type="text" required />
         </div>
         <div className="checkout-items">
-          <h2>Order Summary</h2>
+          <h2>{t("orderSummary")}</h2>
 
-          {cartItems.map((item) => (
-            <div key={item.id}>
-              <p>{item.title}</p>
+          {cartItems.map((item) => {
+            const effectivePrice = getEffectivePrice(item);
+            const hasDiscount = Number(item.discount) > 0;
 
-              <p>
-                {item.quantity} × <strong>{formatPrice(item.price)}</strong>
-              </p>
+            return (
+              <div key={item.id} className="checkout-item-row">
+                <p className="checkout-item-title">{item.title}</p>
 
-              {Number(item.discount) > 0 && (
-                <p>
-                  <span>-{item.discount}% discount</span>
-                </p>
-              )}
-            </div>
-          ))}
+                <div className="checkout-item-pricing">
+                  <span className="checkout-effective-price">
+                    {item.quantity} × <strong>{formatPrice(effectivePrice)}</strong>
+                  </span>
+                  {hasDiscount && (
+                    <span className="checkout-orig-price">
+                      {formatPrice(item.price)}
+                    </span>
+                  )}
+                  {hasDiscount && (
+                    <span className="checkout-discount-badge">
+                      -{item.discount}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
         <div className="checkout-total">
-          <h2>Total: {formatPrice(total)}</h2>
+          <h2>{t("total")}: {formatPrice(total)}</h2>
         </div>
 
         <button
@@ -157,7 +170,7 @@ function CheckoutPage() {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Placing Order..." : "Place Order"}
+          {isSubmitting ? t("placingOrder") : t("placeOrder")}
         </button>
       </form>
     </div>

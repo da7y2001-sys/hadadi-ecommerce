@@ -10,7 +10,7 @@
 .cart-title {
   text-align: center;
   margin-bottom: 30px;
-  color: #253237;
+  color: #111111;
 }
 
 /* شبكة الصفحة: عناصر السلة + ملخص الطلب جنبًا إلى جنب */
@@ -80,7 +80,7 @@
   font-size: 17px;
   font-weight: 600;
   line-height: 1.35;
-  color: #253237;
+  color: #111111;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -88,11 +88,33 @@
   overflow: hidden;
 }
 
+.cart-price-container {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .cart-price {
   margin: 0;
-  color: #129bd8;
+  color: #111111;
   font-weight: 700;
   font-size: 16px;
+}
+
+.cart-original-price {
+  font-size: 13px;
+  color: #888888;
+  text-decoration: line-through;
+}
+
+.cart-discount-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: #111111;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 2px;
 }
 
 /* =========================
@@ -123,7 +145,7 @@
 
   border: none;
   background: #fff;
-  color: #129bd8;
+  color: #111111;
 
   font-size: 18px;
   line-height: 1;
@@ -135,7 +157,7 @@
 }
 
 .quantity-controls button:hover:not(:disabled) {
-  background: #129bd8;
+  background: #111111;
   color: #fff;
 }
 
@@ -151,7 +173,7 @@
   border-right: 1px solid #d6e2ea;
 
   font-weight: 600;
-  color: #253237;
+  color: #111111;
 }
 
 .quantity-controls button:disabled {
@@ -185,7 +207,7 @@
 .item-total-value {
   font-size: 17px;
   font-weight: 700;
-  color: #253237;
+  color: #111111;
 }
 
 /* =========================
@@ -221,12 +243,12 @@
 .save-btn {
   background: #f4fafe;
   border-color: #cfe6f5;
-  color: #129bd8;
+  color: #111111;
 }
 
 .save-btn:hover {
-  background: #129bd8;
-  border-color: #129bd8;
+  background: #111111;
+  border-color: #111111;
   color: #fff;
 }
 
@@ -263,7 +285,7 @@
 .order-summary h2 {
   margin: 0 0 18px;
   font-size: 20px;
-  color: #253237;
+  color: #111111;
 }
 
 .summary-row {
@@ -277,7 +299,7 @@
 
 .summary-row span:last-child {
   font-weight: 600;
-  color: #253237;
+  color: #111111;
 }
 
 .order-summary hr {
@@ -292,7 +314,7 @@
 
   font-size: 20px;
   font-weight: 700;
-  color: #253237;
+  color: #111111;
 }
 
 .checkout-btn {
@@ -302,7 +324,7 @@
   margin-top: 20px;
   padding: 13px 22px;
 
-  background: #129bd8;
+  background: #111111;
   color: #fff;
   text-decoration: none;
   border-radius: 10px;
@@ -314,7 +336,7 @@
 }
 
 .checkout-btn:hover {
-  background: #0d82b8;
+  background: #333333;
   color: #fff;
   transform: translateY(-1px);
 }
@@ -331,7 +353,7 @@
 .empty-cart h2 {
   font-size: 32px;
   margin-bottom: 10px;
-  color: #253237;
+  color: #111111;
 }
 
 .empty-cart p {
@@ -343,7 +365,7 @@
   display: inline-block;
   margin-top: 20px;
   padding: 12px 22px;
-  background: #129bd8;
+  background: #111111;
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
@@ -351,7 +373,7 @@
 }
 
 .continue-shopping:hover {
-  background: #0d82b8;
+  background: #333333;
 }
 
 /* =========================

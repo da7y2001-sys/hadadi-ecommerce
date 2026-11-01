@@ -9,15 +9,6 @@ export const CartContext = createContext();
 function getStock(item) {
   return typeof item.stock === "number" ? item.stock : Infinity;
 }
-function getFinalPrice(item) {
-  const discount = Number(item.discount) || 0;
-
-  if (discount <= 0) {
-    return item.price;
-  }
-
-  return item.price * (1 - discount / 100);
-}
 
 // قراءة آمنة من localStorage: لو البيانات تالفة أو ليست مصفوفة نرجع [] بدل ما يتعطل التطبيق
 function readStoredArray(key) {
@@ -55,9 +46,20 @@ function CartProvider({ children }) {
   };
 
   // cart
-  const [cartItems, setCartItems] = useState(() =>
-    readStoredArray("cartItems"),
-  );
+  const [cartItems, setCartItems] = useState(() => {
+    const raw = readStoredArray("cartItems");
+    return raw.map((item) => {
+      // Normalize any legacy cart items that stored a mutated price
+      if (typeof item.originalPrice === "number") {
+        return {
+          ...item,
+          price: item.originalPrice,
+          originalPrice: undefined,
+        };
+      }
+      return item;
+    });
+  });
 
   // increaseQuantity
   const increaseQuantity = (id) => {
@@ -98,7 +100,6 @@ function CartProvider({ children }) {
 
   const addToCart = (item) => {
     const stock = getStock(item);
-    const finalPrice = getFinalPrice(item);
 
     if (stock <= 0) {
       toast.error(`${item.title} is out of stock`);
@@ -125,9 +126,6 @@ function CartProvider({ children }) {
             ? {
                 ...i,
                 quantity: i.quantity + 1,
-                price: finalPrice,
-                discount: item.discount || 0,
-                originalPrice: item.price,
               }
             : i,
         );
@@ -137,8 +135,6 @@ function CartProvider({ children }) {
         ...prevItems,
         {
           ...item,
-          price: finalPrice,
-          originalPrice: item.price,
           quantity: 1,
         },
       ];

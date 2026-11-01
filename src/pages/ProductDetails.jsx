@@ -12,9 +12,11 @@ import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
 import "./ProductDetails.css";
 import { CartContext } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { formatPrice } from "../utils/formatPrice";
+import { formatPrice, getEffectivePrice } from "../utils/formatPrice";
+import { useLanguage } from "../context/LanguageContext";
 
 function ProductDetails() {
+  const { t } = useLanguage();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,15 +52,11 @@ function ProductDetails() {
 
   const discount = Number(product?.discount) || 0;
 
-  const discountedPrice = product
-    ? discount > 0
-      ? product.price * (1 - discount / 100)
-      : product.price
-    : 0;
+  const discountedPrice = getEffectivePrice(product);
 
   const handleAddToCart = () => {
     if (addToCart(product)) {
-      toast.success(`${product.title} added to cart`);
+      toast.success(`${product.title} ${t("addedToCartSuccess")}`);
     }
   };
 
@@ -260,107 +258,150 @@ function ProductDetails() {
   const ratingCnt = Number(product.ratingCount || 0);
 
   return (
-    <>
-      <div className="product-details">
-        <div className="product-details-image">
-          <img
-            src={selectedImage}
-            alt={product.title}
-            className="main-product-image"
-          />
-        </div>
+    <div className="product-details-page-wrapper">
+      <div className="container product-details-container">
+        {/* Breadcrumb Navigation */}
+        <nav className="details-breadcrumbs" aria-label="Breadcrumb">
+          <Link to="/">{t("home")}</Link>
+          <span className="breadcrumb-separator">/</span>
+          {product.category && (
+            <>
+              <Link to={`/category/${product.category}`}>
+                {t(product.category) || product.category.replace("-", " ")}
+              </Link>
+              <span className="breadcrumb-separator">/</span>
+            </>
+          )}
+          <span className="breadcrumb-current">{product.title}</span>
+        </nav>
 
-        <div className="product-details-info">
-          <h1>{product.title}</h1>
+        {/* Main Two-Column Showcase Grid */}
+        <div className="product-showcase-grid">
+          {/* LEFT: Product Image/Gallery Area */}
+          <div className="product-media-column">
+            <div className="product-main-media-card">
+              {discount > 0 && !isOutOfStock && (
+                <span className="details-badge badge-discount">-{discount}%</span>
+              )}
+              {isOutOfStock && (
+                <span className="details-badge badge-out">{t("outOfStockBadge")}</span>
+              )}
+              <img
+                src={selectedImage}
+                alt={product.title}
+                className="main-product-image"
+              />
+            </div>
+          </div>
 
-          {/* Product rating summary with smooth scroll */}
-          <div
-            className="product-rating"
-            onClick={() => {
-              const section = document.getElementById("reviews-section");
-              if (section) section.scrollIntoView({ behavior: "smooth" });
-            }}
-            style={{ cursor: "pointer", marginBottom: "15px" }}
-            title="View customer reviews"
-          >
-            <div className="stars">
-              {[1, 2, 3, 4, 5].map((star) =>
-                star <= Math.round(ratingAvg) ? (
-                  <FaStar key={star} color="#f5c518" />
-                ) : (
-                  <FaRegStar key={star} color="#ccc" />
-                ),
+          {/* RIGHT: Product Info, Pricing & Intentional Separated Actions */}
+          <div className="product-info-column">
+            {product.brand && (
+              <span className="product-details-brand">{product.brand}</span>
+            )}
+
+            <h1 className="product-details-title">{product.title}</h1>
+
+            {/* Product rating summary with smooth scroll */}
+            <div
+              className="product-details-rating"
+              onClick={() => {
+                const section = document.getElementById("reviews-section");
+                if (section) section.scrollIntoView({ behavior: "smooth" });
+              }}
+              title="View customer reviews"
+              role="button"
+              tabIndex={0}
+            >
+              <div className="stars">
+                {[1, 2, 3, 4, 5].map((star) =>
+                  star <= Math.round(ratingAvg) ? (
+                    <FaStar key={star} color="#f5a623" />
+                  ) : (
+                    <FaRegStar key={star} color="#e0e0e0" />
+                  ),
+                )}
+              </div>
+              <span className="rating-score">
+                {ratingAvg > 0 ? ratingAvg.toFixed(1) : "0.0"}
+              </span>
+              <span className="rating-count-label">
+                ({ratingCnt} {ratingCnt === 1 ? t("reviewSingular") : t("reviewPlural")})
+              </span>
+            </div>
+
+            {/* Pricing Area */}
+            <div className="product-details-pricing">
+              {discount > 0 ? (
+                <>
+                  <span className="discounted-price">
+                    {formatPrice(discountedPrice)}
+                  </span>
+                  <span className="original-price">
+                    {formatPrice(product.price)}
+                  </span>
+                  <span className="details-discount-pill">-{discount}% {t("offDiscount")}</span>
+                </>
+              ) : (
+                <span className="regular-price">{formatPrice(product.price)}</span>
               )}
             </div>
-            <span>
-              {ratingAvg > 0 ? ratingAvg.toFixed(1) : "0.0"} ({ratingCnt}{" "}
-              {ratingCnt === 1 ? "review" : "reviews"})
-            </span>
+
+            {/* Stock Status Indicator */}
+            <div className="product-stock-line">
+              <span className={`stock-status-pill ${isOutOfStock ? "out" : "in"}`}>
+                <span className="stock-dot"></span>
+                {isOutOfStock ? t("outOfStockStatus") : t("inStockCount", { count: product.stock })}
+              </span>
+            </div>
+
+            {/* Description Block */}
+            <div className="product-description-container">
+              <h3 className="description-heading">{t("overview")}</h3>
+              <p className="description-text">{product.description}</p>
+            </div>
+
+            {/* Distinct Separated Action Buttons */}
+            <div className="product-actions-cluster">
+              <button
+                type="button"
+                className="btn-action-primary"
+                onClick={handleAddToCart}
+                disabled={isOutOfStock}
+              >
+                {t("addToCart")}
+              </button>
+
+              <button
+                type="button"
+                className="btn-action-secondary"
+                onClick={() => {
+                  handleAddToCart();
+                  navigate("/checkout");
+                }}
+                disabled={isOutOfStock}
+              >
+                {t("buyNow")}
+              </button>
+
+              <button
+                type="button"
+                className={`btn-action-wishlist ${isInFav ? "in-fav" : ""}`}
+                onClick={() => {
+                  if (isInFav) {
+                    removeFromFavorites(product.id);
+                  } else {
+                    addToFavorites(product);
+                  }
+                }}
+                aria-label={isInFav ? "Remove from wishlist" : "Add to wishlist"}
+                title={isInFav ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                {isInFav ? <FaHeart /> : <FaRegHeart />}
+                <span>{isInFav ? t("savedAction") : t("wishlistAction")}</span>
+              </button>
+            </div>
           </div>
-
-          <div className="product-price">
-            {discount > 0 ? (
-              <>
-                <span className="discounted-price">
-                  {formatPrice(discountedPrice)}
-                </span>
-
-                <span className="original-price">
-                  {formatPrice(product.price)}
-                </span>
-
-                <span className="product-discount-badge">-{discount}%</span>
-              </>
-            ) : (
-              <span>{formatPrice(product.price)}</span>
-            )}
-          </div>
-
-          <p
-            style={{
-              fontWeight: "bold",
-              color: isOutOfStock ? "#e53935" : "#129b38",
-            }}
-          >
-            {isOutOfStock ? "Out of stock" : `In stock: ${product.stock}`}
-          </p>
-
-          <p>{product.description}</p>
-          <button
-            className="add-to-cart-btn"
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            style={
-              isOutOfStock ? { opacity: 0.5, cursor: "not-allowed" } : undefined
-            }
-          >
-            Add to Cart
-          </button>
-          <button
-            className="go-to-cart-btn"
-            onClick={() => {
-              handleAddToCart();
-              navigate("/checkout");
-            }}
-            disabled={isOutOfStock}
-            style={
-              isOutOfStock ? { opacity: 0.5, cursor: "not-allowed" } : undefined
-            }
-          >
-            Buy Now
-          </button>
-          <button
-            className={`favorite-btn ${isInFav ? "in-fav" : ""}`}
-            onClick={() => {
-              if (isInFav) {
-                removeFromFavorites(product.id);
-              } else {
-                addToFavorites(product);
-              }
-            }}
-          >
-            {isInFav ? <FaHeart /> : <FaRegHeart />}
-          </button>
         </div>
       </div>
 
@@ -368,7 +409,7 @@ function ProductDetails() {
       <div className="reviews-section" id="reviews-section">
         <div className="reviews-container">
           <div className="reviews-header">
-            <h2>Customer Reviews</h2>
+            <h2>{t("customerReviews")}</h2>
             <div className="overall-rating">
               <span className="big-rating">
                 {ratingAvg > 0 ? ratingAvg.toFixed(1) : "0.0"}
@@ -383,7 +424,7 @@ function ProductDetails() {
                 )}
               </div>
               <span className="rating-subtitle">
-                Based on {ratingCnt} {ratingCnt === 1 ? "review" : "reviews"}
+                {ratingCnt} {ratingCnt === 1 ? t("reviewSingular") : t("reviewPlural")}
               </span>
             </div>
           </div>
@@ -403,9 +444,9 @@ function ProductDetails() {
             ) : myReview ? (
               editingReview ? (
                 <form onSubmit={handleUpdateReview} className="review-form">
-                  <h3>Edit Your Review</h3>
+                  <h3>{t("editReview")}</h3>
                   <div className="interactive-stars">
-                    <label>Rating: </label>
+                    <label>{t("yourRating")}: </label>
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -426,7 +467,7 @@ function ProductDetails() {
                   <textarea
                     value={editComment}
                     onChange={(e) => setEditComment(e.target.value)}
-                    placeholder="Write your review here (min 3 characters)..."
+                    placeholder={t("commentPlaceholder")}
                     rows={4}
                     required
                   />
@@ -437,7 +478,7 @@ function ProductDetails() {
                       className="submit-review-btn"
                       disabled={updatingReview}
                     >
-                      {updatingReview ? "Saving..." : "Save Changes"}
+                      {updatingReview ? "..." : t("updateReview")}
                     </button>
                     <button
                       type="button"
@@ -445,7 +486,7 @@ function ProductDetails() {
                       onClick={() => setEditingReview(false)}
                       disabled={updatingReview}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                   </div>
                 </form>
@@ -463,7 +504,7 @@ function ProductDetails() {
                           setEditingReview(true);
                         }}
                       >
-                        Edit
+                        {t("editReviewBtn")}
                       </button>
                       <button
                         type="button"
@@ -471,7 +512,7 @@ function ProductDetails() {
                         onClick={() => handleDeleteReview(myReview._id)}
                         disabled={deletingReview}
                       >
-                        {deletingReview ? "Deleting..." : "Delete"}
+                        {deletingReview ? "..." : t("deleteReview")}
                       </button>
                     </div>
                   </div>
@@ -495,9 +536,9 @@ function ProductDetails() {
               )
             ) : (
               <form onSubmit={handleSubmitReview} className="review-form">
-                <h3>Write a Review</h3>
+                <h3>{t("writeReview")}</h3>
                 <div className="interactive-stars">
-                  <label>Your Rating: </label>
+                  <label>{t("yourRating")}: </label>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
@@ -518,7 +559,7 @@ function ProductDetails() {
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  placeholder="Share your thoughts about this product (min 3 characters)..."
+                  placeholder={t("commentPlaceholder")}
                   rows={4}
                   required
                 />
@@ -528,7 +569,7 @@ function ProductDetails() {
                   className="submit-review-btn"
                   disabled={submittingReview}
                 >
-                  {submittingReview ? "Submitting..." : "Submit Review"}
+                  {submittingReview ? "..." : t("submitReview")}
                 </button>
               </form>
             )}
@@ -541,7 +582,7 @@ function ProductDetails() {
               <p>Loading reviews...</p>
             ) : reviews.length === 0 ? (
               <p className="no-reviews">
-                No reviews yet. Be the first to review this product!
+                {t("noReviewsYet")}
               </p>
             ) : (
               reviews.map((rev) => (
@@ -594,7 +635,7 @@ function ProductDetails() {
       </div>
 
       <div className="related-products">
-        <h2>Recommended Products</h2>
+        <h2>{t("recommendedProducts")}</h2>
 
         <Swiper
           modules={[Pagination, Navigation, Autoplay]}
@@ -622,7 +663,7 @@ function ProductDetails() {
           ))}
         </Swiper>
       </div>
-    </>
+    </div>
   );
 }
 

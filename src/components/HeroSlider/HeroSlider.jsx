@@ -1,92 +1,99 @@
-import { useRef } from "react";
 import { Link } from "react-router-dom";
-// استيراد Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
+
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
-// استيراد التنسيقات
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { useLanguage } from "../../context/LanguageContext";
 import "./HeroSlider.css";
 
 export default function HeroSlider() {
-  const progressCircle = useRef(null);
-  const progressContent = useRef(null);
-
-  const onAutoplayTimeLeft = (s, time, progress) => {
-    progressCircle.current.style.setProperty("--progress", 1 - progress);
-    progressContent.current.textContent = `${Math.ceil(time / 1000)}s`;
-  };
+  const { t } = useLanguage();
 
   return (
-    <div className="hero-container container">
-      <Swiper
-        spaceBetween={30}
-        centeredSlides={true}
-        autoplay={{
-          delay: 4000,
-          disableOnInteraction: false,
-        }}
-        pagination={{ clickable: true }}
-        navigation={true}
-        modules={[Autoplay, Pagination, Navigation]}
-        onAutoplayTimeLeft={onAutoplayTimeLeft}
-        className="mySwiper hero-swiper"
-      >
-        {/* الشريحة الأولى */}
-        <SwiperSlide>
-          <div className="slide-content">
-            <h2>Latest Tech Devices</h2>
-            <p>Discover the new generation of smartphones</p>
-            <Link className="shop-now-btn" to="/category/phones">
-              Shop Now
-            </Link>
-          </div>
-          <img
-            src="https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&w=1200&q=80"
-            alt="Iphone"
-          />
-        </SwiperSlide>
+    <div className="hero-slider-section">
+      <div className="container">
+        <Swiper
+          spaceBetween={0}
+          centeredSlides={true}
+          autoplay={{
+            delay: 4500,
+            disableOnInteraction: false,
+          }}
+          pagination={{ clickable: true }}
+          navigation={true}
+          modules={[Autoplay, Pagination, Navigation]}
+          className="hero-swiper"
+        >
+          {/* Phones */}
+          <SwiperSlide>
+            <div className="hero-slide-grid">
+              {/* Product Image Left */}
+              <div className="hero-slide-image">
+                <img src="/products/samsung-s26black.jpg" alt="Galaxy S26 Ultra" />
+              </div>
 
-        {/* الشريحة الثانية */}
-        <SwiperSlide>
-          <div className="slide-content">
-            <h2>Powerful Laptops</h2>
-            <p>For work, gaming, and everything in between</p>
-            <Link className="shop-now-btn" to="/category/laptops">
-              Shop Now
-            </Link>
-          </div>
-          <img
-            src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200&q=80"
-            alt="Laptop"
-          />
-        </SwiperSlide>
+              {/* Text & CTA Right */}
+              <div className="hero-slide-content">
+                <span className="hero-eyebrow">{t("heroSlide1Eyebrow")}</span>
+                <h2 className="hero-headline">{t("heroSlide1Title")}</h2>
+                <p className="hero-description">
+                  {t("heroSlide1Desc")}
+                </p>
+                <Link className="hero-cta-btn" to="/category/phones">
+                  {t("heroSlide1Cta")}
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
 
-        {/* الشريحة الثالثة */}
-        <SwiperSlide>
-          <div className="slide-content">
-            <h2>Premium Audio</h2>
-            <p>Experience sound like never before</p>
-            <Link className="shop-now-btn" to="/category/audio">
-              Shop Now
-            </Link>
-          </div>
-          <img
-            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80"
-            alt="Headphones"
-          />
-        </SwiperSlide>
+          {/* Laptops */}
+          <SwiperSlide>
+            <div className="hero-slide-grid">
+              {/* Product Image Left */}
+              <div className="hero-slide-image">
+                <img src="/products/macbook-pro-16.jpg" alt="MacBook Pro 16" />
+              </div>
 
-        {/* العداد الدائري */}
-        <div className="autoplay-progress" slot="container-end">
-          <svg viewBox="0 0 48 48" ref={progressCircle}>
-            <circle cx="24" cy="24" r="20"></circle>
-          </svg>
-          <span ref={progressContent}></span>
-        </div>
-      </Swiper>
+              {/* Text & CTA Right */}
+              <div className="hero-slide-content">
+                <span className="hero-eyebrow">{t("heroSlide2Eyebrow")}</span>
+                <h2 className="hero-headline">{t("heroSlide2Title")}</h2>
+                <p className="hero-description">
+                  {t("heroSlide2Desc")}
+                </p>
+                <Link className="hero-cta-btn" to="/category/laptops">
+                  {t("heroSlide2Cta")}
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
+
+          {/* Audio */}
+          <SwiperSlide>
+            <div className="hero-slide-grid">
+              {/* Product Image Left */}
+              <div className="hero-slide-image">
+                <img src="/products/sony-wh1000xm6_.jpg" alt="Sony WH-1000XM6" />
+              </div>
+
+              {/* Text & CTA Right */}
+              <div className="hero-slide-content">
+                <span className="hero-eyebrow">{t("heroSlide3Eyebrow")}</span>
+                <h2 className="hero-headline">{t("heroSlide3Title")}</h2>
+                <p className="hero-description">
+                  {t("heroSlide3Desc")}
+                </p>
+                <Link className="hero-cta-btn" to="/category/audio">
+                  {t("heroSlide3Cta")}
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
     </div>
   );
 }
