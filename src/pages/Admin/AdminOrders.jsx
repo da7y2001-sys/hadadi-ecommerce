@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 import { ErrorState } from "../../components";
+import RiyalSymbol from "../../components/common/RiyalSymbol";
 import "./AdminOrders.css";
 
 function AdminOrders() {
@@ -92,7 +93,7 @@ function AdminOrders() {
 
             <p>Email: {order.user?.email}</p>
 
-            <p>Total: {order.total}</p>
+            <p>Total: {order.total} <RiyalSymbol /></p>
 
             <div>
               <label>Status: </label>
@@ -125,7 +126,7 @@ function AdminOrders() {
                 <div className="admin-order-item" key={item._id}>
                   <p>{item.name}</p>
                   <p>Quantity: {item.quantity}</p>
-                  <p>Price: {item.price}</p>
+                  <p>Price: {item.price} <RiyalSymbol /></p>
                 </div>
               ))}
             </div>

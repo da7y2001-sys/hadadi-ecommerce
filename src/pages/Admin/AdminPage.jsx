@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 //import { Link } from "react-router-dom";
+import RiyalSymbol from "../../components/common/RiyalSymbol";
 import "./AdminPage.css";
 
 function getApiErrorMessage(error, fallbackMessage) {
@@ -452,7 +453,7 @@ function AdminPage() {
             {products.map((product) => (
               <tr key={product._id}>
                 <td>{product.name}</td>
-                <td>{product.price} SAR</td>
+                <td>{product.price} <RiyalSymbol /></td>
 
                 <td>{product.discount > 0 ? `${product.discount}%` : "-"}</td>
 

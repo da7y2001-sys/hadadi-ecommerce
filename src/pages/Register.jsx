@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { useLanguage } from "../context/LanguageContext";
 import "./Auth.css";
+
 function Register() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,7 +28,7 @@ function Register() {
         password,
       });
 
-      toast.success("Account created successfully. Please log in");
+      toast.success(t("registerSuccess"));
       navigate("/login");
     } catch (error) {
       const status = error.response?.status;
@@ -33,16 +36,16 @@ function Register() {
 
       if (status === 409) {
         toast.error(
-          message || "An account with this email already exists",
+          message || t("emailAlreadyExists"),
         );
       } else if (status === 400) {
         toast.error(
-          message || "Registration failed. Please check your details",
+          message || t("registrationFailed"),
         );
       } else if (error.response) {
-        toast.error("Server error. Please try again later");
+        toast.error(message || t("serverError"));
       } else {
-        toast.error("Unable to connect to the server. Please try again");
+        toast.error(t("networkError"));
       }
     } finally {
       setIsSubmitting(false);
@@ -52,36 +55,42 @@ function Register() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Create Account</h1>
+        <h1>{t("registerTitle")}</h1>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Name"
+            placeholder={t("namePlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            aria-label={t("namePlaceholder")}
           />
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-label={t("emailPlaceholder")}
           />
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            aria-label={t("passwordPlaceholder")}
           />
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating Account..." : "Create Account"}
+            {isSubmitting ? t("creatingAccount") : t("registerTitle")}
           </button>
+          <p className="auth-link">
+            {t("alreadyHaveAccount")} <Link to="/login">{t("loginLink")}</Link>
+          </p>
         </form>
       </div>
     </div>

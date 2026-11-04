@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useLanguage } from "./LanguageContext";
 
 // This module intentionally exports the provider and its context together.
 // eslint-disable-next-line react-refresh/only-export-components
@@ -25,6 +26,8 @@ function readStoredArray(key) {
 }
 
 function CartProvider({ children }) {
+  const { t } = useLanguage();
+
   // Favorites
   const [favorites, setFavorites] = useState(() =>
     readStoredArray("favoritesItems"),
@@ -67,7 +70,10 @@ function CartProvider({ children }) {
 
     if (current && current.quantity >= getStock(current)) {
       toast.error(
-        `Only ${getStock(current)} of ${current.title} left in stock`,
+        t("cartOnlyStockLeft", {
+          count: getStock(current),
+          title: current.title,
+        }),
       );
       return;
     }
@@ -102,14 +108,14 @@ function CartProvider({ children }) {
     const stock = getStock(item);
 
     if (stock <= 0) {
-      toast.error(`${item.title} is out of stock`);
+      toast.error(t("cartOutOfStock", { title: item.title }));
       return false;
     }
 
     const existingItem = cartItems.find((i) => i.id === item.id);
 
     if (existingItem && existingItem.quantity >= stock) {
-      toast.error(`Only ${stock} of ${item.title} left in stock`);
+      toast.error(t("cartOnlyStockLeft", { count: stock, title: item.title }));
       return false;
     }
 

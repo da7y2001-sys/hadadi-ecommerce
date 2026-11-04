@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ErrorState } from "../components";
 import { formatPrice } from "../utils/formatPrice";
 import { useLanguage } from "../context/LanguageContext";
+import ProductImage from "../components/common/ProductImage";
 
 import "./OrdersPage.css";
 
@@ -158,7 +159,7 @@ function OrdersPage() {
           </p>
           {order.items.map((item) => (
             <div className="order-item" key={item._id}>
-              <img src={item.image} alt={item.name} />
+              <ProductImage src={item.image} alt={item.name} />
 
               <p>{item.name}</p>
 

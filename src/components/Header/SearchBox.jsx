@@ -3,6 +3,7 @@ import { FaSearch, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../services/api";
 import { useLanguage } from "../../context/LanguageContext";
+import ProductImage from "../common/ProductImage";
 
 function SearchBox() {
   const { t } = useLanguage();
@@ -136,7 +137,7 @@ function SearchBox() {
               onClick={handleSelectSuggestion}
             >
               <li>
-                <img src={item.image} alt={item.title} />
+                <ProductImage src={item.image} alt={item.title} />
                 <span>{item.title}</span>
               </li>
             </Link>

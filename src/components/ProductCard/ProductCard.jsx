@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { CartContext } from "../../context/CartContext";
 import { formatPrice, getEffectivePrice } from "../../utils/formatPrice";
 import { useLanguage } from "../../context/LanguageContext";
+import ProductImage from "../common/ProductImage";
 
 import "./ProductCard.css";
 
@@ -45,7 +46,7 @@ function ProductCard({ item }) {
         className="toast-cart-wrapper"
         style={{ display: "flex", alignItems: "center", gap: "10px" }}
       >
-        <img
+        <ProductImage
           src={item.image}
           alt=""
           style={{ width: "36px", height: "36px", objectFit: "contain", borderRadius: "2px" }}
@@ -123,7 +124,7 @@ function ProductCard({ item }) {
         {/* Clickable Image linking to details */}
         <Link to={`/products/${item.id}`} className="product-image-link">
           <div className="img_product">
-            <img src={item.image} alt={item.title} loading="lazy" />
+            <ProductImage src={item.image} alt={item.title} loading="lazy" />
           </div>
         </Link>
       </div>

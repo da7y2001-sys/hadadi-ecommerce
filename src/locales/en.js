@@ -91,6 +91,8 @@ const en = {
   signInAction: "Sign In",
 
   // Cart Page
+  cartOutOfStock: "{title} is out of stock",
+  cartOnlyStockLeft: "Only {count} of {title} left in stock",
   shoppingCart: "Shopping Cart",
   emptyCartTitle: "Your Cart is Empty",
   emptyCartDesc: "Looks like you haven't added anything yet.",
@@ -123,6 +125,7 @@ const en = {
   goToCart: "Go to Cart",
 
   // Orders Page
+  orderId: "Order ID",
   ordersTitle: "My Orders",
   noOrdersTitle: "No Orders Yet",
   noOrdersDesc: "You haven't placed any orders yet.",
@@ -196,6 +199,61 @@ const en = {
   privacyPolicy: "Privacy Policy",
   termsOfService: "Terms of Service",
   cookiePreferences: "Cookie Preferences",
+
+  // Auth Pages (Login & Register)
+  loginTitle: "Login",
+  registerTitle: "Create Account",
+  namePlaceholder: "Name",
+  emailPlaceholder: "Email",
+  passwordPlaceholder: "Password",
+  loggingIn: "Logging in...",
+  creatingAccount: "Creating Account...",
+  dontHaveAccount: "Don't have an account?",
+  registerLink: "Register",
+  alreadyHaveAccount: "Already have an account?",
+  loginLink: "Login",
+  loginSuccess: "Logged in successfully",
+  invalidEmailOrPassword: "Invalid email or password",
+  registerSuccess: "Account created successfully. Please log in",
+  emailAlreadyExists: "An account with this email already exists",
+  registrationFailed: "Registration failed. Please check your details",
+  serverError: "Server error. Please try again later",
+  networkError: "Unable to connect to the server. Please try again",
+
+  // Common Loading
+  loading: "Loading...",
+
+  // Profile Page
+  profileTitle: "My Profile",
+  personalInfoHeading: "Personal Information",
+  editProfileBtn: "Edit Profile",
+  savingProfile: "Saving...",
+  saveChanges: "Save Changes",
+  profileUpdateSuccess: "Profile updated successfully",
+  profileUpdateFailed: "Failed to update profile. Please try again.",
+  changePasswordHeading: "Change Password",
+  currentPassword: "Current Password",
+  newPassword: "New Password",
+  confirmNewPassword: "Confirm New Password",
+  updatingPassword: "Updating...",
+  changePasswordBtn: "Change Password",
+  passwordUpdateSuccess: "Password updated successfully",
+  passwordUpdateFailed: "Failed to update password. Please try again.",
+
+  // Product Reviews Localized
+  verifiedBuyer: "Verified Buyer",
+  reviewLoginPromptPrefix: "Have you tried this product?",
+  reviewLoginPromptLink: "Log in",
+  reviewLoginPromptSuffix: "to write a review.",
+  reviewCommentMinLength: "Comment must be at least 3 characters",
+  reviewSubmitSuccess: "Review submitted successfully",
+  reviewSubmitFailed: "Failed to submit review. Please try again.",
+  reviewUpdateSuccess: "Review updated successfully",
+  reviewUpdateFailed: "Failed to update review. Please try again.",
+  reviewDeleteConfirm: "Are you sure you want to delete this review?",
+  reviewDeleteSuccess: "Review deleted successfully",
+  reviewDeleteFailed: "Failed to delete review. Please try again.",
+  anonymousCustomer: "Customer",
 };
 
 export default en;

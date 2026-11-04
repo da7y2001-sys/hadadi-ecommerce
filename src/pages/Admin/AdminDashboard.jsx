@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { ErrorState } from "../../components";
+import RiyalSymbol from "../../components/common/RiyalSymbol";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
@@ -106,7 +107,7 @@ function AdminDashboard() {
 
         <div className="dashboard-card">
           <h3>Total Sales</h3>
-          <p>{totalSales.toLocaleString()} SAR</p>
+          <p>{totalSales.toLocaleString()} <RiyalSymbol /></p>
         </div>
       </div>
 
@@ -150,7 +151,7 @@ function AdminDashboard() {
 
                   <div>
                     <strong>
-                      {Number(order.total || 0).toLocaleString()} SAR
+                      {Number(order.total || 0).toLocaleString()} <RiyalSymbol />
                     </strong>
 
                     <p>{order.status}</p>

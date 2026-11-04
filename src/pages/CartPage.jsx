@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { formatPrice, getEffectivePrice } from "../utils/formatPrice";
 import { useLanguage } from "../context/LanguageContext";
+import ProductImage from "../components/common/ProductImage";
 import "./CartPage.css";
 
 function CartPage() {
@@ -42,7 +43,7 @@ function CartPage() {
 
               return (
                 <div className="cart-item" key={item.id}>
-                  <img src={item.image} alt={item.title} />
+                  <ProductImage src={item.image} alt={item.title} />
 
                   <div className="cart-item-info">
                     <h2>{item.title}</h2>

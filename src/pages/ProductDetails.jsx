@@ -14,6 +14,7 @@ import { CartContext } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { formatPrice, getEffectivePrice } from "../utils/formatPrice";
 import { useLanguage } from "../context/LanguageContext";
+import ProductImage from "../components/common/ProductImage";
 
 function ProductDetails() {
   const { t } = useLanguage();
@@ -161,7 +162,7 @@ function ProductDetails() {
     if (submittingReview) return;
 
     if (comment.trim().length < 3) {
-      toast.error("Comment must be at least 3 characters");
+      toast.error(t("reviewCommentMinLength"));
       return;
     }
 
@@ -171,13 +172,13 @@ function ProductDetails() {
         rating,
         comment: comment.trim(),
       });
-      toast.success(res.data?.message || "Review submitted successfully");
+      toast.success(res.data?.message || t("reviewSubmitSuccess"));
       setComment("");
       setRating(5);
       setReviewVersion((v) => v + 1);
     } catch (err) {
       toast.error(
-        err.response?.data?.message || "Failed to submit review. Please try again.",
+        err.response?.data?.message || t("reviewSubmitFailed"),
       );
     } finally {
       setSubmittingReview(false);
@@ -189,7 +190,7 @@ function ProductDetails() {
     if (!myReview || updatingReview) return;
 
     if (editComment.trim().length < 3) {
-      toast.error("Comment must be at least 3 characters");
+      toast.error(t("reviewCommentMinLength"));
       return;
     }
 
@@ -199,12 +200,12 @@ function ProductDetails() {
         rating: editRating,
         comment: editComment.trim(),
       });
-      toast.success(res.data?.message || "Review updated successfully");
+      toast.success(res.data?.message || t("reviewUpdateSuccess"));
       setEditingReview(false);
       setReviewVersion((v) => v + 1);
     } catch (err) {
       toast.error(
-        err.response?.data?.message || "Failed to update review. Please try again.",
+        err.response?.data?.message || t("reviewUpdateFailed"),
       );
     } finally {
       setUpdatingReview(false);
@@ -214,20 +215,18 @@ function ProductDetails() {
   const handleDeleteReview = async (reviewId) => {
     if (deletingReview) return;
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this review?",
-    );
+    const confirmed = window.confirm(t("reviewDeleteConfirm"));
     if (!confirmed) return;
 
     setDeletingReview(true);
     try {
       const res = await api.delete(`/reviews/${reviewId}`);
-      toast.success(res.data?.message || "Review deleted successfully");
+      toast.success(res.data?.message || t("reviewDeleteSuccess"));
       setEditingReview(false);
       setReviewVersion((v) => v + 1);
     } catch (err) {
       toast.error(
-        err.response?.data?.message || "Failed to delete review. Please try again.",
+        err.response?.data?.message || t("reviewDeleteFailed"),
       );
     } finally {
       setDeletingReview(false);
@@ -235,7 +234,7 @@ function ProductDetails() {
   };
 
   if (loading) {
-    return <h2>Loading...</h2>;
+    return <h2>{t("loading")}</h2>;
   }
 
   if (error) {
@@ -286,7 +285,7 @@ function ProductDetails() {
               {isOutOfStock && (
                 <span className="details-badge badge-out">{t("outOfStockBadge")}</span>
               )}
-              <img
+              <ProductImage
                 src={selectedImage}
                 alt={product.title}
                 className="main-product-image"
@@ -434,11 +433,11 @@ function ProductDetails() {
             {!user ? (
               <div className="review-login-prompt">
                 <p>
-                  Have you tried this product?{" "}
+                  {t("reviewLoginPromptPrefix")}{" "}
                   <Link to="/login" state={{ from: `/products/${id}` }}>
-                    Log in
+                    {t("reviewLoginPromptLink")}
                   </Link>{" "}
-                  to write a review.
+                  {t("reviewLoginPromptSuffix")}
                 </p>
               </div>
             ) : myReview ? (
@@ -528,7 +527,7 @@ function ProductDetails() {
                   </div>
 
                   {myReview.isVerifiedPurchase && (
-                    <span className="verified-badge">✔ Verified Buyer</span>
+                    <span className="verified-badge">✔ {t("verifiedBuyer")}</span>
                   )}
 
                   <p className="review-comment">{myReview.comment}</p>
@@ -590,11 +589,11 @@ function ProductDetails() {
                   <div className="review-item-header">
                     <div className="reviewer-info">
                       <span className="reviewer-name">
-                        {rev.user?.name || "Customer"}
+                        {rev.user?.name || t("anonymousCustomer")}
                       </span>
                       {rev.isVerifiedPurchase && (
                         <span className="verified-badge">
-                          ✔ Verified Buyer
+                          ✔ {t("verifiedBuyer")}
                         </span>
                       )}
                     </div>
@@ -608,9 +607,9 @@ function ProductDetails() {
                           className="delete-icon-btn"
                           onClick={() => handleDeleteReview(rev._id)}
                           disabled={deletingReview}
-                          title="Delete review"
+                          title={t("deleteReview")}
                         >
-                          Delete
+                          {t("deleteReview")}
                         </button>
                       )}
                     </div>

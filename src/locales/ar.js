@@ -34,7 +34,7 @@ const ar = {
   heroSlide1Desc: "هيكل متين من التيتانيوم الفضائي، كاميرا حسابية بدقة 200 ميجابكسل، ومعالج ذكاء اصطناعي فائق السرعة بدقة 3 نانومتر.",
   heroSlide1Cta: "تسوق الهواتف ←",
 
-  heroSlide2Eyebrow: "محطات العمل الاحترافية",
+  heroSlide2Eyebrow: "الحواسيب",
   heroSlide2Title: "قوة ودقة لا تضاهى",
   heroSlide2Desc: "معالجات سيليكون خارقة متعددة الأنوية، شاشة مرجعية Liquid Retina XDR، وأداء حراري فائق يدوم طوال اليوم.",
   heroSlide2Cta: "تسوق الحواسيب ←",
@@ -91,6 +91,8 @@ const ar = {
   signInAction: "تسجيل الدخول",
 
   // Cart Page
+  cartOutOfStock: "{title} نفد من المخزون",
+  cartOnlyStockLeft: "متبقي {count} فقط من {title} في المخزون",
   shoppingCart: "سلة التسوق",
   emptyCartTitle: "سلتك فارغة",
   emptyCartDesc: "يبدو أنك لم تضف أي منتج إلى السلة بعد.",
@@ -123,6 +125,7 @@ const ar = {
   goToCart: "الذهاب إلى السلة",
 
   // Orders Page
+  orderId: "رقم الطلب",
   ordersTitle: "طلباتي",
   noOrdersTitle: "لا توجد طلبات سابقة",
   noOrdersDesc: "لم تقم بإنشاء أي طلبات حتى الآن.",
@@ -180,7 +183,7 @@ const ar = {
   thirtyDayEvaluation: "فترة تجربة 30 يوماً",
   cataloguesHeading: "الكتالوجات",
   smartphones: "الهواتف الذكية",
-  workstations: "محطات العمل",
+  workstations: "حواسييب",
   acoustics: "الصوتيات",
   gamingHardware: "أجهزة الألعاب",
   displays: "شاشات العرض",
@@ -196,6 +199,61 @@ const ar = {
   privacyPolicy: "سياسة الخصوصية",
   termsOfService: "شروط الخدمة",
   cookiePreferences: "تفضيلات ملفات تعريف الارتباط",
+
+  // Auth Pages (Login & Register)
+  loginTitle: "تسجيل الدخول",
+  registerTitle: "إنشاء حساب",
+  namePlaceholder: "الاسم الكامل",
+  emailPlaceholder: "البريد الإلكتروني",
+  passwordPlaceholder: "كلمة المرور",
+  loggingIn: "جارٍ تسجيل الدخول...",
+  creatingAccount: "جارٍ إنشاء الحساب...",
+  dontHaveAccount: "ليس لديك حساب؟",
+  registerLink: "إنشاء حساب",
+  alreadyHaveAccount: "لديك حساب بالفعل؟",
+  loginLink: "تسجيل الدخول",
+  loginSuccess: "تم تسجيل الدخول بنجاح",
+  invalidEmailOrPassword: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  registerSuccess: "تم إنشاء الحساب بنجاح. يرجى تسجيل الدخول",
+  emailAlreadyExists: "يوجد حساب مسجل بهذا البريد الإلكتروني بالفعل",
+  registrationFailed: "فشل إنشاء الحساب. يرجى التحقق من البيانات",
+  serverError: "حدث خطأ في الخادم. يرجى المحاولة لاحقاً",
+  networkError: "تعذر الاتصال بالخادم. يرجى المحاولة مرة أخرى",
+
+  // Common Loading
+  loading: "جارٍ التحميل...",
+
+  // Profile Page
+  profileTitle: "الملف الشخصي",
+  personalInfoHeading: "المعلومات الشخصية",
+  editProfileBtn: "تعديل الملف الشخصي",
+  savingProfile: "جارٍ الحفظ...",
+  saveChanges: "حفظ التغييرات",
+  profileUpdateSuccess: "تم تحديث الملف الشخصي بنجاح",
+  profileUpdateFailed: "فشل تحديث الملف الشخصي. يرجى المحاولة مرة أخرى.",
+  changePasswordHeading: "تغيير كلمة المرور",
+  currentPassword: "كلمة المرور الحالية",
+  newPassword: "كلمة المرور الجديدة",
+  confirmNewPassword: "تأكيد كلمة المرور الجديدة",
+  updatingPassword: "جارٍ التحديث...",
+  changePasswordBtn: "تغيير كلمة المرور",
+  passwordUpdateSuccess: "تم تحديث كلمة المرور بنجاح",
+  passwordUpdateFailed: "فشل تحديث كلمة المرور. يرجى المحاولة مرة أخرى.",
+
+  // Product Reviews Localized
+  verifiedBuyer: "مشترٍ موثق",
+  reviewLoginPromptPrefix: "هل جربت هذا المنتج؟",
+  reviewLoginPromptLink: "سجّل دخولك",
+  reviewLoginPromptSuffix: "لكتابة تقييم.",
+  reviewCommentMinLength: "يجب ألا يقل التعليق عن 3 أحرف",
+  reviewSubmitSuccess: "تم إرسال التقييم بنجاح",
+  reviewSubmitFailed: "فشل إرسال التقييم. يرجى المحاولة مرة أخرى.",
+  reviewUpdateSuccess: "تم تحديث التقييم بنجاح",
+  reviewUpdateFailed: "فشل تحديث التقييم. يرجى المحاولة مرة أخرى.",
+  reviewDeleteConfirm: "هل أنت متأكد من رغبتك في حذف هذا التقييم؟",
+  reviewDeleteSuccess: "تم حذف التقييم بنجاح",
+  reviewDeleteFailed: "فشل حذف التقييم. يرجى المحاولة مرة أخرى.",
+  anonymousCustomer: "عميل",
 };
 
 export default ar;

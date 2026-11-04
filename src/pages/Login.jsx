@@ -4,11 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useLanguage } from "../context/LanguageContext";
 import "./Auth.css";
+
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setUser } = useAuth();
+  const { t } = useLanguage();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +38,7 @@ function Login() {
 
       setUser(profileRes.data.user);
 
-      toast.success("Logged in successfully");
+      toast.success(t("loginSuccess"));
       if (profileRes.data.user.role === "admin") {
         navigate(location.state?.from || "/admin");
       } else {
@@ -44,14 +47,14 @@ function Login() {
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error(
-          error.response.data?.message || "Invalid email or password",
+          error.response.data?.message || t("invalidEmailOrPassword"),
         );
       } else if (error.response) {
         toast.error(
-          error.response.data?.message || "Server error. Please try again later",
+          error.response.data?.message || t("serverError"),
         );
       } else {
-        toast.error("Unable to connect to the server. Please try again");
+        toast.error(t("networkError"));
       }
     } finally {
       setIsSubmitting(false);
@@ -61,30 +64,32 @@ function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Login</h1>
+        <h1>{t("loginTitle")}</h1>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-label={t("emailPlaceholder")}
           />
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            aria-label={t("passwordPlaceholder")}
           />
 
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Logging in..." : "Login"}
+            {isSubmitting ? t("loggingIn") : t("loginTitle")}
           </button>
           <p className="auth-link">
-            Don't have an account? <Link to="/register">Register</Link>
+            {t("dontHaveAccount")} <Link to="/register">{t("registerLink")}</Link>
           </p>
         </form>
       </div>
