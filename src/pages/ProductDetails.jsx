@@ -17,7 +17,7 @@ import { useLanguage } from "../context/LanguageContext";
 import ProductImage from "../components/common/ProductImage";
 
 function ProductDetails() {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -133,7 +133,7 @@ function ProductDetails() {
 
   useEffect(() => {
     const fetchRelatedProducts = async () => {
-      if (!product) return;
+      if (!product || !product.category) return;
 
       try {
         const res = await api.get(`/products`);
@@ -144,8 +144,13 @@ function ProductDetails() {
           title: item.name,
         }));
 
+        const currentCategory = String(product.category).toLowerCase().trim();
+
         const filteredProducts = formattedProducts.filter(
-          (item) => item.id !== product.id,
+          (item) =>
+            item.category &&
+            String(item.category).toLowerCase().trim() === currentCategory &&
+            item.id !== product.id,
         );
 
         setRelatedProducts(filteredProducts);
@@ -633,35 +638,39 @@ function ProductDetails() {
         </div>
       </div>
 
-      <div className="related-products">
-        <h2>{t("recommendedProducts")}</h2>
+      {relatedProducts.length > 0 && (
+        <div className="related-products">
+          <h2>{t("recommendedProducts")}</h2>
 
-        <Swiper
-          modules={[Pagination, Navigation, Autoplay]}
-          navigation
-          pagination={{ clickable: true }}
-          loop={true}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
-          spaceBetween={20}
-          slidesPerView={4}
-          allowTouchMove={true}
-          breakpoints={{
-            0: { slidesPerView: 1 },
-            600: { slidesPerView: 2 },
-            900: { slidesPerView: 3 },
-            1200: { slidesPerView: 4 },
-          }}
-        >
-          {relatedProducts.map((item) => (
-            <SwiperSlide key={item.id}>
-              <ProductCard item={item} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+          <Swiper
+            key={isRTL ? "rtl" : "ltr"}
+            dir={isRTL ? "rtl" : "ltr"}
+            modules={[Pagination, Navigation, Autoplay]}
+            navigation
+            pagination={{ clickable: true }}
+            loop={false}
+            autoplay={{
+              delay: 3500,
+              disableOnInteraction: false,
+            }}
+            slidesPerView={2}
+            spaceBetween={10}
+            allowTouchMove={true}
+            breakpoints={{
+              0: { slidesPerView: 2, spaceBetween: 10 },
+              600: { slidesPerView: 2, spaceBetween: 16 },
+              900: { slidesPerView: 3, spaceBetween: 20 },
+              1150: { slidesPerView: 4, spaceBetween: 24 },
+            }}
+          >
+            {relatedProducts.map((item) => (
+              <SwiperSlide key={item.id}>
+                <ProductCard item={item} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
     </div>
   );
 }

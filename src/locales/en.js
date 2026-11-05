@@ -54,6 +54,15 @@ const en = {
   homeLoadErrorMessage: "Please check your connection and try again.",
   retry: "Retry",
 
+  // Best Selling Page
+  bestSellingTitle: "Curated Bestsellers",
+  bestSellingSubtitle: "Top performing tech essentials and customer favorites",
+  bestSellingBreadcrumb: "Bestsellers",
+  noBestSellingTitle: "No Bestsellers Available",
+  noBestSellingDesc: "Our best selling catalog is currently updating. Please check back soon.",
+  bestSellingErrorTitle: "We couldn't load the bestsellers",
+  bestSellingErrorMessage: "Please check your connection and try again.",
+
   // Product Card
   inCart: "IN CART",
   outOfStockBadge: "OUT OF STOCK",
@@ -134,10 +143,6 @@ const en = {
   orderAddress: "Address:",
   cancelOrder: "Cancel Order",
   cancellingOrder: "Cancelling...",
-  statusProcessing: "Processing",
-  statusShipped: "Shipped",
-  statusDelivered: "Delivered",
-  statusCancelled: "Cancelled",
 
   // Wishlist Page
   wishlistTitle: "Wishlist",
@@ -254,6 +259,83 @@ const en = {
   reviewDeleteSuccess: "Review deleted successfully",
   reviewDeleteFailed: "Failed to delete review. Please try again.",
   anonymousCustomer: "Customer",
+
+  // Admin Dashboard & Notifications
+  adminDashboardOverview: "Overview",
+  dashboardSubtitle: "Analytics & Performance",
+  todayRevenue: "Today's Revenue",
+  totalRevenueTitle: "Total Revenue",
+  vsYesterday: "vs yesterday",
+  allTimeRevenue: "All-time accumulated sales",
+  dashboardOrders: "Orders",
+  dashboardUsers: "Users",
+  dashboardProducts: "Products",
+  dashboardTotalSales: "Total Sales",
+  revenue7Days: "Revenue (7 days)",
+  recentOrdersTitle: "Recent Orders",
+  orderStatusDistribution: "Order Status",
+  viewAllLink: "View all",
+  noOrdersYet: "No orders yet",
+  notificationsTitle: "Notifications",
+  markAllAsRead: "Mark all as read",
+  noNotifications: "No notifications yet",
+  newOrderNotification: "New order received!",
+  newOrderToast: "New order received! Order #{id} ({amount} SAR)",
+  viewRelatedOrder: "View Order",
+  justNow: "Just now",
+  minutesAgo: "m ago",
+  hoursAgo: "h ago",
+  daysAgo: "d ago",
+
+  // Order Statuses
+  statusProcessing: "Processing",
+  statusShipped: "Shipped",
+  statusDelivered: "Delivered",
+  statusCancelled: "Cancelled",
+  StatusProcessing: "Processing",
+  StatusShipped: "Shipped",
+  StatusDelivered: "Delivered",
+  StatusCancelled: "Cancelled",
+
+  // Admin Orders Management
+  adminOrdersTitle: "Admin Orders",
+  orderCustomer: "Customer:",
+  orderEmail: "Email:",
+  orderTotal: "Total:",
+  orderShippingAddress: "Shipping Address",
+  orderRecipientName: "Name:",
+  orderPhone: "Phone:",
+  orderItems: "Items",
+  orderQuantity: "Quantity:",
+  orderPrice: "Price:",
+  orderStatusUpdated: "Order status updated successfully",
+
+  // Admin Navigation & Dashboard
+  adminBrand: "Hadadi Admin",
+  sidebarDashboard: "Dashboard",
+  sidebarProducts: "Products",
+  sidebarOrders: "Orders",
+  sidebarUsers: "Users",
+  registeredAccountsHint: "Registered accounts",
+  activeCatalogItemsHint: "Active catalog items",
+
+  // Admin Tables & Actions
+  userColName: "Name",
+  userColEmail: "Email",
+  userColRole: "Role",
+  addProductBtn: "+ Add Product",
+  colProduct: "Product",
+  colPrice: "Price",
+  colDiscount: "Discount",
+  colStock: "Stock",
+  colStatus: "Status",
+  colActions: "Actions",
+  btnEdit: "Edit",
+  btnDelete: "Delete",
+  btnSave: "Save",
+  btnCancel: "Cancel",
+  statusActive: "Active",
+  statusInactive: "Inactive",
 };
 
 export default en;

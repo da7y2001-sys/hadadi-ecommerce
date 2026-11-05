@@ -1,11 +1,14 @@
 .admin-orders-page {
   max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 20px;
+  text-align: start;
 }
 
 .admin-orders-title {
   margin-bottom: 30px;
+  text-align: start;
 }
 
 .admin-order-card {
@@ -14,24 +17,139 @@
   border: 1px solid #ddd;
   border-radius: 12px;
   background: #fff;
+  text-align: start;
 }
 
-.admin-order-card h3 {
+.admin-order-id-heading {
   margin-bottom: 15px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  text-align: start;
+}
+
+.admin-order-id-value {
+  font-family: monospace;
+  font-weight: 700;
+  color: #0f2238;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .admin-order-card h4 {
   margin-top: 20px;
   margin-bottom: 10px;
+  text-align: start;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .admin-order-card p {
   margin: 8px 0;
+  text-align: start;
+}
+
+.admin-order-field {
+  margin-block: 8px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  text-align: start;
+}
+
+.admin-order-label {
+  font-weight: 600;
+  color: #4b5563;
+  flex-shrink: 0;
+}
+
+.admin-order-value {
+  color: #111827;
+  unicode-bidi: isolate;
+}
+
+.admin-order-status-row {
+  margin-block: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: start;
+}
+
+.admin-order-status-select {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-order-status-select:focus {
+  outline: none;
+  border-color: #091a2c;
+  box-shadow: 0 0 0 3px rgba(9, 26, 44, 0.1);
+}
+
+.admin-order-status-select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.admin-order-address-box {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
+.admin-order-address-box h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
 }
 
 .admin-order-item {
-  padding: 12px;
+  padding: 14px;
   margin-top: 10px;
   border: 1px solid #eee;
   border-radius: 8px;
+  background-color: #ffffff;
+  text-align: start;
+}
+
+.admin-order-item-name {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .admin-orders-page {
+    margin-block: 16px;
+    margin-inline: auto;
+    padding-inline: 4px;
+  }
+
+  .admin-orders-title {
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+
+  .admin-order-card {
+    padding: 16px 12px;
+    margin-bottom: 16px;
+  }
+
+  .admin-order-status-row {
+    flex-wrap: wrap;
+  }
 }

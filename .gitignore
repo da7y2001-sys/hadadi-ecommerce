@@ -27,3 +27,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Development reference images
+dashboard.png
+design-reference.png
+

@@ -6,6 +6,12 @@
   margin-bottom: 30px;
 }
 
+.admin-users-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .admin-users-table {
   width: 100%;
   border-collapse: collapse;
@@ -14,10 +20,31 @@
 .admin-users-table th,
 .admin-users-table td {
   padding: 16px;
-  text-align: left;
+  text-align: start;
   border-bottom: 1px solid #ddd;
 }
 
 .admin-users-table th {
   background: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+  .admin-users-page {
+    padding: 8px 4px;
+  }
+
+  .admin-users-title {
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+
+  .admin-users-table {
+    min-width: 480px;
+  }
+
+  .admin-users-table th,
+  .admin-users-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
 }

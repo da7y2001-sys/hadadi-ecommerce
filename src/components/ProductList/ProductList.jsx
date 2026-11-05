@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ProductCard from "../ProductCard/ProductCard";
 import api from "../../services/api";
 import { useLanguage } from "../../context/LanguageContext";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
 import "./ProductList.css";
 
 function ProductList() {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,13 +58,33 @@ function ProductList() {
             <h2 className="slider-heading">{t("curatedBestsellers")}</h2>
             <span className="slider-subline">{t("topPerformingTech")}</span>
           </div>
+
+          <Link to="/best-selling" className="view-all-link">
+            {t("viewAll")} {isRTL ? "←" : "→"}
+          </Link>
         </div>
 
-        <div className="bestsellers-grid">
+        <Swiper
+          key={isRTL ? "rtl" : "ltr"}
+          dir={isRTL ? "rtl" : "ltr"}
+          loop={false}
+          navigation={true}
+          modules={[Navigation]}
+          className="category-product-swiper"
+          slidesPerView={1.15}
+          spaceBetween={14}
+          breakpoints={{
+            600: { slidesPerView: 2, spaceBetween: 18 },
+            900: { slidesPerView: 3, spaceBetween: 22 },
+            1150: { slidesPerView: 4, spaceBetween: 24 },
+          }}
+        >
           {products.slice(0, 4).map((item) => (
-            <ProductCard key={item.id} item={item} />
+            <SwiperSlide key={item.id}>
+              <ProductCard item={item} />
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </div>
     </section>
   );

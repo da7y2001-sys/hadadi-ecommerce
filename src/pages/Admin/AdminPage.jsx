@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import api from "../../services/api";
 //import { Link } from "react-router-dom";
 import RiyalSymbol from "../../components/common/RiyalSymbol";
+import AdminNotificationBell from "../../components/Admin/AdminNotificationBell";
+import { useLanguage } from "../../context/LanguageContext";
 import "./AdminPage.css";
 
 function getApiErrorMessage(error, fallbackMessage) {
@@ -16,6 +18,7 @@ function getApiErrorMessage(error, fallbackMessage) {
 }
 
 function AdminPage() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [addingProduct, setAddingProduct] = useState(false);
@@ -157,7 +160,9 @@ function AdminPage() {
   };
   return (
     <div className="admin-page">
-      <h1>Admin Dashboard</h1>
+      <div className="admin-page-header admin-page-header-end">
+        <AdminNotificationBell />
+      </div>
 
       {loadingProducts && <p>Loading products...</p>}
 
@@ -178,7 +183,7 @@ function AdminPage() {
       )}
 
       <button onClick={() => setAddingProduct(true)} disabled={isSubmitting}>
-        + Add Product
+        {t("addProductBtn")}
       </button>
       {addingProduct && (
         <form className="add-product-form" onSubmit={handleAddProduct}>
@@ -440,12 +445,12 @@ function AdminPage() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Discount</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t("colProduct")}</th>
+              <th>{t("colPrice")}</th>
+              <th>{t("colDiscount")}</th>
+              <th>{t("colStock")}</th>
+              <th>{t("colStatus")}</th>
+              <th>{t("colActions")}</th>
             </tr>
           </thead>
 
@@ -461,9 +466,9 @@ function AdminPage() {
 
                 <td>
                   {product.isActive ? (
-                    <span className="status-active">Active</span>
+                    <span className="status-active">{t("statusActive")}</span>
                   ) : (
-                    <span className="status-inactive">Inactive</span>
+                    <span className="status-inactive">{t("statusInactive")}</span>
                   )}
                 </td>
                 <td>
@@ -471,13 +476,13 @@ function AdminPage() {
                     onClick={() => setEditingProduct(product)}
                     disabled={isSubmitting}
                   >
-                    Edit
+                    {t("btnEdit")}
                   </button>
                   <button
                     onClick={() => handleDelete(product._id)}
                     disabled={isSubmitting}
                   >
-                    Delete
+                    {t("btnDelete")}
                   </button>
                 </td>
               </tr>

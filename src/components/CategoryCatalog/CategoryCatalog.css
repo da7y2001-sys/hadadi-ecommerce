@@ -15,6 +15,7 @@
   justify-content: space-between;
   gap: 16px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
   padding: 2px 0 6px;
@@ -81,6 +82,11 @@
 @media (max-width: 768px) {
   .category-catalog-strip {
     padding: 16px 0 8px;
+  }
+
+  .category-catalog-grid {
+    justify-content: flex-start;
+    padding-inline: 4px;
   }
   
   .catalog-icon-wrapper {

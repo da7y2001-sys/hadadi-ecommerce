@@ -28,8 +28,26 @@
   cursor: pointer;
 }
 
+.admin-page > button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.15s ease;
+}
+
+.admin-page > button:hover {
+  background: #333333;
+}
+
 .admin-products {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
@@ -42,7 +60,7 @@
 .admin-table td {
   padding: 15px;
   border-bottom: 1px solid #ddd;
-  text-align: left;
+  text-align: start;
 }
 
 .admin-table th {
@@ -50,29 +68,151 @@
 }
 
 .admin-table button {
-  margin-right: 8px;
+  margin-inline-end: 8px;
   padding: 8px 14px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* ==========================================================
+   Admin Product Forms (Add Product & Edit Product)
+   ========================================================== */
+
+.add-product-form,
 .edit-product-form {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 25px;
   flex-wrap: wrap;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 
-.edit-product-form input {
-  width: 160px;
-  padding: 10px;
-  font-size: 16px;
+.add-product-form h2,
+.edit-product-form h2 {
+  width: 100%;
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #111111;
+}
+
+.add-product-form input:not([type="checkbox"]),
+.add-product-form select,
+.add-product-form textarea,
+.edit-product-form input:not([type="checkbox"]),
+.edit-product-form select,
+.edit-product-form textarea {
+  flex: 1 1 calc(50% - 12px);
+  min-width: 180px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
   border: 1px solid #ccc;
   border-radius: 6px;
   box-sizing: border-box;
+  background: #fff;
+  color: #111111;
+  text-align: start;
 }
 
-.edit-product-form input[type="number"] {
-  width: 140px;
+.add-product-form label,
+.edit-product-form label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+}
+
+.add-product-form button,
+.edit-product-form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.add-product-form button[type="submit"],
+.edit-product-form button:first-of-type {
+  background: #111111;
+  color: #ffffff;
+}
+
+.add-product-form button[type="submit"]:hover,
+.edit-product-form button:first-of-type:hover {
+  background: #333333;
+}
+
+.add-product-form button[type="button"],
+.edit-product-form button:last-of-type {
+  background: #eeeeee;
+  color: #333333;
+}
+
+.add-product-form button[type="button"]:hover,
+.edit-product-form button:last-of-type:hover {
+  background: #dddddd;
+}
+
+/* ==========================================================
+   Responsive Breakpoints
+   ========================================================== */
+
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 8px 4px;
+  }
+
+  .admin-page h1 {
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+
+  .admin-page > button {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .add-product-form,
+  .edit-product-form {
+    flex-direction: column;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .add-product-form input:not([type="checkbox"]),
+  .add-product-form select,
+  .add-product-form textarea,
+  .edit-product-form input:not([type="checkbox"]),
+  .edit-product-form select,
+  .edit-product-form textarea {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+    font-size: 16px;
+  }
+
+  .add-product-form button,
+  .edit-product-form button {
+    width: 100%;
+  }
+
+  .admin-table {
+    min-width: 600px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
 }

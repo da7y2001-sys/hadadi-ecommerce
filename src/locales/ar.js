@@ -54,6 +54,15 @@ const ar = {
   homeLoadErrorMessage: "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
   retry: "إعادة المحاولة",
 
+  // Best Selling Page
+  bestSellingTitle: "الأكثر مبيعاً والمختارة بعناية",
+  bestSellingSubtitle: "أفضل الأجهزة والتقنيات الأكثر طلباً وإقبالاً من عملائنا",
+  bestSellingBreadcrumb: "الأكثر مبيعاً",
+  noBestSellingTitle: "لا تتوفر منتجات حالياً",
+  noBestSellingDesc: "يتم تحديث قائمة المنتجات الأكثر مبيعاً حالياً. يرجى العودة لاحقاً.",
+  bestSellingErrorTitle: "تعذر تحميل المنتجات الأكثر مبيعاً",
+  bestSellingErrorMessage: "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
+
   // Product Card
   inCart: "في السلة",
   outOfStockBadge: "نفد من المخزون",
@@ -134,10 +143,6 @@ const ar = {
   orderAddress: "العنوان:",
   cancelOrder: "إلغاء الطلب",
   cancellingOrder: "جاري الإلغاء...",
-  statusProcessing: "قيد المعالجة",
-  statusShipped: "تم الشحن",
-  statusDelivered: "تم التوصيل",
-  statusCancelled: "ملغي",
 
   // Wishlist Page
   wishlistTitle: "قائمة المفضلة",
@@ -254,6 +259,83 @@ const ar = {
   reviewDeleteSuccess: "تم حذف التقييم بنجاح",
   reviewDeleteFailed: "فشل حذف التقييم. يرجى المحاولة مرة أخرى.",
   anonymousCustomer: "عميل",
+
+  // Admin Dashboard & Notifications
+  adminDashboardOverview: "نظرة عامة",
+  dashboardSubtitle: "التحليلات والأداء",
+  todayRevenue: "إيرادات اليوم",
+  totalRevenueTitle: "إجمالي الإيرادات",
+  vsYesterday: "مقارنة بالأمس",
+  allTimeRevenue: "إجمالي المبيعات المتراكمة",
+  dashboardOrders: "الطلبات",
+  dashboardUsers: "المستخدمين",
+  dashboardProducts: "المنتجات",
+  dashboardTotalSales: "إجمالي المبيعات",
+  revenue7Days: "الإيرادات (7 أيام)",
+  recentOrdersTitle: "أحدث الطلبات",
+  orderStatusDistribution: "حالة الطلبات",
+  viewAllLink: "عرض الكل",
+  noOrdersYet: "لا توجد طلبات بعد",
+  notificationsTitle: "الإشعارات",
+  markAllAsRead: "تحديد الكل كمقروء",
+  noNotifications: "لا توجد إشعارات حالياً",
+  newOrderNotification: "تم استلام طلب جديد!",
+  newOrderToast: "تم استلام طلب جديد! طلب #{id} ({amount} ر.س)",
+  viewRelatedOrder: "عرض الطلب",
+  justNow: "الآن",
+  minutesAgo: "د مضت",
+  hoursAgo: "س مضت",
+  daysAgo: "يوم مضى",
+
+  // Order Statuses
+  statusProcessing: "قيد المعالجة",
+  statusShipped: "تم الشحن",
+  statusDelivered: "تم التوصيل",
+  statusCancelled: "ملغي",
+  StatusProcessing: "قيد المعالجة",
+  StatusShipped: "تم الشحن",
+  StatusDelivered: "تم التوصيل",
+  StatusCancelled: "ملغي",
+
+  // Admin Orders Management
+  adminOrdersTitle: "إدارة الطلبات",
+  orderCustomer: "العميل:",
+  orderEmail: "البريد الإلكتروني:",
+  orderTotal: "الإجمالي:",
+  orderShippingAddress: "عنوان الشحن",
+  orderRecipientName: "الاسم:",
+  orderPhone: "الهاتف:",
+  orderItems: "المنتجات",
+  orderQuantity: "الكمية:",
+  orderPrice: "السعر:",
+  orderStatusUpdated: "تم تحديث حالة الطلب بنجاح",
+
+  // Admin Navigation & Dashboard
+  adminBrand: "لوحة تحكم حدادي",
+  sidebarDashboard: "لوحة التحكم",
+  sidebarProducts: "المنتجات",
+  sidebarOrders: "الطلبات",
+  sidebarUsers: "المستخدمين",
+  registeredAccountsHint: "حسابات مسجلة",
+  activeCatalogItemsHint: "منتجات معروضة",
+
+  // Admin Tables & Actions
+  userColName: "الاسم",
+  userColEmail: "البريد الإلكتروني",
+  userColRole: "الدور",
+  addProductBtn: "+ إضافة منتج",
+  colProduct: "المنتج",
+  colPrice: "السعر",
+  colDiscount: "الخصم",
+  colStock: "المخزون",
+  colStatus: "الحالة",
+  colActions: "الإجراءات",
+  btnEdit: "تعديل",
+  btnDelete: "حذف",
+  btnSave: "حفظ",
+  btnCancel: "إلغاء",
+  statusActive: "نشط",
+  statusInactive: "غير نشط",
 };
 
 export default ar;

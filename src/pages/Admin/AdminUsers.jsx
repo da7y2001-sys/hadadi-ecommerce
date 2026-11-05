@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { ErrorState } from "../../components";
+import AdminNotificationBell from "../../components/Admin/AdminNotificationBell";
+import { useLanguage } from "../../context/LanguageContext";
 import "./AdminUsers.css";
 
 function AdminUsers() {
+  const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,7 +22,7 @@ function AdminUsers() {
       })
       .catch(() => {
         if (isActive) {
-          setError("Could not load users. Please try again.");
+          setError(t("serverError") || "Could not load users. Please try again.");
         }
       })
       .finally(() => {
@@ -29,16 +32,16 @@ function AdminUsers() {
     return () => {
       isActive = false;
     };
-  }, [retryCount]);
+  }, [retryCount, t]);
 
   if (loading) {
-    return <p>Loading users...</p>;
+    return <p>{t("loading")}</p>;
   }
 
   if (error) {
     return (
       <ErrorState
-        title="Could not load users"
+        title={t("serverError") || "Could not load users"}
         message={error}
         onRetry={() => {
           setLoading(true);
@@ -51,27 +54,38 @@ function AdminUsers() {
 
   return (
     <div className="admin-users-page">
-      <h1 className="admin-users-title">Users</h1>
+      <div className="admin-page-header">
+        <h1 className="admin-users-title">{t("dashboardUsers")}</h1>
+        <AdminNotificationBell />
+      </div>
 
-      <table className="admin-users-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
+      <div className="admin-users-table-wrapper">
+        <table className="admin-users-table">
+          <thead>
+            <tr>
+              <th>{t("userColName")}</th>
+              <th>{t("userColEmail")}</th>
+              <th>{t("userColRole")}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id}>
+                <td>
+                  <bdi>{user.name}</bdi>
+                </td>
+                <td>
+                  <bdi dir="ltr">{user.email}</bdi>
+                </td>
+                <td>
+                  <bdi>{user.role}</bdi>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

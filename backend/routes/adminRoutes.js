@@ -5,6 +5,9 @@ const {
   getAdminOrders,
   updateOrderStatus,
   getAdminUsers,
+  getAdminNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
 } = require("../controllers/adminController");
 const { getAdminProducts } = require("../controllers/productController");
 
@@ -41,6 +44,28 @@ router.get(
   authMiddleware,
   adminMiddleware,
   getAdminUsers
+);
+
+// Notifications for admin
+router.get(
+  "/notifications",
+  authMiddleware,
+  adminMiddleware,
+  getAdminNotifications
+);
+
+router.patch(
+  "/notifications/:id/read",
+  authMiddleware,
+  adminMiddleware,
+  markNotificationRead
+);
+
+router.patch(
+  "/notifications/read-all",
+  authMiddleware,
+  adminMiddleware,
+  markAllNotificationsRead
 );
 
 module.exports = router;

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Order = require("../models/Order");
 
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 const { restoreOrderInventory, OrderError } = require("./orderController");
 
 // Get all orders for admin
@@ -150,8 +151,105 @@ const getAdminUsers = async (req, res) => {
   }
 };
 
+// Get all notifications for admin
+const getAdminNotifications = async (req, res) => {
+  try {
+    // Backfill from existing orders if notification collection is empty
+    const count = await Notification.countDocuments();
+    if (count === 0) {
+      const recentOrders = await Order.find()
+        .populate("user", "name")
+        .sort({ createdAt: -1 })
+        .limit(10);
+
+      if (recentOrders.length > 0) {
+        const backfill = recentOrders.map((ord) => ({
+          type: "NEW_ORDER",
+          title: "New order received!",
+          message: `Order #${ord._id.toString().slice(-6)} received with total ${ord.total} SAR`,
+          orderId: ord._id,
+          orderTotal: ord.total,
+          customerName: ord.shippingAddress?.fullName || ord.user?.name || "Customer",
+          isRead: true, // Historical orders are marked as read so they do not show as new unread orders
+          createdAt: ord.createdAt,
+        }));
+        await Notification.insertMany(backfill, { ordered: false }).catch(() => {});
+      }
+    }
+
+    const notifications = await Notification.find()
+      .sort({ createdAt: -1 })
+      .limit(30);
+
+    const unreadCount = await Notification.countDocuments({ isRead: false });
+
+    res.json({
+      notifications,
+      unreadCount,
+    });
+  } catch (error) {
+    console.error("Failed to get admin notifications:", error);
+    res.status(500).json({
+      message: "Failed to get notifications",
+    });
+  }
+};
+
+// Mark single notification as read
+const markNotificationRead = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid notification ID" });
+    }
+
+    const notification = await Notification.findByIdAndUpdate(
+      id,
+      { isRead: true },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    const unreadCount = await Notification.countDocuments({ isRead: false });
+
+    res.json({
+      notification,
+      unreadCount,
+    });
+  } catch (error) {
+    console.error("Failed to mark notification as read:", error);
+    res.status(500).json({
+      message: "Failed to mark notification as read",
+    });
+  }
+};
+
+// Mark all notifications as read
+const markAllNotificationsRead = async (req, res) => {
+  try {
+    await Notification.updateMany({ isRead: false }, { isRead: true });
+
+    res.json({
+      message: "All notifications marked as read",
+      unreadCount: 0,
+    });
+  } catch (error) {
+    console.error("Failed to mark all notifications as read:", error);
+    res.status(500).json({
+      message: "Failed to mark all notifications as read",
+    });
+  }
+};
+
 module.exports = {
   getAdminOrders,
   updateOrderStatus,
   getAdminUsers,
+  getAdminNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
 };

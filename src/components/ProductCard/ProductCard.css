@@ -297,6 +297,16 @@
   right: 8px;
 }
 
+[dir="rtl"] .product .name_product {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .product-card-rating {
+  direction: rtl;
+  text-align: right;
+}
+
 [dir="rtl"] .btn_wishlist {
   right: auto;
   left: 8px;

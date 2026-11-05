@@ -146,12 +146,6 @@
 @media (max-width: 768px) {
   .search-products-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .search-products-grid {
-    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }

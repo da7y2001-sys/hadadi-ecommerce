@@ -24,12 +24,7 @@
 @media (max-width: 650px) {
   .wishlist-products {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 450px) {
-  .wishlist-products {
-    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 

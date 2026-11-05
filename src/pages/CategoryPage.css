@@ -150,7 +150,7 @@
 
 .currency-prefix {
   position: absolute;
-  left: 10px;
+  inset-inline-start: 10px;
   font-size: 13px;
   color: #888888;
   pointer-events: none;
@@ -158,7 +158,9 @@
 
 .price-input-wrapper input {
   width: 100%;
-  padding: 8px 8px 8px 24px;
+  padding-block: 8px;
+  padding-inline-end: 8px;
+  padding-inline-start: 24px;
   font-size: 13px;
   border: 1px solid var(--border-hairline, #e8e8e8);
   border-radius: var(--radius-xs, 2px);
@@ -267,10 +269,9 @@
   .category-heading {
     font-size: 26px;
   }
-}
 
-@media (max-width: 550px) {
   .products-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }

@@ -1,19 +1,48 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoMdHeartEmpty, IoMdCart, IoMdPerson } from "react-icons/io";
 import SearchBox from "./SearchBox";
 import "./Header.css";
 import logo from "../../assets/icon.jpg";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { CartContext } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 
 function TopHeader() {
   const [accountOpen, setAccountOpen] = useState(false);
+  const accountMenuRef = useRef(null);
 
   const { user, logout } = useAuth();
   const { cartItems, favorites } = useContext(CartContext);
   const { language, setLanguage, t } = useLanguage();
+  const location = useLocation();
+
+  // Close account dropdown on route changes
+  const [prevLocationKey, setPrevLocationKey] = useState(location.key);
+  if (location.key !== prevLocationKey) {
+    setPrevLocationKey(location.key);
+    setAccountOpen(false);
+  }
+
+  // Close account menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(e.target)
+      ) {
+        setAccountOpen(false);
+      }
+    }
+    if (accountOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [accountOpen]);
 
   return (
     <div className="container">
@@ -26,7 +55,10 @@ function TopHeader() {
         </div>
 
         {/* Search Component */}
-        <SearchBox />
+        <SearchBox
+          isAccountOpen={accountOpen}
+          onSearchOpen={() => setAccountOpen(false)}
+        />
 
         {/* Actions */}
         <div className="header-actions">
@@ -69,10 +101,10 @@ function TopHeader() {
             <span>{cartItems.length}</span>
           </Link>
 
-          <div className="account-menu">
+          <div className="account-menu" ref={accountMenuRef}>
             <button
               className="account-button"
-              onClick={() => setAccountOpen(!accountOpen)}
+              onClick={() => setAccountOpen((prev) => !prev)}
               aria-label={t("accountHeading")}
               aria-expanded={accountOpen}
             >

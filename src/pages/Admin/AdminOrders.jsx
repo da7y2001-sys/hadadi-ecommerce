@@ -3,9 +3,12 @@ import toast from "react-hot-toast";
 import api from "../../services/api";
 import { ErrorState } from "../../components";
 import RiyalSymbol from "../../components/common/RiyalSymbol";
+import AdminNotificationBell from "../../components/Admin/AdminNotificationBell";
+import { useLanguage } from "../../context/LanguageContext";
 import "./AdminOrders.css";
 
 function AdminOrders() {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,7 +25,7 @@ function AdminOrders() {
       })
       .catch(() => {
         if (isActive) {
-          setError("Could not load orders. Please try again.");
+          setError(t("serverError") || "Could not load orders. Please try again.");
         }
       })
       .finally(() => {
@@ -32,7 +35,7 @@ function AdminOrders() {
     return () => {
       isActive = false;
     };
-  }, [retryCount]);
+  }, [retryCount, t]);
 
   const handleStatusChange = async (orderId, status) => {
     if (updatingOrderId) return;
@@ -51,10 +54,11 @@ function AdminOrders() {
         ),
       );
 
-      toast.success("Order status updated successfully");
-    } catch (error) {
+      toast.success(t("orderStatusUpdated") || "Order status updated successfully");
+    } catch (err) {
       toast.error(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
+          t("serverError") ||
           "Failed to update order status. Please try again.",
       );
     } finally {
@@ -63,13 +67,13 @@ function AdminOrders() {
   };
 
   if (loading) {
-    return <p>Loading orders...</p>;
+    return <p>{t("loading")}</p>;
   }
 
   if (error) {
     return (
       <ErrorState
-        title="Could not load orders"
+        title={t("serverError") || "Could not load orders"}
         message={error}
         onRetry={() => {
           setLoading(true);
@@ -83,22 +87,49 @@ function AdminOrders() {
   return (
     <div>
       <div className="admin-orders-page">
-        <h1 className="admin-orders-title">Admin Orders</h1>
+        <div className="admin-page-header">
+          <h1 className="admin-orders-title">{t("adminOrdersTitle")}</h1>
+          <AdminNotificationBell />
+        </div>
 
         {orders.map((order) => (
           <div className="admin-order-card" key={order._id}>
-            <h3>Order: {order._id}</h3>
+            <h3 className="admin-order-id-heading">
+              <span>{t("orderId")}:</span>{" "}
+              <bdi className="admin-order-id-value" dir="ltr">
+                #{order._id}
+              </bdi>
+            </h3>
 
-            <p>Customer: {order.user?.name}</p>
+            <p className="admin-order-field">
+              <span className="admin-order-label">{t("orderCustomer")}</span>{" "}
+              <bdi className="admin-order-value">
+                {order.user?.name || order.shippingAddress?.fullName || t("anonymousCustomer")}
+              </bdi>
+            </p>
 
-            <p>Email: {order.user?.email}</p>
+            <p className="admin-order-field">
+              <span className="admin-order-label">{t("orderEmail")}</span>{" "}
+              <bdi className="admin-order-value" dir="ltr">
+                {order.user?.email || "—"}
+              </bdi>
+            </p>
 
-            <p>Total: {order.total} <RiyalSymbol /></p>
+            <p className="admin-order-field">
+              <span className="admin-order-label">{t("orderTotal")}</span>{" "}
+              <span className="admin-order-value">
+                <bdi dir="ltr">{Number(order.total || 0).toLocaleString()}</bdi> <RiyalSymbol />
+              </span>
+            </p>
 
-            <div>
-              <label>Status: </label>
+            <div className="admin-order-status-row">
+              <label className="admin-order-label" htmlFor={`order-status-${order._id}`}>
+                {t("orderStatus")}
+              </label>
 
               <select
+                id={`order-status-${order._id}`}
+                className="admin-order-status-select"
                 value={order.status}
                 onChange={(e) => handleStatusChange(order._id, e.target.value)}
                 disabled={
@@ -106,27 +137,54 @@ function AdminOrders() {
                   order.status === "Cancelled"
                 }
               >
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="Processing">{t("statusProcessing")}</option>
+                <option value="Shipped">{t("statusShipped")}</option>
+                <option value="Delivered">{t("statusDelivered")}</option>
+                <option value="Cancelled">{t("statusCancelled")}</option>
               </select>
             </div>
-            <div>
-              <div>
-                <h4>Shipping Address</h4>
 
-                <p>Name: {order.shippingAddress?.fullName}</p>
-                <p>Phone: {order.shippingAddress?.phone}</p>
-                <p>Address: {order.shippingAddress?.address}</p>
+            <div>
+              <div className="admin-order-address-box">
+                <h4>{t("orderShippingAddress")}</h4>
+
+                <p className="admin-order-field">
+                  <span className="admin-order-label">{t("orderRecipientName")}</span>{" "}
+                  <bdi className="admin-order-value">
+                    {order.shippingAddress?.fullName || "—"}
+                  </bdi>
+                </p>
+                <p className="admin-order-field">
+                  <span className="admin-order-label">{t("orderPhone")}</span>{" "}
+                  <bdi className="admin-order-value" dir="ltr">
+                    {order.shippingAddress?.phone || "—"}
+                  </bdi>
+                </p>
+                <p className="admin-order-field">
+                  <span className="admin-order-label">{t("orderAddress")}</span>{" "}
+                  <bdi className="admin-order-value">
+                    {order.shippingAddress?.address || "—"}
+                  </bdi>
+                </p>
               </div>
-              <h4>Items</h4>
+
+              <h4>{t("orderItems")}</h4>
 
               {order.items.map((item) => (
                 <div className="admin-order-item" key={item._id}>
-                  <p>{item.name}</p>
-                  <p>Quantity: {item.quantity}</p>
-                  <p>Price: {item.price} <RiyalSymbol /></p>
+                  <p className="admin-order-item-name">{item.name}</p>
+                  <p className="admin-order-field">
+                    <span className="admin-order-label">{t("orderQuantity")}</span>{" "}
+                    <bdi className="admin-order-value" dir="ltr">
+                      {item.quantity}
+                    </bdi>
+                  </p>
+                  <p className="admin-order-field">
+                    <span className="admin-order-label">{t("orderPrice")}</span>{" "}
+                    <span className="admin-order-value">
+                      <bdi dir="ltr">{Number(item.price || 0).toLocaleString()}</bdi> <RiyalSymbol />
+                    </span>
+                  </p>
                 </div>
               ))}
             </div>

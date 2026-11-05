@@ -5,7 +5,7 @@ import api from "../../services/api";
 import { useLanguage } from "../../context/LanguageContext";
 import ProductImage from "../common/ProductImage";
 
-function SearchBox() {
+function SearchBox({ isAccountOpen = false, onSearchOpen }) {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -23,6 +23,15 @@ function SearchBox() {
     setIsOpen(false);
   }
 
+  // Close search suggestions during render when account menu opens
+  const [prevAccountOpen, setPrevAccountOpen] = useState(isAccountOpen);
+  if (isAccountOpen !== prevAccountOpen) {
+    setPrevAccountOpen(isAccountOpen);
+    if (isAccountOpen) {
+      setIsOpen(false);
+    }
+  }
+
   // Close suggestions when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
@@ -34,7 +43,11 @@ function SearchBox() {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
 
   const handleSubmit = (e) => {
@@ -72,7 +85,12 @@ function SearchBox() {
         }));
 
         setSuggestions(formattedProducts);
-        setIsOpen(formattedProducts.length > 0);
+        if (formattedProducts.length > 0 && !isAccountOpen) {
+          onSearchOpen?.();
+          setIsOpen(true);
+        } else {
+          setIsOpen(false);
+        }
       } catch (error) {
         console.error("Search Error :", error);
         setSuggestions([]);
@@ -86,7 +104,7 @@ function SearchBox() {
     }, 300);
 
     return () => clearTimeout(debounce);
-  }, [searchTerm]);
+  }, [searchTerm, isAccountOpen, onSearchOpen]);
 
   return (
     <div
@@ -101,9 +119,13 @@ function SearchBox() {
           id="search"
           placeholder={t("searchPlaceholder")}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            onSearchOpen?.();
+          }}
           onFocus={() => {
-            if (suggestions.length > 0) setIsOpen(true);
+            onSearchOpen?.();
+            if (suggestions.length > 0 && !isAccountOpen) setIsOpen(true);
           }}
           autoComplete="off"
         />

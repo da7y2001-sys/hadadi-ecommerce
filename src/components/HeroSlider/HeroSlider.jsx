@@ -10,12 +10,14 @@ import { useLanguage } from "../../context/LanguageContext";
 import "./HeroSlider.css";
 
 export default function HeroSlider() {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
 
   return (
     <div className="hero-slider-section">
       <div className="container">
         <Swiper
+          key={isRTL ? "rtl" : "ltr"}
+          dir={isRTL ? "rtl" : "ltr"}
           spaceBetween={0}
           centeredSlides={true}
           autoplay={{

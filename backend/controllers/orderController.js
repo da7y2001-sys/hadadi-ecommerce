@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const Notification = require("../models/Notification");
 
 class OrderError extends Error {
   constructor(message, status = 400) {
@@ -148,6 +149,21 @@ const createOrder = async (req, res) => {
     );
 
     await session.commitTransaction();
+
+    // Create admin notification asynchronously after successful order commit
+    try {
+      await Notification.create({
+        type: "NEW_ORDER",
+        title: "New order received!",
+        message: `Order #${order._id.toString().slice(-6)} received with total ${order.total} SAR`,
+        orderId: order._id,
+        orderTotal: order.total,
+        customerName: fullName || "Customer",
+        isRead: false,
+      });
+    } catch (notifErr) {
+      console.warn("Notification creation notice:", notifErr.message);
+    }
 
     res.status(201).json({
       message: "Order created successfully",

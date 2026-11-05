@@ -5,6 +5,7 @@ import { Header, ErrorBoundary, Footer, ScrollToTop } from "./components";
 import ProductDetails from "./pages/ProductDetails";
 import Home from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
+import BestSellingPage from "./pages/BestSellingPage";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import SearchPage from "./pages/SearchPage";
@@ -64,6 +65,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/best-selling" element={<BestSellingPage />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />

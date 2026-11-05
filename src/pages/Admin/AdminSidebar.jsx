@@ -1,28 +1,30 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 function AdminSidebar() {
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <aside className="admin-sidebar">
-      <h2>Hadai Admin</h2>
+      <h2>{t("adminBrand")}</h2>
 
       <nav>
         <NavLink to="/admin" end>
-          Dashboard
+          {t("sidebarDashboard")}
         </NavLink>
 
-        <NavLink to="/admin/products">Products</NavLink>
+        <NavLink to="/admin/products">{t("sidebarProducts")}</NavLink>
 
-        <NavLink to="/admin/orders">Orders</NavLink>
+        <NavLink to="/admin/orders">{t("sidebarOrders")}</NavLink>
 
-        <NavLink to="/admin/users">Users</NavLink>
+        <NavLink to="/admin/users">{t("sidebarUsers")}</NavLink>
       </nav>
 
       <div className="admin-sidebar-actions">
         <button type="button" onClick={logout}>
-          Logout
+          {t("logout")}
         </button>
       </div>
     </aside>

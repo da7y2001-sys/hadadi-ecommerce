@@ -8,7 +8,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 import { useLanguage } from "../../context/LanguageContext";
 
 function ProductSlider({ data, title }) {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const categoryKey = title.toLowerCase().replace(" ", "-");
   const translatedTitle = t(categoryKey) || title;
 
@@ -22,11 +22,13 @@ function ProductSlider({ data, title }) {
           </div>
 
           <Link to={`/category/${categoryKey}`} className="view-all-link">
-            {t("viewAll")} ({data?.length || 0}) →
+            {t("viewAll")} ({data?.length || 0}) {isRTL ? "←" : "→"}
           </Link>
         </div>
 
         <Swiper
+          key={isRTL ? "rtl" : "ltr"}
+          dir={isRTL ? "rtl" : "ltr"}
           loop={false}
           navigation={true}
           modules={[Navigation, Autoplay]}
