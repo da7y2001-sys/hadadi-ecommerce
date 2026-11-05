@@ -1,308 +1,280 @@
-# Hadadi E-Commerce — Full-Stack Platform
+# Hadadi Tech — Full-Stack E-Commerce Platform
 
-A modern, production-structured Full-Stack E-Commerce web application built with **React 19**, **Vite**, **Express 5**, and **MongoDB Atlas**. The platform delivers a complete end-to-end e-commerce flow: customer registration and authentication, optimized catalog browsing and real-time search, discount-aware sorting and filtering, localStorage cart and wishlist synchronization, transactional checkout with stock reservation, customer and admin order management with atomic inventory restoration, and a community product reviews and ratings system featuring verified buyer badges.
+[![Live Demo](https://img.shields.io/badge/Demo-hadadi--ecommerce.vercel.app-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://hadadi-ecommerce.vercel.app)
+[![Browse Accessories](https://img.shields.io/badge/Browse-Accessories-FF69B4?style=for-the-badge&logo=shopify&logoColor=white)](https://hadadi-ecommerce.vercel.app/category/accessories)
+[![API Status](https://img.shields.io/badge/API-hadadi--tech--api.onrender.com-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://hadadi-tech-api.onrender.com)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/da7y2001-sys/hadadi-ecommerce)
+[![Node.js Version](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![React Version](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+
+A modern, production-structured Full-Stack E-Commerce web application built with **React 19**, **Vite**, **Node.js Express 5**, and **MongoDB Atlas**. Hadadi Tech delivers a comprehensive end-to-end shopping experience featuring bilingual localization (Arabic RTL & English LTR), Saudi Riyal currency formatting, discount-aware catalog filtering, real-time search suggestions, persistent cart and wishlist states, transactional checkout with atomic stock reservations, verified-buyer product reviews, and an administrative dashboard equipped with polling-based admin order notifications.
 
 ---
 
 ## Table of Contents
 
-- [Overview & Architecture](#overview--architecture)
-- [Tech Stack](#tech-stack)
-- [Core Features](#core-features)
-- [Security Considerations](#security-considerations)
-- [REST API Reference](#rest-api-reference)
-- [Project Structure](#project-structure)
-- [Installation & Local Setup](#installation--local-setup)
-- [Environment Variables](#environment-variables)
-- [MongoDB Atlas & Replica Set Requirements](#mongodb-atlas--replica-set-requirements)
-- [Available Scripts](#available-scripts)
-- [Verification & Automated Testing](#verification--automated-testing)
-- [Production Readiness & Limitations](#production-readiness--limitations)
+- [1. Project Overview](#1-project-overview)
+- [2. Features](#2-features)
+- [3. Technology Stack](#3-technology-stack)
+- [4. Project Structure](#4-project-structure)
+- [5. Installation and Setup](#5-installation-and-setup)
+- [6. Environment Variables](#6-environment-variables)
+- [7. API Overview](#7-api-overview)
+- [8. Authentication and Authorization](#8-authentication-and-authorization)
+- [9. Database & Transactional Order Processing](#9-database--transactional-order-processing)
+- [10. Deployment Architecture](#10-deployment-architecture)
+- [11. Future Improvements](#11-future-improvements)
 
 ---
 
-## Overview & Architecture
+## 1. Project Overview
 
-The application adopts a decoupled client-server architecture with strict separation of concerns, secure token handling, and database-level consistency guarantees:
+Hadadi Tech is an e-commerce platform designed for consumer electronics and modern tech gear. The project models real-world e-commerce architecture with a strict separation of concerns:
+- **Client-Side:** Responsive, accessible Single Page Application (SPA) with full RTL/LTR bi-directional layout support and instant language toggling.
+- **Server-Side:** RESTful API with route-level security, rate limiting, and server-authoritative calculations that discard untrusted client prices.
+- **Database:** MongoDB Atlas replica set leveraging multi-document ACID transactions for zero-loss stock reservation and cancellation rollbacks.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        React 19 Client                          │
-│  - React Router 7 (SPA navigation & protected route guards)     │
-│  - Context API (AuthContext, CartContext)                       │
-│  - Centralized Axios Interceptor (auto Bearer token injection)  │
-│  - UI: Framer Motion, Swiper, React Hot Toast, React Icons      │
-└────────────────┬────────────────────────────────▲───────────────┘
-                 │ HTTP / REST                    │ JSON Responses
-                 │ (CORS with credentials)        │ Error Contracts
-┌────────────────▼────────────────────────────────┴───────────────┐
-│                        Express 5 Backend                        │
-│  - Middleware: Helmet, CORS, Rate Limiting, JSON Body Parser    │
-│  - Security: JWT Authentication & Role-Based Authorization      │
-│  - Controllers: Admin, Auth, Order, Product, Profile, Review   │
-│  - Atomic Transactions: Mongoose ClientSession (2-phase commit) │
-└────────────────┬────────────────────────────────────────────────┘
-                 │ Mongoose ODM / Driver (Replica Set / Atlas)
-┌────────────────▼────────────────────────────────────────────────┐
-│                        MongoDB Database                         │
-│  - Collections: users, products, orders, reviews                │
-│  - Compound unique indexes & ACID multi-document transactions   │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Key Architectural Tenets:
-1. **Centralized Communication Layer:** All outbound HTTP requests flow through a single Axios instance (`src/services/api.js`). Request interceptors automatically inject the `Authorization: Bearer <token>` header from `localStorage`, and response interceptors normalize server error messages.
-2. **Server-Authoritative Business Logic:** Prices, discounts, stock availability, and verified buyer states are never trusted from the client. Checkout calculates totals and discounts directly from MongoDB documents inside a database transaction.
-3. **Transactional Inventory Integrity:** Both checkout (stock reservation) and order cancellation (inventory restoration) execute inside MongoDB multi-document transactions (`session.startTransaction()`) with atomic increment/decrement operations and condition guards (`$gte`).
+### Quick Links
+- **Live Storefront:** [https://hadadi-ecommerce.vercel.app](https://hadadi-ecommerce.vercel.app)
+- **Browse Accessories:** [https://hadadi-ecommerce.vercel.app/category/accessories](https://hadadi-ecommerce.vercel.app/category/accessories)
+- **Live Backend API:** [https://hadadi-tech-api.onrender.com](https://hadadi-tech-api.onrender.com)
+- **Source Code Repository:** [https://github.com/da7y2001-sys/hadadi-ecommerce](https://github.com/da7y2001-sys/hadadi-ecommerce)
 
 ---
 
-## Tech Stack
+## 2. Features
+
+### Storefront & Shopping Experience
+- **Catalog Browsing & Categorization:** Filter products across 7 unified tech categories (*Phones, Audio, Laptops, Watches, Monitors, Gaming, Accessories*).
+- **Dedicated Category Extraction (`GET /products/categories`):** Employs MongoDB `distinct` aggregation to populate navigation bars dynamically without loading full product models.
+- **Real-Time Autocomplete (`GET /products/suggest?q=...`):** Lightweight autocomplete search returning top 5 matches with projected fields (`_id`, `name`, `image`) and debounced input handling.
+- **Discount-Aware Sorting & Filtering:** Real-time client and server filtering respecting the computed selling price:
+  $$\text{effectivePrice} = \text{discount} > 0 \; ? \; \text{price} \times \left(1 - \frac{\text{discount}}{100}\right) : \text{price}$$
+- **Interactive Product Details:** High-resolution product showcase with image gallery selection, stock badges, discount calculations, dynamic rating summaries, related products slider, and verified buyer reviews.
+- **Persistent Cart & Wishlist:** Client-side state managed via Context API and automatically synchronized with `localStorage` across browser tabs. Out-of-stock guards prevent adding quantities beyond current inventory.
+- **Saudi Riyal Currency Representation:** Localized currency presentation via a reusable `<RiyalSymbol />` component displaying `ر.س` in Arabic and `SAR` in English.
+
+### Bilingual Localization (Arabic & English)
+- **Dynamic RTL / LTR Switching:** Toggles `document.documentElement.dir` (`rtl` vs `ltr`) and `lang` (`ar` vs `en`) on the fly.
+- **CSS Logical Properties:** Stylesheets utilize CSS logical properties (`margin-inline-start`, `padding-inline-end`, `inset-inline-start`) to maintain layout symmetry without CSS duplication.
+- **Bi-Directional Text Isolation:** Sensitive text fields like Order IDs, phone numbers, email addresses, and prices are wrapped with `<bdi>` and `dir="ltr"` to prevent punctuation inversion in Arabic.
+
+### User Account & Profile Management
+- **Customer Authentication:** JWT-based authentication with salted bcrypt password hashing (cost factor 10).
+- **Profile Dashboard:** View and update account credentials (full name, email) and securely change passwords with current-password verification.
+- **Order History:** Detailed order status tracking (`Processing`, `Shipped`, `Delivered`, `Cancelled`) with individual order cancellation support.
+
+### Community Product Reviews & Ratings
+- **Single Review Constraint:** Compound unique database index `{ user: 1, product: 1 }` prevents multiple reviews per user on the same product (`409 Conflict`).
+- **Verified Buyer Badge:** Automatically checks customer order history. If the customer purchased the item in a non-cancelled order, their review displays a green `✔ Verified Buyer` badge.
+- **Dynamic Rating Recalculation:** Server automatically updates `ratingAverage` (rounded to 1 decimal place) and `ratingCount` on the `Product` document whenever a review is created, edited, or deleted.
+- **Author & Admin Permissions:** Customers can edit or delete their own reviews. Administrators have moderation privileges to delete any review.
+
+### Administrative Management Suite
+- **Modern Analytics Dashboard:** Revenue metrics, active order distribution breakdown, and quick management links.
+- **Product Management (CRUD):** Create new products, update specifications, adjust inventory stock, configure percentage discounts, and toggle catalog visibility (`isActive`).
+- **Order Fulfillment Workflow:** Inspect platform orders, review customer shipping information, and manage status transitions (`Processing` $\to$ `Shipped` $\to$ `Delivered` $\to$ `Cancelled`).
+- **User Oversight:** View all registered user accounts with registration timestamps (passwords excluded).
+- **Polling-Based Admin Order Notifications:**
+  - Background polling runs on an interval of **15 seconds** while an authenticated administrator is in the admin suite (`AdminNotificationContext.jsx`).
+  - Notification bell in the admin navigation displays unread count badges and a dropdown list of recent orders.
+  - Generates interactive toast notifications when new orders are placed.
+  - Supports marking individual or all notifications as read (`PATCH /admin/notifications/:id/read`, `PATCH /admin/notifications/read-all`).
+
+### Responsive Layout & Mobile Optimization
+- **Unified 2-Column Mobile Grid:** Standardized across Category, Search, Best-Selling, and Wishlist pages at viewports $\le 768\text{px}$.
+- **Adaptive Slider Navigation:** Desktop and laptop viewports display white elevated slider navigation arrows; mobile viewports ($\le 600\text{px}$) cleanly hide arrows to prioritize touch swipe gestures.
+- **Mobile Admin Drawer:** Administrative sidebar transforms into a compact, responsive top navigation bar on mobile screens without horizontal overflow.
+- **Table Scroll Containers:** User and order tables are wrapped in horizontal scroll containers with `overflow-wrap: anywhere` on alphanumeric IDs.
+
+---
+
+## 3. Technology Stack
 
 ### Frontend
-- **React 19** (`^19.2.8`) — UI framework using modern hooks (`useState`, `useEffect`, `useContext`, `useCallback`, `useMemo`).
-- **Vite** (`^8.3.0`) — Ultra-fast build tool and local development server with HMR.
-- **React Router DOM** (`^7.18.4`) — Client-side declarative routing, nested layouts, and route guards.
-- **Axios** (`^1.20.0`) — Promise-based HTTP client with centralized interceptors.
-- **React Hot Toast** (`^2.6.1`) — Non-blocking, accessible toast notifications.
-- **Swiper** (`^14.3.0`) — Touch-enabled carousel for hero banners and related product sliders.
-- **Framer Motion** (`^14.3.0`) — Smooth component entry and layout transitions.
-- **React Icons** (`^5.7.0`) — Accessible iconography.
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **React** | `^19.2.8` | Component architecture, state hooks, and Context providers |
+| **Vite** | `^8.3.0` | Build tool, development server, and client bundler |
+| **React Router DOM** | `^7.18.4` | Client-side declarative routing, nested routes, and route guards |
+| **Axios** | `^1.20.0` | Promise-based HTTP client with centralized auth interceptors |
+| **Swiper** | `^14.3.0` | Touch-enabled carousel for hero banners and product sliders |
+| **React Hot Toast** | `^2.6.1` | Non-blocking, accessible toast notifications |
+| **Framer Motion** | `^14.3.0` | Page transition effects |
+| **React Icons** | `^5.7.0` | Vector iconography |
 
-### Backend & Database
-- **Node.js** (v18+ / v20+ / v22+) — Asynchronous runtime environment.
-- **Express 5** (`^5.3.0`) — RESTful routing engine with native async error handling.
-- **MongoDB & Mongoose** (`^9.11.2`) — Document database with schema validation and multi-document transactions.
-- **JSON Web Token (`jsonwebtoken`)** (`^9.0.3`) — Stateless authentication tokens with expiration claims.
-- **bcryptjs** (`^3.0.3`) — Salted password hashing (cost factor 10).
-- **Helmet** (`^8.3.0`) — HTTP security response headers.
-- **express-rate-limit** (`^8.7.1`) — Endpoint rate limiting against brute-force attacks.
-- **CORS** (`^2.8.6`) — Cross-Origin Resource Sharing control with configurable origin whitelist.
+### Backend
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **Node.js** | `>=20.0.0` | Asynchronous JavaScript server runtime |
+| **Express** | `^5.3.0` | Web application framework and RESTful routing engine |
+| **Helmet** | `^8.3.0` | Security headers middleware (XSS, Sniff, Frameguard) |
+| **express-rate-limit** | `^8.7.1` | Rate limiter protecting authentication endpoints |
+| **cors** | `^2.8.6` | Cross-Origin Resource Sharing control with origin whitelist |
+| **bcryptjs** | `^3.0.3` | Salted password hashing |
+| **jsonwebtoken** | `^9.0.3` | Stateless signed JSON Web Tokens for authentication |
+| **dotenv** | `^18.0.8` | Environment variable loader |
 
----
+### Database & ODM
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **MongoDB Atlas** | Cloud M0+ | Managed cloud document database (Replica Set configuration) |
+| **Mongoose** | `^9.11.2` | Object Data Modeling (ODM), schema validation, and transactions |
 
-## Core Features
-
-### 1. Authentication & Role-Based Authorization
-- **Registration & Login:** Clean registration with email normalization, password hashing, and duplicate checks. Login issues signed JWT tokens containing `userId` and `role`.
-- **Role Enforcement:** Strict authorization gates for customers (`role: "user"`) and administrators (`role: "admin"`).
-- **Client Route Guards:** `ProtectedRoute` redirects unauthenticated users to `/login`; `AdminRoute` restricts administrative pages to admin users.
-
-### 2. Product Catalog & Performance Optimization
-- **Dedicated Category Extraction (`GET /products/categories`):** Uses MongoDB `distinct` over active products, eliminating the need to load the full catalog just to populate navigation menus.
-- **Search Suggestions (`GET /products/suggest?q=...`):** Lightweight autocomplete endpoint returning top 5 matches with projected fields (`_id`, `name`, `image`) without loading full product models.
-- **Catalog Filtering & Discount-Aware Sorting:** Category page filters products by category, stock availability, and effective selling price:
-  $$\text{effectivePrice} = \text{discount} > 0 \; ? \; \text{price} \times \left(1 - \frac{\text{discount}}{100}\right) : \text{price}$$
-  Price filters (Min / Max) and sorting (Low $\to$ High, High $\to$ Low) respect the effective selling price.
-
-### 3. Shopping Cart & Wishlist
-- **Persistent Local State:** Synchronized with `localStorage` for offline persistence across page reloads.
-- **Real-time Synchronization:** Dynamic item badge counters in the navigation header.
-- **Stock Guards:** Prevents adding more items than currently in stock and disables out-of-stock items.
-
-### 4. Checkout & Atomic Order Processing
-- **Server-Side Price Recalculation:** Client-supplied prices are discarded. Backend checks stock in real time, applies discounts, computes item totals, and decrements stock.
-- **MongoDB ACID Transactions:** Stock decrement and order creation occur within a single transaction session. If any product is out of stock, the entire checkout aborts cleanly with zero data corruption.
-
-### 5. Customer & Admin Order Management
-- **Customer Order Cancellation (`PATCH /orders/:id/cancel`):** Customers can cancel their own orders while status is `Processing`. Cancellation is forbidden for `Shipped`, `Delivered`, or `Cancelled` orders.
-- **Atomic Inventory Restoration:** Restores product stock and decrements `soldCount` using atomic `$inc` operators with strict condition checks (`soldCount: { $gte: item.quantity }`).
-- **Admin Order Workflow:** Admins can view all platform orders and transition statuses (`Processing` $\to$ `Shipped` $\to$ `Delivered` $\to$ `Cancelled`). Admin cancellation triggers the exact same safe inventory restoration logic.
-
-### 6. Product Reviews & Ratings System
-- **Single Review Enforcement:** Compound unique index `{ user: 1, product: 1 }` prevents multiple reviews per user on the same product, returning `409 Conflict`.
-- **Verified Buyer Detection:** System queries order history for non-cancelled orders containing the product. Non-buyers are welcome to review, but verified customers receive a green `✔ Verified Buyer` badge.
-- **Dynamic Rating Statistics:** Recomputes `ratingAverage` (rounded to 1 decimal place) and `ratingCount` on `Product` whenever a review is created, edited, or deleted. Reset safely to `0` if all reviews are removed.
-- **Review Permissions:** Authors can update or delete their reviews. Platform administrators can delete any review.
-
-### 7. Admin Dashboard & Product CRUD
-- **Product Management:** Full create, read, update (including name, price, stock, SKU, discount, description, category, brand, image, and `isActive` toggle), and delete capabilities.
-- **Customer & Order Oversight:** Tabular view of platform orders and registered user accounts.
-- **Navigation Integration:** Top header displays an "Admin Panel" link exclusively for authenticated administrators.
+### Deployment & Hosting
+| Platform | Component | Configuration |
+| :--- | :--- | :--- |
+| **Vercel** | Frontend Web App | Single-Page Application rewrites via `vercel.json` |
+| **Render** | Backend Web Service | Node.js web service running `node server.js` |
+| **MongoDB Atlas** | Database | Dedicated cloud cluster with network access controls |
 
 ---
 
-## Security Considerations
+## 4. Project Structure
 
-- **Password Hashing:** Passwords hashed with bcrypt (salt rounds = 10) before storage; plaintext passwords are never logged or stored.
-- **Token Sanitation:** User password hashes are excluded from responses (`select("-password")`).
-- **HTTP Header Hardening:** `helmet()` sets standard protective headers (XSS filter, frameguard, noSniff, hidePoweredBy).
-- **Rate Limiting:** `express-rate-limit` prevents abusive request floods.
-- **Input Validation & Sanitization:** Strict schema validations on both client and server (e.g., ratings must be integers 1–5; comments 3–1000 characters; email trimmed and lowercased).
-- **Route Injection Prevention:** All MongoDB ObjectId parameters are verified with `mongoose.Types.ObjectId.isValid()`.
-- **CORS Protection:** Configurable via `FRONTEND_URL` environment variable; credentials supported securely.
-
----
-
-## REST API Reference
-
-### Public Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/` | API health and status check |
-| `POST` | `/auth/register` | Register a new user account |
-| `POST` | `/auth/login` | Authenticate credentials and obtain JWT |
-| `GET` | `/products` | List all active products |
-| `GET` | `/products/categories` | Get distinct active product categories |
-| `GET` | `/products/suggest?q=...` | Get top 5 search suggestions (`_id`, `name`, `image`) |
-| `GET` | `/products/search?q=...` | Search products by name, category, or brand |
-| `GET` | `/products/best-selling` | Retrieve top best-selling products |
-| `GET` | `/products/:id` | Get single active product details |
-| `GET` | `/products/:productId/reviews` | List all reviews for a product (newest first) |
-
-### Authenticated Endpoints (Customer & Admin)
-
-*Requires header: `Authorization: Bearer <token>`*
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/profile` | Get current authenticated user profile |
-| `PATCH` | `/profile` | Update user name or email |
-| `PATCH` | `/profile/password` | Change user password |
-| `POST` | `/orders` | Create an order with transactional stock decrement |
-| `GET` | `/orders` | Get order history for the authenticated user |
-| `PATCH` | `/orders/:id/cancel` | Cancel customer's own order (only if `Processing`) |
-| `GET` | `/products/:productId/reviews/my-review` | Get authenticated user's review for a product |
-| `POST` | `/products/:productId/reviews` | Post a product review (verifies buyer status) |
-| `PATCH` | `/reviews/:id` | Update own product review |
-| `DELETE` | `/reviews/:id` | Delete own review (or any review if Admin) |
-
-### Admin Endpoints
-
-*Requires header: `Authorization: Bearer <token>` with `user.role === "admin"`*
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/admin/products` | List all products (including inactive items) |
-| `POST` | `/products` | Create a new product document |
-| `PATCH` | `/products/:id` | Update complete product fields |
-| `DELETE` | `/products/:id` | Delete product from database |
-| `GET` | `/admin/orders` | List all customer orders |
-| `PATCH` | `/admin/orders/:id/status` | Update order status (`Processing`, `Shipped`, `Delivered`, `Cancelled`) |
-| `GET` | `/admin/users` | List registered user accounts |
-
----
-
-## Project Structure
+The repository contains the root React application alongside the backend service directory:
 
 ```text
-myapp/
+hadadi-ecommerce/
 ├── backend/
 │   ├── controllers/
-│   │   ├── adminController.js     # Admin orders, status updates, user queries
-│   │   ├── orderController.js     # Checkout transaction, orders, cancel & stock restore
-│   │   ├── productController.js   # Product CRUD, categories, suggestions, search
-│   │   ├── profileController.js   # User profile & password updates
-│   │   └── reviewController.js    # Review CRUD, rating stats helper, verified buyer
+│   │   ├── adminController.js         # Order status workflow, user lists, admin notifications
+│   │   ├── orderController.js         # Transactional checkout, user orders, cancel & inventory restore
+│   │   ├── productController.js       # Product CRUD, categories, search, suggestions, best-selling
+│   │   ├── profileController.js       # Profile management and password updates
+│   │   └── reviewController.js        # Review CRUD, rating recalculations, verified buyer lookup
 │   ├── middleware/
-│   │   ├── adminMiddleware.js     # Admin role verification
-│   │   └── authMiddleware.js      # JWT token authentication
+│   │   ├── adminMiddleware.js         # Admin role authorization check (HTTP 403)
+│   │   └── authMiddleware.js          # Bearer JWT token verification (HTTP 401)
 │   ├── models/
-│   │   ├── Order.js               # Order schema & items subdocument
-│   │   ├── Product.js             # Product schema, rating stats, inventory tracking
-│   │   ├── Review.js              # Review schema with compound unique index
-│   │   └── User.js                # User schema with credentials and roles
+│   │   ├── Notification.js            # Admin notification schema with unique orderId index
+│   │   ├── Order.js                   # Customer order schema & item subdocuments
+│   │   ├── Product.js                 # Product catalog schema, inventory, and rating stats
+│   │   ├── Review.js                  # Review schema with compound unique user-product index
+│   │   └── User.js                    # User account schema with hashed credentials & roles
 │   ├── routes/
-│   │   ├── adminRoutes.js         # /admin routing
-│   │   ├── auth.js                # /auth registration & login
-│   │   ├── orderRoutes.js         # /orders customer routing
-│   │   ├── productRoutes.js       # /products catalog & product reviews routing
-│   │   ├── profileRoutes.js       # /profile user routing
-│   │   └── reviewRoutes.js        # /reviews review management routing
-│   ├── .env.example               # Backend environment variable template
-│   ├── db.js                      # MongoDB connection setup
-│   ├── package.json               # Backend dependencies and scripts
-│   └── server.js                  # Express app configuration & middleware
-├── public/                        # Static assets
+│   │   ├── adminRoutes.js             # /admin protected endpoints
+│   │   ├── auth.js                    # /auth customer registration & login routes
+│   │   ├── orderRoutes.js             # /orders customer checkout & cancellation routes
+│   │   ├── productRoutes.js           # /products public & admin catalog routes
+│   │   ├── profileRoutes.js           # /profile customer profile routes
+│   │   └── reviewRoutes.js            # /reviews review moderation & update routes
+│   ├── scripts/
+│   │   └── seedProducts.js            # Database seeding script for catalog items
+│   ├── .gitignore                     # Backend-specific ignore rules
+│   ├── db.js                          # Mongoose connection initialization
+│   ├── package.json                   # Backend dependencies, engines, and start scripts
+│   └── server.js                      # Express app entrypoint, middleware, and route mounting
+├── public/                            # Static public assets (icons, category images)
 ├── src/
-│   ├── components/                # Reusable UI components
-│   │   ├── AdminRoute/            # Admin route protection guard
-│   │   ├── ErrorBoundary/         # React runtime error boundary
-│   │   ├── ErrorState/            # Friendly error & retry display
-│   │   ├── Footer/                # Site footer
-│   │   ├── Header/                # Header, TopHeader, SearchBox, category nav
-│   │   ├── HeroSlider/            # Promotional banner carousel
-│   │   ├── ProductCard/           # Product card with price, badge, rating
-│   │   ├── ProductList/           # Product grid and category sliders
-│   │   └── ProtectedRoute/        # Authentication route protection guard
+│   ├── components/
+│   │   ├── Admin/
+│   │   │   └── AdminNotificationBell.jsx  # Notification bell, badge counter, and dropdown
+│   │   ├── CategoryCatalog/           # Visual category navigation grid
+│   │   ├── common/
+│   │   │   ├── ProductImage.jsx       # Fallback-aware product image component
+│   │   │   └── RiyalSymbol.jsx        # Localized Saudi Riyal (SAR / ر.س) currency glyph
+│   │   ├── ErrorBoundary/             # React error boundary component
+│   │   ├── ErrorState/                # Visual retry and error banner component
+│   │   ├── Footer/                    # Bilingual site footer
+│   │   ├── Header/                    # Header, SearchBox autocomplete, and top navigation
+│   │   ├── HeroSlider/                # Promotional Swiper carousel
+│   │   ├── ProductCard/               # Product card with discount badge, rating, and cart action
+│   │   ├── ProductList/               # Category sliders and product grid displays
+│   │   └── ProtectedRoute/            # Authentication & admin route protection wrappers
 │   ├── context/
-│   │   ├── AuthContext.jsx        # User state, login, logout, token persistence
-│   │   └── CartContext.jsx        # Cart & wishlist state synchronized with localStorage
+│   │   ├── AdminNotificationContext.jsx # 15s admin polling & toast provider
+│   │   ├── AuthContext.jsx            # Authentication state, login, logout, and token persistence
+│   │   ├── CartContext.jsx            # Shopping cart state synchronized with localStorage
+│   │   ├── LanguageContext.jsx        # Bilingual (AR/EN) locale state and RTL/LTR direction
+│   │   └── WishlistContext.jsx        # Customer wishlist synchronized with localStorage
+│   ├── locales/
+│   │   ├── ar.js                      # Complete Arabic translation dictionary
+│   │   └── en.js                      # Complete English translation dictionary
 │   ├── pages/
-│   │   ├── Admin/                 # Admin dashboard, products, orders, users
-│   │   ├── CartPage.jsx           # Cart view & item quantity modification
-│   │   ├── CategoryPage.jsx       # Category browsing with discount-aware sort/filter
-│   │   ├── CheckoutPage.jsx       # Shipping form & transactional order placement
-│   │   ├── OrdersPage.jsx         # Customer order history & order cancellation
-│   │   ├── ProductDetails.jsx     # Detail view, rating summary, reviews & form
-│   │   ├── Profile.jsx            # Account info & password change
-│   │   ├── SearchPage.jsx         # Full catalog search results
-│   │   ├── WishlistPage.jsx       # Saved favorites
-│   │   └── Login.jsx / Register.jsx
+│   │   ├── Admin/
+│   │   │   ├── AdminDashboard.jsx     # Metrics, revenue card, and status breakdown
+│   │   │   ├── AdminLayout.jsx        # Admin responsive layout and top navigation bar
+│   │   │   ├── AdminOrders.jsx        # Order fulfillment table and status transitions
+│   │   │   ├── AdminPage.jsx          # Admin product CRUD management
+│   │   │   ├── AdminSidebar.jsx       # Responsive admin sidebar & mobile drawer
+│   │   │   └── AdminUsers.jsx         # Registered user management table
+│   │   ├── BestSellingPage.jsx        # Best-selling products catalog route
+│   │   ├── CartPage.jsx               # Shopping cart item management
+│   │   ├── CategoryPage.jsx           # Category-specific catalog browsing
+│   │   ├── CheckoutPage.jsx           # Shipping form and order placement
+│   │   ├── Home.jsx                   # Home page with hero banner and category sliders
+│   │   ├── Login.jsx                  # Customer login form
+│   │   ├── OrdersPage.jsx             # Customer order history and order cancellation
+│   │   ├── ProductDetails.jsx         # Product view, review list, and submission form
+│   │   ├── Profile.jsx                # Account profile and password update forms
+│   │   ├── Register.jsx               # Customer registration form
+│   │   ├── SearchPage.jsx             # Catalog search results
+│   │   └── WishlistPage.jsx           # Saved items page
 │   ├── services/
-│   │   └── api.js                 # Central Axios instance with auth interceptor
-│   ├── utils/
-│   │   └── formatPrice.js         # Currency and price formatting utility
-│   ├── App.jsx                    # Root routing & category initialization
-│   └── main.jsx                   # React DOM entrypoint
-├── .env.example                   # Frontend environment variable template
-├── eslint.config.js               # ESLint configuration
-├── package.json                   # Frontend dependencies and scripts
-└── vite.config.js                 # Vite build configuration
+│   │   └── api.js                     # Centralized Axios instance with auth interceptor
+│   ├── App.jsx                        # Application routes, error boundaries, and category prefetch
+│   ├── main.jsx                       # React DOM entrypoint
+│   └── index.css                      # Global styles and logical properties
+├── .gitignore                         # Root git ignore rules
+├── eslint.config.js                   # ESLint configuration
+├── package.json                       # Frontend dependencies, engines, and build scripts
+├── vercel.json                        # Vercel SPA rewrite configuration
+└── vite.config.js                     # Vite build configuration
 ```
 
 ---
 
-## Installation & Local Setup
+## 5. Installation and Setup
 
 ### Prerequisites
-- **Node.js** (v18.0.0 or later)
-- **npm** (v9.0.0 or later)
-- A running **MongoDB** instance (MongoDB Atlas recommended, see requirements below)
+- **Node.js** (`>=20.0.0`)
+- **npm** (`>=10.0.0`)
+- A running **MongoDB** instance (MongoDB Atlas cluster recommended for transaction support)
 
-### Step 1: Clone Repository
+### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/da7y2001-sys/hadadi-ecommerce.git
-cd hadadi-ecommerce/myapp
+cd hadadi-ecommerce
 ```
 
-### Step 2: Configure Environment Variables
-Copy the example environment files for both frontend and backend:
-
+### Step 2: Install Frontend Dependencies
+From the repository root (`hadadi-ecommerce`):
 ```bash
-# Frontend
-cp .env.example .env
-
-# Backend
-cd backend
-cp .env.example .env
-cd ..
-```
-
-*(On Windows PowerShell, use `Copy-Item .env.example .env`)*
-
-### Step 3: Install Dependencies
-```bash
-# Install frontend dependencies
 npm install
+```
 
-# Install backend dependencies
+### Step 3: Install Backend Dependencies
+From the `backend/` directory:
+```bash
 cd backend
 npm install
 cd ..
 ```
 
-### Step 4: Run the Application
+### Step 4: Configure Environment Variables
+Create `.env` in the repository root and `backend/.env` in the `backend/` folder following the specifications in [Section 6](#6-environment-variables).
 
-#### Start the Backend API (Port 5000)
+### Step 5: (Optional) Seed the Database
+To populate the catalog with initial tech products:
+```bash
+cd backend
+node scripts/seedProducts.js
+cd ..
+```
+
+### Step 6: Run the Applications Locally
+
+#### Start the Backend API Server (Port 5000)
+In your first terminal from `backend/`:
 ```bash
 cd backend
 npm run dev
 ```
+*(Uses `nodemon server.js` for automatic restart on file changes).*
 
 #### Start the Frontend Client (Port 5173)
-In a separate terminal:
+In a second terminal from the repository root:
 ```bash
 npm run dev
 ```
@@ -310,80 +282,224 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## Environment Variables
+## 6. Environment Variables
 
-### Backend Configuration (`backend/.env`)
-Based on `backend/.env.example`:
+### Backend Environment Configuration (`backend/.env`)
+Create a file at `backend/.env`:
 
-| Variable | Description | Example / Default |
-|---|---|---|
-| `MONGO_URI` | MongoDB connection string (Replica Set / Atlas required) | `mongodb+srv://<user>:<password>@cluster0.mongodb.net/ecommerce` |
-| `JWT_SECRET` | Secret key used to sign and verify JSON Web Tokens | `your_super_secret_jwt_key_here` |
-| `PORT` | Port on which the Express server listens | `5000` |
-| `FRONTEND_URL`| Allowed frontend origin for CORS | `http://localhost:5173` |
+```env
+# Server Port
+PORT=5000
 
-### Frontend Configuration (`.env`)
-Based on `.env.example`:
+# Environment Mode
+NODE_ENV=development
 
-| Variable | Description | Example / Default |
-|---|---|---|
-| `VITE_API_URL` | Base URL of the backend REST API | `http://localhost:5000` |
+# MongoDB Connection String (Must support Replica Sets / Atlas)
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority
 
----
+# JWT Signing Secret (High-entropy random string)
+JWT_SECRET=your_jwt_secret_key_here
 
-## MongoDB Atlas & Replica Set Requirements
+# Allowed Frontend Origins for CORS (Comma-separated for multiple origins)
+FRONTEND_URL=http://localhost:5173,http://localhost:4173
+```
 
-> [!IMPORTANT]
-> **Multi-Document ACID Transactions:**
-> The order creation workflow (`POST /orders`) and order cancellation workflow (`PATCH /orders/:id/cancel`) use Mongoose `ClientSession` (`session.startTransaction()`) to guarantee atomic stock changes and prevent inventory race conditions.
->
-> MongoDB transactions **require a Replica Set**. They will not function on a standalone MongoDB instance.
->
-> - **MongoDB Atlas:** All MongoDB Atlas clusters (including the free M0 tier) are replica sets by default and fully support transactions out of the box.
-> - **Local MongoDB:** If running locally via Docker or native binary, you must initiate a single-node replica set (`rs.initiate()`) before testing checkout or cancellation.
+### Frontend Environment Configuration (`.env`)
+Create a file at the root `.env`:
 
----
+```env
+# Backend API Base URL
+VITE_API_URL=http://localhost:5000
+```
 
-## Available Scripts
-
-### Frontend Scripts (from `myapp/`)
-- `npm run dev` — Launches Vite dev server with hot module replacement at `localhost:5173`.
-- `npm run build` — Compiles and optimizes assets into production-ready static files in `dist/`.
-- `npm run preview` — Locally previews the built production bundle.
-- `npm run lint` — Runs ESLint across all JavaScript/JSX source files.
-
-### Backend Scripts (from `myapp/backend/`)
-- `npm run dev` — Runs the Express API server with `nodemon` for automatic reload on file changes.
-- `npm start` — Runs the server with production Node.js.
+> [!WARNING]
+> Frontend environment variables prefixed with `VITE_` are publicly accessible and baked into static bundles at build time. Never place database strings, API secrets, or private keys in the frontend `.env`.
 
 ---
 
-## Verification & Automated Testing
+## 7. API Overview
 
-The codebase has undergone verification across all layers:
+All backend routes are registered in [`backend/server.js`](backend/server.js).
 
-1. **Static Analysis & Compilation:**
-   - ESLint: **0 errors, 0 warnings** across the entire workspace.
-   - Vite Production Build: Completed cleanly without warnings.
-   - Node.js Syntax Verification: All backend routes and controllers validated with `node --check`.
+### Public Endpoints
+| HTTP Method | Route | Description |
+| :--- | :--- | :--- |
+| `GET` | `/` | API operational health check |
+| `POST` | `/auth/register` | Register a new user account |
+| `POST` | `/auth/login` | Authenticate user and return signed JWT (Rate limited) |
+| `GET` | `/products` | List all active catalog products |
+| `GET` | `/products/categories` | Retrieve distinct active product categories |
+| `GET` | `/products/suggest?q=...` | Top 5 lightweight search suggestions |
+| `GET` | `/products/search?q=...` | Search products across name, brand, and category |
+| `GET` | `/products/best-selling` | Retrieve top best-selling products sorted by `soldCount` |
+| `GET` | `/products/:id` | Retrieve single product details |
+| `GET` | `/products/:productId/reviews` | Retrieve all reviews for a specific product |
 
-2. **Integration Test Suite:**
-   The backend includes comprehensive integration tests verifying:
-   - Order cancellation restrictions (forbidding cancellation of shipped/delivered orders).
-   - Atomic inventory rollback upon cancellation (`stock` increments, `soldCount` decrements).
-   - Category distinct extraction and search suggestions.
-   - Compound unique index duplicate review rejection (`409 Conflict`).
-   - Verified buyer badge calculation against order history.
-   - Dynamic product rating statistic recalculation (and clean reset to 0 upon deletion).
+### Authenticated Customer Endpoints
+*Requires header: `Authorization: Bearer <token>`*
+
+| HTTP Method | Route | Description |
+| :--- | :--- | :--- |
+| `GET` | `/profile` | Retrieve authenticated user profile (password excluded) |
+| `PATCH` | `/profile` | Update account full name and email address |
+| `PATCH` | `/profile/password` | Update account password with verification |
+| `POST` | `/orders` | Place an order with transactional stock reservation |
+| `GET` | `/orders` | Retrieve authenticated user's order history |
+| `PATCH` | `/orders/:id/cancel` | Cancel order if in `Processing` status & restore stock |
+| `GET` | `/products/:productId/reviews/my-review` | Get authenticated user's review for a product |
+| `POST` | `/products/:productId/reviews` | Create review (computes verified buyer status) |
+| `PATCH` | `/reviews/:id` | Update customer's own review |
+| `DELETE` | `/reviews/:id` | Delete customer's own review |
+
+### Admin Endpoints
+*Requires header: `Authorization: Bearer <token>` with `user.role === "admin"`*
+
+| HTTP Method | Route | Description |
+| :--- | :--- | :--- |
+| `GET` | `/admin/products` | List all products (including inactive items) |
+| `POST` | `/products` | Create a new product document |
+| `PATCH` | `/products/:id` | Update product fields and inventory stock |
+| `DELETE` | `/products/:id` | Delete product from database |
+| `GET` | `/admin/orders` | Retrieve all customer orders across the platform |
+| `PATCH` | `/admin/orders/:id/status` | Update order status (`Processing`, `Shipped`, `Delivered`, `Cancelled`) |
+| `GET` | `/admin/users` | List all registered user accounts (passwords excluded) |
+| `GET` | `/admin/notifications` | Retrieve order notifications and unread count |
+| `PATCH` | `/admin/notifications/:id/read` | Mark single notification as read |
+| `PATCH` | `/admin/notifications/read-all` | Mark all unread notifications as read |
+| `DELETE` | `/reviews/:id` | Moderate and delete any product review |
 
 ---
 
-## Production Readiness & Limitations
+## 8. Authentication and Authorization
 
-This project is a high-quality portfolio application demonstrating realistic full-stack e-commerce architecture. For transparency, the following features are intentionally out of scope for this version:
+### Password Security & Hashing
+- User passwords are automatically salted and hashed using `bcryptjs` with **10 salt rounds** during registration and password change.
+- Plaintext passwords are never stored in the database or logged.
+- Controllers explicitly use `.select("-password")` across profile queries and admin user listings to prevent password hash leakage.
 
-- **Payment Gateway Integration:** Checkout creates simulated orders directly without third-party payment gateways (e.g., Stripe, PayPal).
-- **Email Delivery:** Account registration and password updates do not dispatch verification emails or transactional receipts.
-- **File Upload Storage:** Product images are referenced via external image URLs rather than an S3/Cloudinary media bucket.
-- **Cart Storage Location:** The shopping cart and wishlist are persisted in browser `localStorage` rather than server-synced database records.
-- **Admin Promotion:** New registrations default to `role: "user"`. First-time admin promotion is performed directly in the database (`db.users.updateOne({ email: "..." }, { $set: { role: "admin" } })`).
+### Token-Based Authentication
+- Upon successful login, the server issues a signed JSON Web Token (`jsonwebtoken`) with a **7-day lifespan** (`{ expiresIn: "7d" }`).
+- The token payload carries the user ID and role claims:
+  ```json
+  {
+    "userId": "67290...",
+    "role": "user"
+  }
+  ```
+- The frontend stores the token in `localStorage` and automatically injects it as an `Authorization: Bearer <token>` header on all requests via an Axios request interceptor.
+- If an API request returns an HTTP `401 Unauthorized` (e.g., token expired), the Axios response interceptor clears the token and dispatches an `auth:unauthorized` event to redirect to `/login`.
+
+### Role-Based Access Control (RBAC)
+- **`authMiddleware.js`:** Validates the Bearer token signature against `process.env.JWT_SECRET`. If valid, attaches `req.user = decoded` to the request pipeline.
+- **`adminMiddleware.js`:** Verifies that `req.user.role === "admin"`. If false or missing, execution halts immediately with HTTP `403 Forbidden` (`Admin access required`).
+- **Client Route Guards:**
+  - `<ProtectedRoute>` prevents unauthenticated visitors from accessing `/profile`, `/orders`, and `/checkout`.
+  - `<AdminRoute>` protects all `/admin/*` routes, redirecting non-admin users to `/` with an error message.
+
+---
+
+## 9. Database & Transactional Order Processing
+
+### Mongoose Models & Schemas
+- **`User`:** Stores `name`, `email` (unique index, lowercase, trimmed), hashed `password`, and `role` (`"user"` | `"admin"`).
+- **`Product`:** Stores specifications (`name`, `price`, `discount`, `stock`, `soldCount`, `category`, `brand`, `sku`, `image`, `isActive`, `ratingAverage`, `ratingCount`). Enforces integer validation on stock and sold counters.
+- **`Order`:** Stores `user` reference, subdocument items array (`product`, `name`, `image`, `quantity`, `price`), `total`, `status` (`Processing` | `Shipped` | `Delivered` | `Cancelled`), and `shippingAddress`.
+- **`Review`:** Stores `user` and `product` references, `rating` (1–5), `comment`, and `isVerifiedPurchase`. Features a **compound unique index** `{ user: 1, product: 1 }` to guarantee one review per product per customer.
+- **`Notification`:** Stores admin notification type, title, message, `orderId` (**unique index** to prevent duplicate notifications), `orderTotal`, `customerName`, and `isRead` (**indexed** for fast polling count).
+
+### ACID Multi-Document Transactions
+Order placement and order cancellation execute inside Mongoose `ClientSession` transactions (`session.startTransaction()`):
+
+#### 1. Atomic Checkout (`POST /orders`)
+- **Server Price Calculation:** Discards client prices. Calculates the exact unit selling price directly from MongoDB `Product` records.
+- **Atomic Stock Reservation:**
+  ```javascript
+  const product = await Product.findOneAndUpdate(
+    { _id: item.product, isActive: true, stock: { $gte: item.quantity } },
+    { $inc: { stock: -item.quantity, soldCount: item.quantity } },
+    { new: true, session }
+  );
+  ```
+- If any requested product lacks sufficient stock, the query returns `null`, the transaction calls `session.abortTransaction()`, and checkout returns an HTTP `409 Conflict` error without deducting stock for other items in the cart.
+- Upon successful transaction commit, an admin notification document is generated asynchronously.
+
+#### 2. Atomic Cancellation Inventory Rollback (`PATCH /orders/:id/cancel`)
+- If an order is cancelled while in `Processing` status, `restoreOrderInventory()` runs within the transaction:
+  ```javascript
+  await Product.findOneAndUpdate(
+    { _id: productId, soldCount: { $gte: item.quantity } },
+    { $inc: { stock: item.quantity, soldCount: -item.quantity } },
+    { new: true, session }
+  );
+  ```
+- Guarantees inventory quantities are restored safely without race conditions.
+
+---
+
+## 10. Deployment Architecture
+
+The application is deployed across three cloud platforms:
+
+```
+[ Client Browser ]
+       │
+       ├── HTTPS (Single Page App) ──► Vercel (Frontend Hosting)
+       │                                │ Rewrites: vercel.json (/(.*) -> /)
+       │                                │ Environment: VITE_API_URL
+       │
+       └── HTTPS (RESTful API) ──────► Render (Backend Web Service)
+                                        │ Runs: node server.js
+                                        │ Environment: MONGO_URI, JWT_SECRET, FRONTEND_URL
+                                        │
+                                        ▼
+                                 MongoDB Atlas (Cloud Replica Set)
+                                  Network Access: Configured deployment rules
+```
+
+### 1. Frontend on Vercel
+- **Live URL:** [https://hadadi-ecommerce.vercel.app](https://hadadi-ecommerce.vercel.app)
+- **Browse Accessories Category:** [https://hadadi-ecommerce.vercel.app/category/accessories](https://hadadi-ecommerce.vercel.app/category/accessories)
+- **Framework Preset:** Vite
+- **Root Directory:** `.` (repository root)
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+- **SPA Routing (`vercel.json`):** Configured with rewrite rules so direct URLs like `/category/phones`, `/category/accessories`, or `/admin/orders` route to `index.html` without triggering 404 errors:
+  ```json
+  {
+    "rewrites": [
+      {
+        "source": "/(.*)",
+        "destination": "/"
+      }
+    ]
+  }
+  ```
+- **Environment Variable:** `VITE_API_URL=https://hadadi-tech-api.onrender.com`
+
+### 2. Backend on Render
+- **API URL:** [https://hadadi-tech-api.onrender.com](https://hadadi-tech-api.onrender.com)
+- **Environment:** Node.js Web Service
+- **Root Directory:** `backend`
+- **Build Command:** `npm install`
+- **Start Command:** `node server.js`
+- **Environment Variables:**
+  - `NODE_ENV=production`
+  - `MONGO_URI=<mongodb_connection_string>`
+  - `JWT_SECRET=<jwt_signing_key>`
+  - `FRONTEND_URL=https://hadadi-ecommerce.vercel.app`
+
+### 3. Database on MongoDB Atlas
+- **Tier:** Cloud M0 Shared Cluster (Replica Set configuration).
+- **Network Access & Security:** In production environments, network access should ideally be restricted to static IP addresses or dedicated egress CIDR ranges provided by the hosting platform (such as Render dedicated outbound IPs or private networking). Where shared dynamic hosting environments require broader network rules, database access must be tightly coupled with strong authentication credentials, least-privilege user roles, and database auditing. *(Note: This section documents security best practices; no changes to active database rules were made).*
+
+---
+
+## 11. Future Improvements
+
+The following architectural and functional enhancements represent natural next steps for expanding the platform:
+
+1. **Payment Gateway Integration:** Integrate modern payment providers (Stripe, HyperPay, Apple Pay) for real-world card processing and webhook-driven order fulfillment.
+2. **Transactional Email Service:** Integrate an email service provider (SendGrid, Resend) to dispatch automated order confirmations, shipping updates, and password-reset links.
+3. **Cloud Media Storage:** Transition product image storage from static paths to a cloud asset CDN (Cloudinary or AWS S3) with an administrative drag-and-drop image uploader.
+4. **WebSocket Real-Time Notifications:** Upgrade admin order notifications from 15-second polling to full duplex WebSockets (`Socket.IO`) for instantaneous updates.
+5. **Route-Level Code Splitting:** Implement `React.lazy()` and `<Suspense>` on administrative routes in `App.jsx` to reduce initial storefront bundle size below 500 kB.
